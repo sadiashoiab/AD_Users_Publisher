@@ -31,6 +31,11 @@ namespace AD_Users_Extract
                     client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
                 .AddTransientHttpErrorPolicy(builder =>
                     builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
+            services
+                .AddHttpClient("GoogleApiHttpClient",
+                    client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
+                .AddTransientHttpErrorPolicy(builder =>
+                    builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
 
             services.AddMvc(options => { options.Filters.Add<ExceptionActionFilter>(); })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using AD_Users_Extract.Services.Exceptions;
 using AD_Users_Extract.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
@@ -59,20 +60,6 @@ namespace AD_Users_Extract.Services
         {
             var responseMessage = await SendAsync(url, token);
             return await responseMessage.Content.ReadAsStringAsync();
-        }
-
-        public class UnexpectedDataException : ApplicationException
-        {
-            public UnexpectedDataException(string parameterName) : base($"Unexpected Data: {parameterName}")
-            {
-            }
-        }
-
-        public class UnexpectedStatusCodeException : ApplicationException
-        {
-            public UnexpectedStatusCodeException(HttpResponseMessage response) : base($"Unexpected Status Code: {response.StatusCode}, for Method: {response.RequestMessage?.Method}, with Uri: {response.RequestMessage?.RequestUri}")
-            {
-            }
         }
     }
 }
