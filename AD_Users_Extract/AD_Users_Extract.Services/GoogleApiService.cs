@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Encodings.Web;
@@ -71,7 +72,6 @@ namespace AD_Users_Extract.Services
             var encodedPostalCode = _urlEncoder.Encode(postalCode);
             var query = $"{encodedAddress}&components=postal_code:{encodedPostalCode}";
             var url = await BuildApiUrl(GoogleApiEndpointEnum.GeoCode, query);
-
             var responseMessage = await SendAsync(url);
             var json = await responseMessage.Content.ReadAsStringAsync();
             var geoCodeResults = JsonSerializer.Deserialize<GoogleApiGeoCodeRootObject>(json);
@@ -84,9 +84,15 @@ namespace AD_Users_Extract.Services
             return geoCodeResults.results.FirstOrDefault()?.geometry.location;
         }
 
-        public Task<string> TimeZone(GoogleApiLocation location)
+        public async Task<string> TimeZone(GoogleApiLocation location)
         {
-            throw new NotImplementedException();
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var query = $"location={location.lat.ToString(CultureInfo.InvariantCulture)},{location.lng.ToString(CultureInfo.InvariantCulture)}&timestamp={timestamp}";
+            var url = await BuildApiUrl(GoogleApiEndpointEnum.TimeZone, query);
+            var responseMessage = await SendAsync(url);
+            var json = await responseMessage.Content.ReadAsStringAsync();
+            var timeZoneResult = JsonSerializer.Deserialize<GoogleApiTimeZoneResult>(json);
+            return timeZoneResult.timeZoneId;
         }
     }
 }
