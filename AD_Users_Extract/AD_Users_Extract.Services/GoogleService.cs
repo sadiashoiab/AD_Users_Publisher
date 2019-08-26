@@ -26,15 +26,15 @@ namespace AD_Users_Extract.Services
             _httpClientFactory = httpClientFactory;
         }
 
-        private async Task<string> BuildApiUrl(GoogleApiEndpoint googleApiEndpoint, string query)
+        private async Task<string> BuildApiUrl(GoogleApiEndpointEnum googleApiEndpointEnum, string query)
         {
-            switch (googleApiEndpoint)
+            switch (googleApiEndpointEnum)
             {
-                case GoogleApiEndpoint.GeoCode:
-                case GoogleApiEndpoint.TimeZone:
+                case GoogleApiEndpointEnum.GeoCode:
+                case GoogleApiEndpointEnum.TimeZone:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(googleApiEndpoint));
+                    throw new ArgumentOutOfRangeException(nameof(googleApiEndpointEnum));
             }
 
             if (string.IsNullOrWhiteSpace(GoogleApiKey))
@@ -42,7 +42,7 @@ namespace AD_Users_Extract.Services
                 GoogleApiKey = await _keyVaultService.GetSecret("GoogleApiKey");
             }
 
-            return $"{_googleApiBaseUrl}{googleApiEndpoint.ToString().ToLower()}/json?{query}&key={GoogleApiKey}";
+            return $"{_googleApiBaseUrl}{googleApiEndpointEnum.ToString().ToLower()}/json?{query}&key={GoogleApiKey}";
         }
 
         private async Task<HttpResponseMessage> SendAsync(string url)
@@ -70,12 +70,12 @@ namespace AD_Users_Extract.Services
             var encodedAddress = _urlEncoder.Encode(address);
             var encodedPostalCode = _urlEncoder.Encode(postalCode);
             var query = $"{encodedAddress}&components=postal_code:{encodedPostalCode}";
-            var url = await BuildApiUrl(GoogleApiEndpoint.GeoCode, query);
+            var url = await BuildApiUrl(GoogleApiEndpointEnum.GeoCode, query);
 
             var responseMessage = await SendAsync(url);
             var json = await responseMessage.Content.ReadAsStringAsync();
             var geoCodeResults = JsonSerializer.Deserialize<GoogleApiGeoCodeRootObject>(json);
-            if (!geoCodeResults.results.Any())
+            if (geoCodeResults.results == null || !geoCodeResults.results.Any())
             {
                 var innerException = new UnexpectedDataException("query", query);
                 throw new UnexpectedDataException("No results for query", innerException);
@@ -88,11 +88,5 @@ namespace AD_Users_Extract.Services
         {
             throw new NotImplementedException();
         }
-    }
-
-    public enum GoogleApiEndpoint
-    {
-        GeoCode,
-        TimeZone
     }
 }
