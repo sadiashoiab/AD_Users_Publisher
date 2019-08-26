@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TestBed.Services.Interfaces;
+using AD_Users_Extract.Services.Interfaces;
 
-namespace TestBed.Services
+namespace AD_Users_Extract.Services
 {
     public class TokenService : ITokenService
     {

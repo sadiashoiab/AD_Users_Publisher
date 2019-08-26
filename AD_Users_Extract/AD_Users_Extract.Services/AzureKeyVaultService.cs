@@ -1,10 +1,10 @@
-﻿using Microsoft.Azure.KeyVault;
+﻿using System.Threading.Tasks;
+using AD_Users_Extract.Services.Interfaces;
+using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using TestBed.Services.Interfaces;
 
-namespace TestBed.Services
+namespace AD_Users_Extract.Services
 {
     public class AzureKeyVaultService : IAzureKeyVaultService
     {

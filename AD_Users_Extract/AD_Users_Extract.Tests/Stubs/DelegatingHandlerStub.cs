@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TestBed.Tests.Stubs
+namespace AD_Users_Extract.Tests.Stubs
 {
     public class DelegatingHandlerStub : DelegatingHandler
     {

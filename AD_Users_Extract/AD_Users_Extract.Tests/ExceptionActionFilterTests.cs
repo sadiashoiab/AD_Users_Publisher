@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Castle.Core.Logging;
+using AD_Users_Extract.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -12,9 +11,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestBed.Filters;
 
-namespace TestBed.Tests
+namespace AD_Users_Extract.Tests
 {
     [TestClass]
     public class ExceptionActionFilterTests

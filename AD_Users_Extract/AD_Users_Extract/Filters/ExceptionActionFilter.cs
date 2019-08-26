@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 
-namespace TestBed.Filters
+namespace AD_Users_Extract.Filters
 {
     public class ExceptionActionFilter : ExceptionFilterAttribute
     {

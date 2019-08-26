@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "TestBed": {
+    "AD_Users_Extract": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

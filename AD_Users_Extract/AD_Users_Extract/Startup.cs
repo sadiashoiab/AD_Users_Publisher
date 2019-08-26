@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using AD_Users_Extract.Filters;
+using AD_Users_Extract.Services;
+using AD_Users_Extract.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -7,11 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Swashbuckle.AspNetCore.Swagger;
-using TestBed.Filters;
-using TestBed.Services;
-using TestBed.Services.Interfaces;
 
-namespace TestBed
+namespace AD_Users_Extract
 {
     [ExcludeFromCodeCoverage]
     public class Startup
@@ -38,8 +38,8 @@ namespace TestBed
             services.AddSwaggerGen(c => {  
                 c.SwaggerDoc("v1", new Info {  
                     Version = "v1",  
-                    Title = "TestBed API",  
-                    Description = "TestBed ASP.NET Core Web API"  
+                    Title = "AD_Users_Extract API",  
+                    Description = "AD_Users_Extract ASP.NET Core Web API"  
                 });  
             });
 
@@ -70,7 +70,7 @@ namespace TestBed
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TestBed API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "AD_Users_Extract API V1");
             });
         }
     }

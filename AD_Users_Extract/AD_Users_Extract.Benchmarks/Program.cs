@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using BenchmarkDotNet.Running;
 
-namespace TestBed.Benchmarks
+namespace AD_Users_Extract.Benchmarks
 {
     [ExcludeFromCodeCoverage]
     class Program

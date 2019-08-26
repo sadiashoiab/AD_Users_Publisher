@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AD_Users_Extract.Services.Interfaces;
+using AD_Users_Extract.Services.Models;
 using Microsoft.Extensions.Configuration;
-using TestBed.Services.Interfaces;
-using TestBed.Services.Models;
 
-namespace TestBed.Services
+namespace AD_Users_Extract.Services
 {
     public class UserService : IUserService
     {

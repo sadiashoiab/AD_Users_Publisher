@@ -3,11 +3,11 @@ using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using AD_Users_Extract.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using TestBed.Services.Interfaces;
 
-namespace TestBed.Services
+namespace AD_Users_Extract.Services
 {
     public class GraphApiService : IGraphApiService
     {

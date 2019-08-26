@@ -3,7 +3,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace TestBed
+namespace AD_Users_Extract
 {
     [ExcludeFromCodeCoverage]
     public class Program

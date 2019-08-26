@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using AD_Users_Extract.Services.Interfaces;
+using AD_Users_Extract.Services.Models;
 using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.Configuration;
 using Moq;
-using TestBed.Services;
-using TestBed.Services.Interfaces;
-using TestBed.Services.Models;
 
-namespace TestBed.Benchmarks
+namespace AD_Users_Extract.Benchmarks
 {
     [ExcludeFromCodeCoverage]
     public class UserService

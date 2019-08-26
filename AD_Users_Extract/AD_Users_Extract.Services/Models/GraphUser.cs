@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace TestBed.Services.Models
+namespace AD_Users_Extract.Services.Models
 {
     [ExcludeFromCodeCoverage]
     public class GraphUser

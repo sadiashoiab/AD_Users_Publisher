@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AD_Users_Extract.Services;
+using AD_Users_Extract.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestBed.Services;
-using TestBed.Services.Interfaces;
 
-namespace TestBed.Tests
+namespace AD_Users_Extract.Tests
 {
     [TestClass]
     public class UserServiceTests
