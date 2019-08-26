@@ -10,7 +10,7 @@ using AD_Users_Extract.Services.Models;
 
 namespace AD_Users_Extract.Services
 {
-    public class GoogleService : IGoogleService
+    public class GoogleApiService : IGoogleApiService
     {
         private const string _googleApiBaseUrl = "https://maps.googleapis.com/maps/api/";
         
@@ -20,7 +20,7 @@ namespace AD_Users_Extract.Services
 
         private string GoogleApiKey { get; set; }
 
-        public GoogleService(IAzureKeyVaultService keyVaultService, IHttpClientFactory httpClientFactory)
+        public GoogleApiService(IAzureKeyVaultService keyVaultService, IHttpClientFactory httpClientFactory)
         {
             _keyVaultService = keyVaultService;
             _httpClientFactory = httpClientFactory;
@@ -84,7 +84,7 @@ namespace AD_Users_Extract.Services
             return geoCodeResults.results.FirstOrDefault()?.geometry.location;
         }
 
-        public Task<string> TimeZone(string latitude, string longitude)
+        public Task<string> TimeZone(GoogleApiLocation location)
         {
             throw new NotImplementedException();
         }

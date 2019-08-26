@@ -34,7 +34,7 @@ namespace AD_Users_Extract.Tests
             );
 
             var client = new HttpClient(clientHandlerStub);
-            var unitUnderTest = new GoogleService(keyVaultServiceMock.Object, httpClientFactoryMock.Object);
+            var unitUnderTest = new GoogleApiService(keyVaultServiceMock.Object, httpClientFactoryMock.Object);
             var apiKey = "APIKEY";
 
             keyVaultServiceMock.Setup(mock => mock.GetSecret("GoogleApiKey"))
@@ -70,7 +70,7 @@ namespace AD_Users_Extract.Tests
             );
 
             var client = new HttpClient(clientHandlerStub);
-            var unitUnderTest = new GoogleService(keyVaultServiceMock.Object, httpClientFactoryMock.Object);
+            var unitUnderTest = new GoogleApiService(keyVaultServiceMock.Object, httpClientFactoryMock.Object);
             var apiKey = "APIKEY";
 
             keyVaultServiceMock.Setup(mock => mock.GetSecret("GoogleApiKey"))
@@ -93,7 +93,7 @@ namespace AD_Users_Extract.Tests
             var clientHandlerStub = new DelegatingHandlerStub();
 
             var client = new HttpClient(clientHandlerStub);
-            var unitUnderTest = new GoogleService(keyVaultServiceMock.Object, httpClientFactoryMock.Object);
+            var unitUnderTest = new GoogleApiService(keyVaultServiceMock.Object, httpClientFactoryMock.Object);
             var apiKey = "APIKEY";
 
             keyVaultServiceMock.Setup(mock => mock.GetSecret("GoogleApiKey"))
@@ -126,7 +126,7 @@ namespace AD_Users_Extract.Tests
             );
 
             var client = new HttpClient(clientHandlerStub);
-            var unitUnderTest = new GoogleService(keyVaultServiceMock.Object, httpClientFactoryMock.Object);
+            var unitUnderTest = new GoogleApiService(keyVaultServiceMock.Object, httpClientFactoryMock.Object);
             var apiKey = "APIKEY";
 
             keyVaultServiceMock.Setup(mock => mock.GetSecret("GoogleApiKey"))
