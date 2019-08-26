@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TestBed.Services\TestBed.Services.csproj" />
-    <ProjectReference Include="..\TestBed\TestBed.csproj" />
+    <ProjectReference Include="..\AD_Users_Extract.Services\AD_Users_Extract.Services.csproj" />
+    <ProjectReference Include="..\AD_Users_Extract\AD_Users_Extract.csproj" />
   </ItemGroup>
 
   <ItemGroup>
