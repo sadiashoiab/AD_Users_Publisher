@@ -33,6 +33,8 @@ namespace AD_Users_Extract.Services
                 throw new ArgumentOutOfRangeException();
             }
 
+            // todo: once we have all the properties we want ironed out, change the url to only "select" the fields we care about.
+            //       right now, we are having the api give us all fields, and this is wasteful.
             var url = $"{_graphApiUrl}/groups/{groupId}/members";//?$top=999";//"?$select=onPremisesLastSyncDateTime,companyName,givenName,mail,mobilePhone,surname,jobTitle,id,userPrincipalName,officeLocation";
             var duration = syncDurationInHours * -1;
             var usersList = await GetGraphUsers(url, duration, token);
