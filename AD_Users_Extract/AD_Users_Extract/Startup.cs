@@ -54,6 +54,7 @@ namespace AD_Users_Extract
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IGraphApiService, GraphApiService>();
+            services.AddScoped<IGoogleApiService, GoogleApiService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

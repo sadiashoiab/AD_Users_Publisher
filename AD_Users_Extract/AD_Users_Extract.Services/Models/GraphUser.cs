@@ -88,5 +88,7 @@ namespace AD_Users_Extract.Services.Models
         //    public OnPremisesExtensionAttributes onPremisesExtensionAttributes { get; set; }
         //    public List<object> onPremisesProvisioningErrors { get; set; }
         //    public List<ProvisionedPlan> provisionedPlans { get; set; }
+
+        public string timeZoneId { get; set; }
     }
 }
