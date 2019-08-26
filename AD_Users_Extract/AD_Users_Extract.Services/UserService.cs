@@ -49,7 +49,8 @@ namespace AD_Users_Extract.Services
             var officeTimeZones = new Dictionary<string, string>();
             foreach (var location in distinctOfficeLocations)
             {
-                // get lat/lng from google
+                // google timezone service requires lat/lng for it to provide a timezone, therefore we need to use the
+                // google geocode service to get the primary office's lat/lng before calling the timezone service
                 var googleLocation = await _googleApiService.GeoCode(location.streetAddress, location.city, location.state, location.postalCode);
                 var googleTimeZone = await _googleApiService.TimeZone(googleLocation);
                 officeTimeZones.Add(location.officeLocation, googleTimeZone);
