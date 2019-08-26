@@ -42,7 +42,7 @@ namespace AD_Users_Extract.Services
             return usersList;
         }
 
-        // todo: refactor this to do many requests at once, rather than processing them sychronously
+        // todo: refactor this to do many requests at once, rather than processing them synchronously
         private async Task PopulateUserTimeZones(List<GraphUser> usersList)
         {
             var distinctOfficeLocations = usersList.Select(user => new {user.officeLocation, user.postalCode, user.city, user.state, user.streetAddress}).Distinct();
