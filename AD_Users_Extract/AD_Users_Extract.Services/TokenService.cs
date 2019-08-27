@@ -33,6 +33,9 @@ namespace AD_Users_Extract.Services
                 case TokenEnum.Franchise:
                     prefix = "NA"; 
                     break;
+                case TokenEnum.HomeOffice:
+                    prefix = "HO"; 
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(tokenEnum), $"Provided tokenEnum ({tokenEnum.ToString()}) is invalid.");
             }
