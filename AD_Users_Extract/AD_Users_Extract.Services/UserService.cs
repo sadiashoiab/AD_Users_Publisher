@@ -68,10 +68,8 @@ namespace AD_Users_Extract.Services
         {
             bool keepIterating;
             var usersList = new List<GraphUser>();
-            var count = 0;
             do
             {
-                count++;
                 var json = await RetrieveAndAddGraphUsers(usersList, url, duration, token);
                 keepIterating = AreMoreGraphUsersAvailable(json, out url);
             } while (keepIterating);

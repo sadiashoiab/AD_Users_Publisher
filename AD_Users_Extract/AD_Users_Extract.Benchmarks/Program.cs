@@ -6,9 +6,9 @@ namespace AD_Users_Extract.Benchmarks
     [ExcludeFromCodeCoverage]
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            var summary = BenchmarkRunner.Run<UserService>();
+            var _ = BenchmarkRunner.Run<UserService>();
         }
     }
 }

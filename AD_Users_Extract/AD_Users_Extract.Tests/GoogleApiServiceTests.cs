@@ -13,7 +13,7 @@ using Moq;
 namespace AD_Users_Extract.Tests
 {
     [TestClass]
-    public class GoogleServiceTests
+    public class GoogleApiServiceTests
     {
         [TestMethod]
         public async Task GeoCode_Success()
