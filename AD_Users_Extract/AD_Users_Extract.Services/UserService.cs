@@ -14,6 +14,7 @@ namespace AD_Users_Extract.Services
         private const string _odataInitialName = "@odata.type";
         private const string _odataReplacementName = "odatatype";
         private const string _odataTypeGroupName = "#microsoft.graph.group";
+        private const string _memberPropertiesToSelect = "$select=onPremisesLastSyncDateTime,companyName,givenName,mail,mobilePhone,surname,jobTitle,id,userPrincipalName,officeLocation,city,country,postalCode,state,streetAddress,onPremisesExtensionAttributes";
 
         private readonly IGraphApiService _graphApiService;
         private readonly IGoogleApiService _googleApiService;
@@ -33,9 +34,7 @@ namespace AD_Users_Extract.Services
                 throw new ArgumentOutOfRangeException();
             }
 
-            // todo: once we have all the properties we want ironed out, change the url to only "select" the fields we care about.
-            //       right now, we are having the api give us all fields, and this is wasteful.
-            var url = $"{_graphApiUrl}/groups/{groupId}/members";//?$top=999";//"?$select=onPremisesLastSyncDateTime,companyName,givenName,mail,mobilePhone,surname,jobTitle,id,userPrincipalName,officeLocation";
+            var url = $"{_graphApiUrl}/groups/{groupId}/members?{_memberPropertiesToSelect}";
             var duration = syncDurationInHours * -1;
             var usersList = await GetGraphUsers(url, duration, token);
             await GetGraphGroupUsers(usersList, duration, token);
@@ -110,7 +109,7 @@ namespace AD_Users_Extract.Services
                 {
                     if (groupUser.odatatype.Equals(_odataTypeGroupName))
                     {
-                        var url = $"{_graphApiUrl}/groups/{groupUser.id}/members?$top=999";
+                        var url = $"{_graphApiUrl}/groups/{groupUser.id}/members?$top=999&{_memberPropertiesToSelect}";
                         var _ = await RetrieveAndAddGraphUsers(usersList, url, duration, token);
                     }
 

@@ -85,10 +85,35 @@ namespace AD_Users_Extract.Services.Models
         //    public List<AssignedLicens> assignedLicenses { get; set; }
         //    public List<AssignedPlan> assignedPlans { get; set; }
         //    public List<object> deviceKeys { get; set; }
-        //    public OnPremisesExtensionAttributes onPremisesExtensionAttributes { get; set; }
+
+        public OnPremisesExtensionAttributes onPremisesExtensionAttributes { get; set; }
+
         //    public List<object> onPremisesProvisioningErrors { get; set; }
         //    public List<ProvisionedPlan> provisionedPlans { get; set; }
 
         public string timeZoneId { get; set; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public class OnPremisesExtensionAttributes
+    {
+        //public object extensionAttribute1 { get; set; }
+        //public object extensionAttribute2 { get; set; }
+        //public object extensionAttribute3 { get; set; }
+
+        public string extensionAttribute4 { get; set; }
+        //public object extensionAttribute5 { get; set; }
+        //public object extensionAttribute6 { get; set; }
+        //public object extensionAttribute7 { get; set; }
+
+        public DateTimeOffset? extensionAttribute8 { get; set; }
+        
+        //public object extensionAttribute9 { get; set; }
+        //public object extensionAttribute10 { get; set; }
+        //public object extensionAttribute11 { get; set; }
+        //public object extensionAttribute12 { get; set; }
+        //public object extensionAttribute13 { get; set; }
+        //public object extensionAttribute14 { get; set; }
+        //public object extensionAttribute15 { get; set; }
     }
 }
