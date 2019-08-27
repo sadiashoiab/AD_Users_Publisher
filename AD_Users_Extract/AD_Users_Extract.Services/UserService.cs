@@ -100,7 +100,6 @@ namespace AD_Users_Extract.Services
             return keepIterating;
         }
 
-
         // note: i do not have a "live" example of this occuring, however a mocked a unit test that does
         private async Task GetGraphGroupUsers(List<GraphUser> usersList, int duration, string token)
         {
