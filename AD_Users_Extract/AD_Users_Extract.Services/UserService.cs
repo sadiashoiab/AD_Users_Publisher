@@ -38,7 +38,7 @@ namespace AD_Users_Extract.Services
             var duration = syncDurationInHours * -1;
             var usersList = await GetGraphUsers(url, duration, token);
             await GetGraphGroupUsers(usersList, duration, token);
-            //await PopulateUserTimeZones(usersList);
+            await PopulateUserTimeZones(usersList);
 
             return usersList;
         }
