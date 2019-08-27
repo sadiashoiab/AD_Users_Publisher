@@ -5,6 +5,6 @@ namespace AD_Users_Publisher.Services
 {
     public interface ITokenService
     {
-        Task<HttpResponseMessage> RetrieveToken();
+        Task<string> RetrieveToken();
     }
 }

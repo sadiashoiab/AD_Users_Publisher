@@ -12,7 +12,7 @@ namespace AD_Users_Publisher.Tests
     public class TokenServiceTests
     {
         [TestMethod]
-        public async Task TestMethod1()
+        public async Task RetrieveToken_Success()
         {
             // ARRANGE
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
@@ -34,12 +34,11 @@ namespace AD_Users_Publisher.Tests
                 .Returns(client).Verifiable();
 
             // ACT
-            var responseMessage = await unitUnderTest.RetrieveToken();
-            var responseString = await responseMessage.Content.ReadAsStringAsync();
+            var token = await unitUnderTest.RetrieveToken();
 
             // ASSERT
             httpClientFactoryMock.Verify();
-            Assert.IsNotNull(responseString);
+            Assert.IsNotNull(token);
         }
     }
 }
