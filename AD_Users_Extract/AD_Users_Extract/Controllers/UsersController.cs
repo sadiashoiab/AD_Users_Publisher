@@ -27,7 +27,7 @@ namespace AD_Users_Extract.Controllers
 
         // GET users
         [ProducesResponseType(typeof(List<GraphUser>), StatusCodes.Status200OK)]
-        [HttpGet("/franchise")]
+        [HttpGet("franchise")]
         public async Task<IActionResult> Franchise([FromQuery]string groupId, [FromQuery]int syncDurationInHours = 0)
         {
             var token = await _tokenService.RetrieveToken(TokenEnum.Franchise);
@@ -41,12 +41,13 @@ namespace AD_Users_Extract.Controllers
             return Ok(users);
         }
 
-        [ProducesResponseType(typeof(Exception), StatusCodes.Status500InternalServerError)]
-        [HttpGet("/error")]
-        public IActionResult ThrowException()
-        {
-            var innerException = new Exception("this is the inner exception message");
-            throw new Exception("this is the outer exception message", innerException);
-        }
+        // note: this is here for a quick way to force an error
+        //[ProducesResponseType(typeof(Exception), StatusCodes.Status500InternalServerError)]
+        //[HttpGet("/error")]
+        //public IActionResult ThrowException()
+        //{
+        //    var innerException = new Exception("this is the inner exception message");
+        //    throw new Exception("this is the outer exception message", innerException);
+        //}
     }
 }
