@@ -31,6 +31,7 @@ namespace AD_Users_Extract.Tests
 
             // ACT
             var _ = await unitUnderTest.GetUsers(groupId, token, syncDurationInHours);
+            // f
         }
 
         [TestMethod]
