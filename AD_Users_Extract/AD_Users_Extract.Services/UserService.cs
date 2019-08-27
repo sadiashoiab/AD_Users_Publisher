@@ -90,7 +90,7 @@ namespace AD_Users_Extract.Services
                     var nextUrl = nextLinkJsonElement.GetString();
                     if (!string.IsNullOrWhiteSpace(nextUrl))
                     {
-                        url = nextLinkJsonElement.GetString();
+                        url = nextUrl;
                         keepIterating = true;
                     }
                 }
