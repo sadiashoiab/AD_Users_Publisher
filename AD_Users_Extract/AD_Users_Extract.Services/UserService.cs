@@ -14,7 +14,7 @@ namespace AD_Users_Extract.Services
         private const string _odataInitialName = "@odata.type";
         private const string _odataReplacementName = "odatatype";
         private const string _odataTypeGroupName = "#microsoft.graph.group";
-        private const string _memberPropertiesToSelect = "$select=onPremisesLastSyncDateTime,companyName,givenName,mail,mobilePhone,surname,jobTitle,id,userPrincipalName,officeLocation,city,country,postalCode,state,streetAddress,onPremisesExtensionAttributes";
+        private const string _memberPropertiesToSelect = "$select=onPremisesLastSyncDateTime,companyName,givenName,mail,mobilePhone,surname,jobTitle,id,userPrincipalName,officeLocation,city,country,postalCode,state,streetAddress,onPremisesExtensionAttributes,businessPhones";
 
         private readonly IGraphApiService _graphApiService;
         private readonly IGoogleApiService _googleApiService;
@@ -38,7 +38,7 @@ namespace AD_Users_Extract.Services
             var duration = syncDurationInHours * -1;
             var usersList = await GetGraphUsers(url, duration, token);
             await GetGraphGroupUsers(usersList, duration, token);
-            await PopulateUserTimeZones(usersList);
+            //await PopulateUserTimeZones(usersList);
 
             return usersList;
         }

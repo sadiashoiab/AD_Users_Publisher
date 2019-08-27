@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace AD_Users_Extract.Services.Models
 {
@@ -14,8 +17,8 @@ namespace AD_Users_Extract.Services.Models
         //    public object deletedDateTime { get; set; }
         //    public bool accountEnabled { get; set; }
         //    public object ageGroup { get; set; }
-        //    public List<object> businessPhones { get; set; }
 
+        public List<string> businessPhones { get; set; }
         public string city { get; set; }
 
         //    public DateTime createdDateTime { get; set; }
@@ -35,7 +38,7 @@ namespace AD_Users_Extract.Services.Models
 
         //    public List<string> imAddresses { get; set; }
         //    public object isResourceAccount { get; set; }
-        
+
         public string jobTitle { get; set; }
 
         //    public object legalAgeGroupClassification { get; set; }
@@ -92,6 +95,8 @@ namespace AD_Users_Extract.Services.Models
         //    public List<ProvisionedPlan> provisionedPlans { get; set; }
 
         public string timeZoneId { get; set; }
+        public bool owner => jobTitle == "Franchise Owner";
+        public string firstBusinessPhone => businessPhones?.Where(phone => !string.IsNullOrWhiteSpace(phone)).FirstOrDefault();
     }
 
     [ExcludeFromCodeCoverage]
