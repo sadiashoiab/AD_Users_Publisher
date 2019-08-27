@@ -6,9 +6,8 @@ namespace AD_Users_Publisher.Controllers
     [ApiController]
     public class PublishController : ControllerBase
     {
-        // GET api/publish/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        [HttpGet]
+        public ActionResult<string> Get()
         {
             return "value";
         }
