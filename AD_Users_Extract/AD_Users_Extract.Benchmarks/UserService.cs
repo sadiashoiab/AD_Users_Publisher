@@ -10,6 +10,7 @@ using Moq;
 namespace AD_Users_Extract.Benchmarks
 {
     [ExcludeFromCodeCoverage]
+    [ShortRunJob]
     public class UserService
     {
         private const string _token = "TOKEN";
