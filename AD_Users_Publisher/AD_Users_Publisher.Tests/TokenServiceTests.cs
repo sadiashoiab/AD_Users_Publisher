@@ -16,6 +16,7 @@ namespace AD_Users_Publisher.Tests
         {
             // ARRANGE
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            var azureKeyVaultServiceMock = new Mock<IAzureKeyVaultService>();
 
             //var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) =>
             //    {
@@ -28,7 +29,7 @@ namespace AD_Users_Publisher.Tests
             //);
 
             var client = new HttpClient();
-            var unitUnderTest = new TokenService(httpClientFactoryMock.Object);
+            var unitUnderTest = new TokenService(httpClientFactoryMock.Object, azureKeyVaultServiceMock.Object);
 
             httpClientFactoryMock.Setup(mock => mock.CreateClient(It.IsAny<string>()))
                 .Returns(client).Verifiable();
