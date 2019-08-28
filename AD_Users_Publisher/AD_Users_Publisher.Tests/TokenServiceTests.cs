@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AD_Users_Publisher.Services;
 using AD_Users_Publisher.Services.Exceptions;
+using AD_Users_Publisher.Services.Interfaces;
 using AD_Users_Publisher.Tests.Stubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;

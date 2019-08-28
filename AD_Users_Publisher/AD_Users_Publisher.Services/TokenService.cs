@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AD_Users_Publisher.Services.Exceptions;
+using AD_Users_Publisher.Services.Interfaces;
 
 namespace AD_Users_Publisher.Services
 {

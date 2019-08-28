@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using AD_Users_Publisher.Services.Interfaces;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
