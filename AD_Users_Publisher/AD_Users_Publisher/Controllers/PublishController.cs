@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using AD_Users_Publisher.Services;
+using AD_Users_Publisher.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AD_Users_Publisher.Controllers
 {
@@ -6,9 +9,26 @@ namespace AD_Users_Publisher.Controllers
     [ApiController]
     public class PublishController : ControllerBase
     {
-        [HttpGet]
-        public ActionResult<string> Get()
+        private readonly ITokenService _tokenService;
+        private readonly IProgramDataService _programDataService;
+
+        public PublishController(ITokenService tokenService, IProgramDataService programDataService)
         {
+            _tokenService = tokenService;
+            _programDataService = programDataService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            var token = await _tokenService.RetrieveToken();
+            var salesforceFranchisesTask = _programDataService.RetrieveFranchises(ProgramDataSources.Salesforce, token);
+            var clearCareFranchisesTask = _programDataService.RetrieveFranchises(ProgramDataSources.ClearCare, token);
+            await Task.WhenAll(salesforceFranchisesTask, clearCareFranchisesTask);
+
+            var salesforceFranchises = await salesforceFranchisesTask;
+            var clearCareFranchises = await clearCareFranchisesTask;
+
             return "value";
         }
     }
