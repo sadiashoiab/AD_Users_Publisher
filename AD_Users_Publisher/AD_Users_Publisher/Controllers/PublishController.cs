@@ -29,7 +29,7 @@ namespace AD_Users_Publisher.Controllers
             var salesforceFranchises = await salesforceFranchisesTask;
             var clearCareFranchises = await clearCareFranchisesTask;
 
-            return "value";
+            return Ok("value");
         }
     }
 }
