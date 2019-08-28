@@ -29,7 +29,7 @@ namespace Azure_AD_Users_Publisher.Services
                 var clientIdTask = _azureKeyVaultService.GetSecret("BearerTokenClientId");
                 var clientSecretTask = _azureKeyVaultService.GetSecret("BearerTokenClientSecret");
                 await Task.WhenAll(clientIdTask, clientSecretTask);
-                ContentBody = $"client_id={await clientIdTask}&client_secret={await clientSecretTask}=&grant_type=client_credentials&resource=https://hiscprogramdatadv.azurewebsites.net";
+                ContentBody = $"client_id={await clientIdTask}&client_secret={await clientSecretTask}&grant_type=client_credentials&resource=https://hiscprogramdatadv.azurewebsites.net";
             }
 
             return ContentBody;
