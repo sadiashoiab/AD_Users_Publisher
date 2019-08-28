@@ -67,7 +67,7 @@ namespace Azure_AD_Users_Publisher.Tests
             Assert.AreEqual(235, results.Last());
         }
 
-                [TestMethod]
+        [TestMethod]
         public async Task RetrieveFranchises_ClearCare_Success()
         { 
             // ARRANGE

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services;
 using Azure_AD_Users_Publisher.Services.Interfaces;
@@ -70,7 +71,11 @@ namespace Azure_AD_Users_Publisher.Controllers
             //    }
             //);
 
-            return Ok("value");
+            var salesforce = $"[{string.Join(',', salesforceFranchises)}]";
+            var clearCare = $"[{string.Join(',', clearCareFranchises)}]";
+            var stringOutput = @"{""salesforceFranchises"":" + salesforce + @",""clearCareFranchises"":" + clearCare + "}";
+
+            return Ok(stringOutput);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Exceptions;
 using Azure_AD_Users_Publisher.Services.Interfaces;
@@ -27,8 +28,6 @@ namespace Azure_AD_Users_Publisher.Services
 
         private async Task<string> GetClientBody()
         {
-            // note: technically this can be called many times and we should lock the setting of this appropriately
-            // todo: rework to lock access so we do not have race issues
             if (string.IsNullOrWhiteSpace(ContentBody))
             {
                 var clientIdTask = _azureKeyVaultService.GetSecret("BearerTokenClientId");
