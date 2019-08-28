@@ -36,7 +36,8 @@ namespace Azure_AD_Users_Publisher.Services
                 await _semaphoreSlim.WaitAsync();
                 try
                 {
-                    // note: checking again, because caller other than myself could, in theory, have set it.... and if so, no need to get it again here
+                    // note: checking again, because caller other than myself could, in theory, have set it while we were waiting for semaphore...
+                    //       and if so, no need to get it again here
                     if (string.IsNullOrWhiteSpace(ContentBody))
                     {
                         var clientIdTask = _azureKeyVaultService.GetSecret("BearerTokenClientId");
