@@ -16,6 +16,7 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAzureKeyVaultService _azureKeyVaultService;
         private readonly string _resourceUrl;
+        static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1,1);
 
         private string ContentBody { get; set; }
 
@@ -28,12 +29,27 @@ namespace Azure_AD_Users_Publisher.Services
 
         private async Task<string> GetClientBody()
         {
+            // note: check if it has been set, if so just give the value, otherwise...
             if (string.IsNullOrWhiteSpace(ContentBody))
             {
-                var clientIdTask = _azureKeyVaultService.GetSecret("BearerTokenClientId");
-                var clientSecretTask = _azureKeyVaultService.GetSecret("BearerTokenClientSecret");
-                await Task.WhenAll(clientIdTask, clientSecretTask);
-                ContentBody = $"client_id={await clientIdTask}&client_secret={await clientSecretTask}&grant_type=client_credentials&resource={_resourceUrl}";
+                // note: technically we could have many callers... use a lightweight semaphore to only allow one at a time for setting
+                await _semaphoreSlim.WaitAsync();
+                try
+                {
+                    // note: checking again, because caller other than myself could, in theory, have set it.... and if so, no need to get it again here
+                    if (string.IsNullOrWhiteSpace(ContentBody))
+                    {
+                        var clientIdTask = _azureKeyVaultService.GetSecret("BearerTokenClientId");
+                        var clientSecretTask = _azureKeyVaultService.GetSecret("BearerTokenClientSecret");
+                        await Task.WhenAll(clientIdTask, clientSecretTask);
+
+                        ContentBody = $"client_id={await clientIdTask}&client_secret={await clientSecretTask}&grant_type=client_credentials&resource={_resourceUrl}";
+                    }
+                }
+                finally
+                {
+                    _semaphoreSlim.Release();
+                }
             }
 
             return ContentBody;
