@@ -44,8 +44,8 @@ namespace Azure_AD_Users_Publisher
             services.AddSwaggerGen(c => {  
                 c.SwaggerDoc("v1", new Info {  
                     Version = "v1",  
-                    Title = "AAD_Users_Publisher API",  
-                    Description = "AAD_Users_Publisher ASP.NET Core Web API"  
+                    Title = "Azure_AD_Users_Publisher API",  
+                    Description = "Azure_AD_Users_Publisher ASP.NET Core Web API"  
                 });  
             });
 
@@ -76,7 +76,7 @@ namespace Azure_AD_Users_Publisher
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "AAD_Users_Publisher API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Azure_AD_Users_Publisher API V1");
             });
         }
     }
