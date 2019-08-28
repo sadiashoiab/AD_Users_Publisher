@@ -69,7 +69,6 @@ namespace AD_Users_Extract.Tests
 
             // ACT
             var _ = await unitUnderTest.RetrieveData("https://www.google.com", "Does not matter for this test as we are using a DelegatingHandler");
-            client.Dispose();
         }
 
         [TestMethod]
@@ -87,7 +86,6 @@ namespace AD_Users_Extract.Tests
 
             // ACT
             var _ = await unitUnderTest.RetrieveData("https://www.google.com", "Does not matter for this test as we are using a DelegatingHandler");
-            client.Dispose();
         }
     }
 }

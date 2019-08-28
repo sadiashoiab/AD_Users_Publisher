@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AD_Users_Extract.Tests.Stubs
+namespace AD_Users_Publisher.Tests.Stubs
 {
     [ExcludeFromCodeCoverage]
     public class DelegatingHandlerStub : DelegatingHandler
