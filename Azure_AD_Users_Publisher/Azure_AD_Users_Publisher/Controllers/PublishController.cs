@@ -49,6 +49,27 @@ namespace Azure_AD_Users_Publisher.Controllers
             //    }
             //}
 
+            //_queueClient.RegisterMessageHandler(
+            //    async (message, token) =>
+            //    {
+            //        try
+            //        {
+            //            processMessage(message); // await Task.Delay(...)
+            //            await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            await _queueClient.DeadLetterAsync(message.SystemProperties.LockToken);
+            //        }
+            //    },
+            //    new MessageHandlerOptions(OnException)
+            //    {
+            //        AutoComplete = false,
+            //        MaxConcurrentCalls = MaxConcurrentCalls,
+            //        MaxAutoRenewDuration = MaxAutoRenewDuration
+            //    }
+            //);
+
             return Ok("value");
         }
     }

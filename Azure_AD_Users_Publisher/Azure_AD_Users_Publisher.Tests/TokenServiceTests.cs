@@ -42,11 +42,11 @@ namespace Azure_AD_Users_Publisher.Tests
                 .Returns(client).Verifiable();
 
             var clientId = "ClientId";
-            keyVaultServiceMock.Setup(mock => mock.GetSecret("BarerTokenClientId"))
+            keyVaultServiceMock.Setup(mock => mock.GetSecret("BearerTokenClientId"))
                 .ReturnsAsync(() => clientId).Verifiable();
             
             var appKey = "ClientSecret";
-            keyVaultServiceMock.Setup(mock => mock.GetSecret("BarerTokenClientSecret"))
+            keyVaultServiceMock.Setup(mock => mock.GetSecret("BearerTokenClientSecret"))
                 .ReturnsAsync(() => appKey).Verifiable();
 
             // ACT
