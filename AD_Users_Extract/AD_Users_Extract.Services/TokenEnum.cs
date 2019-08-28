@@ -2,6 +2,7 @@
 {
     public enum TokenEnum
     {
+        Invalid = 0,
         Franchise,
         HomeOffice
     }

@@ -51,11 +51,11 @@ namespace AD_Users_Publisher.Tests
 
             // ACT
             var token = await unitUnderTest.RetrieveToken();
+            client.Dispose();
 
             // ASSERT
             httpClientFactoryMock.Verify();
             Assert.AreEqual(expectedAccessToken, token);
-            client.Dispose();
         }
 
         [TestMethod]

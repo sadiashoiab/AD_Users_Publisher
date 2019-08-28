@@ -2,6 +2,7 @@
 {
     public enum GoogleApiEndpointEnum
     {
+        Invalid = 0,
         GeoCode,
         TimeZone
     }

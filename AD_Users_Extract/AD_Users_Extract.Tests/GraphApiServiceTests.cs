@@ -39,11 +39,11 @@ namespace AD_Users_Extract.Tests
 
             // ACT
             var result = await unitUnderTest.RetrieveData("https://www.google.com", "Does not matter for this test as we are using a DelegatingHandler");
+            client.Dispose();
 
             // ASSERT
             Assert.IsNotNull(result);
             Assert.AreEqual(_goodResponseString, result);
-            client.Dispose();
         }
 
         [TestMethod]

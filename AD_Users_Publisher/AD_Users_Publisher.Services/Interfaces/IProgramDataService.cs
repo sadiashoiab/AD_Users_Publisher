@@ -4,6 +4,6 @@ namespace AD_Users_Publisher.Services.Interfaces
 {
     public interface IProgramDataService
     {
-        Task<string> RetrieveFranchises(ProgramDataSources sources);
+        Task<int[]> RetrieveFranchises(ProgramDataSources source, string bearerToken);
     }
 }

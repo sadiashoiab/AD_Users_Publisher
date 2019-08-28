@@ -45,13 +45,13 @@ namespace AD_Users_Extract.Tests
 
             // ACT
             var result = await unitUnderTest.GeoCode("825 Redwood Lane", "Papillion", "NE", "68046");
+            client.Dispose();
 
             // ASSERT
             keyVaultServiceMock.Verify();
             httpClientFactoryMock.Verify();
             Assert.AreEqual(41.1319017, result.lat);
             Assert.AreEqual(-96.0573302, result.lng);
-            client.Dispose();
         }
 
         [TestMethod]
@@ -175,12 +175,12 @@ namespace AD_Users_Extract.Tests
 
             // ACT
             var result = await unitUnderTest.TimeZone(location);
+            client.Dispose();
 
             // ASSERT
             keyVaultServiceMock.Verify();
             httpClientFactoryMock.Verify();
             Assert.AreEqual("America/New_York", result);
-            client.Dispose();
         }
     }
 }
