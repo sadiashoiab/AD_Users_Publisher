@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AD_Users_Publisher.Services.Exceptions
+namespace Azure_AD_Users_Publisher.Services.Exceptions
 {
     public class UnexpectedDataException : ApplicationException
     {

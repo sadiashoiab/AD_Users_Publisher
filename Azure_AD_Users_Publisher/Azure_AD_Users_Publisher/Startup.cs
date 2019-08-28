@@ -1,14 +1,19 @@
 ﻿using System;
-using AD_Users_Publisher.Filters;
+using System.Diagnostics.CodeAnalysis;
+using Azure_AD_Users_Publisher.Filters;
+using Azure_AD_Users_Publisher.Services;
+using Azure_AD_Users_Publisher.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
+using Swashbuckle.AspNetCore.Swagger;
 
-namespace AD_Users_Publisher
+namespace Azure_AD_Users_Publisher
 {
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -27,9 +32,28 @@ namespace AD_Users_Publisher
                 .AddTransientHttpErrorPolicy(builder =>
                     builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
 
+            services
+                .AddHttpClient("ProgramDataHttpClient",
+                    client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
+                .AddTransientHttpErrorPolicy(builder =>
+                    builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
 
             services.AddMvc(options => { options.Filters.Add<ExceptionActionFilter>(); })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddSwaggerGen(c => {  
+                c.SwaggerDoc("v1", new Info {  
+                    Version = "v1",  
+                    Title = "AAD_Users_Publisher API",  
+                    Description = "AAD_Users_Publisher ASP.NET Core Web API"  
+                });  
+            });
+
+            services.AddApplicationInsightsTelemetry();
+
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAzureKeyVaultService, AzureKeyVaultService>();
+            services.AddScoped<IProgramDataService, ProgramDataService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,7 +70,13 @@ namespace AD_Users_Publisher
             }
 
             app.UseHttpsRedirection();
+            app.UseStatusCodePages();
             app.UseMvc();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "AAD_Users_Publisher API V1");
+            });
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 
-namespace AD_Users_Publisher.Services.Exceptions
+namespace Azure_AD_Users_Publisher.Services.Exceptions
 {
     public class UnexpectedStatusCodeException : ApplicationException
     {

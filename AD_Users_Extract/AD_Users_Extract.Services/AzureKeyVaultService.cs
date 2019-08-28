@@ -10,9 +10,9 @@ namespace AD_Users_Extract.Services
     {
         private readonly string _url;
 
-        public AzureKeyVaultService(IConfiguration config)
+        public AzureKeyVaultService(IConfiguration configuration)
         {
-            _url = config["KeyVaultUrl"];
+            _url = configuration["KeyVaultUrl"];
         }
 
         // todo: this method is not testable due to usage of requiring a valid AzureServiceTokenProvider, refactor later.

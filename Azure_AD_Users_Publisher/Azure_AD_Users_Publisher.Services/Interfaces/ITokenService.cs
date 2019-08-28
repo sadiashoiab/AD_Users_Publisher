@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace AD_Users_Publisher.Services
+namespace Azure_AD_Users_Publisher.Services.Interfaces
 {
     public interface ITokenService
     {

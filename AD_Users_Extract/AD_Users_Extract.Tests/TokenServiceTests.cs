@@ -1,4 +1,6 @@
 ﻿//using System;
+
+using System;
 using System.Threading.Tasks;
 using AD_Users_Extract.Services;
 using AD_Users_Extract.Services.Interfaces;
@@ -10,22 +12,10 @@ namespace AD_Users_Extract.Tests
     [TestClass]
     public class TokenServiceTests
     {
-        //private static TestContext _context;
-
-        //[ClassInitialize]
-        //public static void Initialize(TestContext context)
-        //{
-        //    _context = context;
-        //    _context.Properties["config"] = new ConfigurationBuilder()
-        //        .AddJsonFile("token-service-test-settings.json")
-        //        .Build();
-        //}
-
         [TestMethod]
         public async Task RetrieveFranchiseToken()
         {
             // ARRANGE
-            //var config = (IConfiguration) _context.Properties["config"];
             var keyVaultServiceMock = new Mock<IAzureKeyVaultService>();
             var tokenProvider = new Mock<IGraphApiService>();
             var unitUnderTest = new TokenService(keyVaultServiceMock.Object, tokenProvider.Object);
@@ -58,7 +48,6 @@ namespace AD_Users_Extract.Tests
         public async Task RetrieveHomeOfficeToken()
         {
             // ARRANGE
-            //var config = (IConfiguration) _context.Properties["config"];
             var keyVaultServiceMock = new Mock<IAzureKeyVaultService>();
             var tokenProvider = new Mock<IGraphApiService>();
             var unitUnderTest = new TokenService(keyVaultServiceMock.Object, tokenProvider.Object);
@@ -85,6 +74,19 @@ namespace AD_Users_Extract.Tests
             // ASSERT
             keyVaultServiceMock.Verify();
             Assert.AreEqual(expectedToken, result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public async Task Retrieve_ArgumentOutOfRangeException()
+        {
+            // ARRANGE
+            var keyVaultServiceMock = new Mock<IAzureKeyVaultService>();
+            var tokenProvider = new Mock<IGraphApiService>();
+            var unitUnderTest = new TokenService(keyVaultServiceMock.Object, tokenProvider.Object);
+
+            // ACT
+            var _ = await unitUnderTest.RetrieveToken(TokenEnum.Invalid);
         }
     }
 }

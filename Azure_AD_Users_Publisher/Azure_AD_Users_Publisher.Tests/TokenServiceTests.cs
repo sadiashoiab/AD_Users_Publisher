@@ -2,13 +2,14 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using AD_Users_Publisher.Services;
-using AD_Users_Publisher.Services.Exceptions;
-using AD_Users_Publisher.Tests.Stubs;
+using Azure_AD_Users_Publisher.Services;
+using Azure_AD_Users_Publisher.Services.Exceptions;
+using Azure_AD_Users_Publisher.Services.Interfaces;
+using Azure_AD_Users_Publisher.Tests.Stubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace AD_Users_Publisher.Tests
+namespace Azure_AD_Users_Publisher.Tests
 {
     [TestClass]
     public class TokenServiceTests
@@ -50,11 +51,11 @@ namespace AD_Users_Publisher.Tests
 
             // ACT
             var token = await unitUnderTest.RetrieveToken();
+            client.Dispose();
 
             // ASSERT
             httpClientFactoryMock.Verify();
             Assert.AreEqual(expectedAccessToken, token);
-            client.Dispose();
         }
 
         [TestMethod]

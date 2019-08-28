@@ -20,9 +20,9 @@ namespace AD_Users_Extract.Services
         private readonly IGoogleApiService _googleApiService;
         private readonly string _graphApiUrl;
 
-        public UserService(IConfiguration config, IGraphApiService graphApiService, IGoogleApiService googleApiService)
+        public UserService(IConfiguration configuration, IGraphApiService graphApiService, IGoogleApiService googleApiService)
         {
-            _graphApiUrl = config["GraphApiUrl"];
+            _graphApiUrl = configuration["GraphApiUrl"];
             _graphApiService = graphApiService;
             _googleApiService = googleApiService;
         }

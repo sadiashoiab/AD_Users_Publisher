@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
+using Azure_AD_Users_Publisher.Services.Interfaces;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 
-namespace AD_Users_Publisher.Services
+namespace Azure_AD_Users_Publisher.Services
 {
     public class AzureKeyVaultService : IAzureKeyVaultService
     {

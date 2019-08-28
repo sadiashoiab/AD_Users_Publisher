@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AD_Users_Publisher", "AD_Users_Publisher\AD_Users_Publisher.csproj", "{3B106EDB-8EE2-43E5-BFD6-9F287C6A57C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure_AD_Users_Publisher", "Azure_AD_Users_Publisher\Azure_AD_Users_Publisher.csproj", "{3B106EDB-8EE2-43E5-BFD6-9F287C6A57C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AD_Users_Publisher.Tests", "AD_Users_Publisher.Tests\AD_Users_Publisher.Tests.csproj", "{E2982531-4338-4D37-B548-F9D71B27D54D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure_AD_Users_Publisher.Tests", "Azure_AD_Users_Publisher.Tests\Azure_AD_Users_Publisher.Tests.csproj", "{E2982531-4338-4D37-B548-F9D71B27D54D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AD_Users_Publisher.Services", "AD_Users_Publisher.Services\AD_Users_Publisher.Services.csproj", "{C93D89EA-1FE4-4695-B7C9-4F3C50B2AF8C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure_AD_Users_Publisher.Services", "Azure_AD_Users_Publisher.Services\Azure_AD_Users_Publisher.Services.csproj", "{C93D89EA-1FE4-4695-B7C9-4F3C50B2AF8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

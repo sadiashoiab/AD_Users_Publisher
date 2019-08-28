@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AD_Users_Publisher.Tests.Stubs
+namespace Azure_AD_Users_Publisher.Tests.Stubs
 {
     [ExcludeFromCodeCoverage]
     public class DelegatingHandlerStub : DelegatingHandler

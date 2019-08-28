@@ -18,10 +18,10 @@ namespace AD_Users_Extract.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly string _azureActiveDirectoryInstanceFormat;
 
-        public GraphApiService(IConfiguration config, IHttpClientFactory httpClientFactory)
+        public GraphApiService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
-            _azureActiveDirectoryInstanceFormat = config["AzureActiveDirectoryInstanceFormat"];
+            _azureActiveDirectoryInstanceFormat = configuration["AzureActiveDirectoryInstanceFormat"];
         }
 
         // todo: this method is not testable due to usage of requiring a valid AuthenticationContext, refactor later.

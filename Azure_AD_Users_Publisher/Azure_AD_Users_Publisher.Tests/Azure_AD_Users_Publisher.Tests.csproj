@@ -19,8 +19,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AD_Users_Publisher.Services\AD_Users_Publisher.Services.csproj" />
-    <ProjectReference Include="..\AD_Users_Publisher\AD_Users_Publisher.csproj" />
+    <ProjectReference Include="..\Azure_AD_Users_Publisher.Services\Azure_AD_Users_Publisher.Services.csproj" />
+    <ProjectReference Include="..\Azure_AD_Users_Publisher\Azure_AD_Users_Publisher.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="program-data-service-test-settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
