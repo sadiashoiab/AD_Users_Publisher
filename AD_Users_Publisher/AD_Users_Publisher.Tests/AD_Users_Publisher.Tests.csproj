@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="Moq" Version="4.12.0" />
@@ -16,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AD_Users_Publisher.Services\AD_Users_Publisher.Services.csproj" />
+    <ProjectReference Include="..\AD_Users_Publisher\AD_Users_Publisher.csproj" />
   </ItemGroup>
 
 </Project>
