@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using AD_Users_Publisher.Services;
 using AD_Users_Publisher.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace AD_Users_Publisher.Controllers
 {
@@ -28,6 +30,24 @@ namespace AD_Users_Publisher.Controllers
 
             var salesforceFranchises = await salesforceFranchisesTask;
             var clearCareFranchises = await clearCareFranchisesTask;
+
+            // peek-lock topic from bus
+            // topic name:              franchiseusers
+            // topic subscription name: salesforcefranchiseuserssubscription
+            // maximum message count:   175
+            // subscription type:       Main
+            // connection:              RootManageSharedAccessKey
+
+
+            // if we have one ore more results from the topic
+            //var topics = new List<string>();
+            //if (true)
+            //{
+            //    foreach (var topic in topics)
+            //    {
+                    
+            //    }
+            //}
 
             return Ok("value");
         }
