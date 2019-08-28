@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace TestBed.Services.Interfaces
+namespace AD_Users_Extract.Services.Interfaces
 {
     public interface ITokenService
     {

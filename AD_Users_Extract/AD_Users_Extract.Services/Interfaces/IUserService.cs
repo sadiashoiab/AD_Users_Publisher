@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using TestBed.Services.Models;
+using AD_Users_Extract.Services.Models;
 
-namespace TestBed.Services.Interfaces
+namespace AD_Users_Extract.Services.Interfaces
 {
     public interface IUserService
     {

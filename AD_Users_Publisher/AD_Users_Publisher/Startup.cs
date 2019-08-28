@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using AD_Users_Extract.Filters;
-using AD_Users_Extract.Services;
-using AD_Users_Extract.Services.Interfaces;
+using AD_Users_Publisher.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
-using Swashbuckle.AspNetCore.Swagger;
 
-namespace AD_Users_Extract
+namespace AD_Users_Publisher
 {
-    [ExcludeFromCodeCoverage]
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -27,34 +22,14 @@ namespace AD_Users_Extract
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddHttpClient("GraphApiHttpClient",
+                .AddHttpClient("TokenApiHttpClient",
                     client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
                 .AddTransientHttpErrorPolicy(builder =>
                     builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
-            services
-                .AddHttpClient("GoogleApiHttpClient",
-                    client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
-                .AddTransientHttpErrorPolicy(builder =>
-                    builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
+
 
             services.AddMvc(options => { options.Filters.Add<ExceptionActionFilter>(); })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
-            services.AddSwaggerGen(c => {  
-                c.SwaggerDoc("v1", new Info {  
-                    Version = "v1",  
-                    Title = "AD_Users_Extract API",  
-                    Description = "AD_Users_Extract ASP.NET Core Web API"  
-                });  
-            });
-
-            services.AddApplicationInsightsTelemetry();
-
-            services.AddScoped<IAzureKeyVaultService, AzureKeyVaultService>();
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IGraphApiService, GraphApiService>();
-            services.AddScoped<IGoogleApiService, GoogleApiService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,13 +46,7 @@ namespace AD_Users_Extract
             }
 
             app.UseHttpsRedirection();
-            app.UseStatusCodePages();
             app.UseMvc();
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "AD_Users_Extract API V1");
-            });
         }
     }
 }

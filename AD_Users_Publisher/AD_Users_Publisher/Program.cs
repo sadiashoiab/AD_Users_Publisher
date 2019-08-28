@@ -1,11 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace AD_Users_Extract
+namespace AD_Users_Publisher
 {
-    [ExcludeFromCodeCoverage]
     public class Program
     {
         public static void Main(string[] args)

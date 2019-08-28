@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
-namespace TestBed.Services.Models
+namespace AD_Users_Extract.Services.Models
 {
     [ExcludeFromCodeCoverage]
     public class GraphUser
@@ -14,8 +17,8 @@ namespace TestBed.Services.Models
         //    public object deletedDateTime { get; set; }
         //    public bool accountEnabled { get; set; }
         //    public object ageGroup { get; set; }
-        //    public List<object> businessPhones { get; set; }
 
+        public List<string> businessPhones { get; set; }
         public string city { get; set; }
 
         //    public DateTime createdDateTime { get; set; }
@@ -35,7 +38,7 @@ namespace TestBed.Services.Models
 
         //    public List<string> imAddresses { get; set; }
         //    public object isResourceAccount { get; set; }
-        
+
         public string jobTitle { get; set; }
 
         //    public object legalAgeGroupClassification { get; set; }
@@ -85,8 +88,37 @@ namespace TestBed.Services.Models
         //    public List<AssignedLicens> assignedLicenses { get; set; }
         //    public List<AssignedPlan> assignedPlans { get; set; }
         //    public List<object> deviceKeys { get; set; }
-        //    public OnPremisesExtensionAttributes onPremisesExtensionAttributes { get; set; }
+
+        public OnPremisesExtensionAttributes onPremisesExtensionAttributes { get; set; }
+
         //    public List<object> onPremisesProvisioningErrors { get; set; }
         //    public List<ProvisionedPlan> provisionedPlans { get; set; }
+
+        public string timeZoneId { get; set; }
+        public bool owner => jobTitle == "Franchise Owner";
+        public string firstBusinessPhone => businessPhones?.Where(phone => !string.IsNullOrWhiteSpace(phone)).FirstOrDefault();
+    }
+
+    [ExcludeFromCodeCoverage]
+    public class OnPremisesExtensionAttributes
+    {
+        //public object extensionAttribute1 { get; set; }
+        //public object extensionAttribute2 { get; set; }
+        //public object extensionAttribute3 { get; set; }
+
+        public string extensionAttribute4 { get; set; }
+        //public object extensionAttribute5 { get; set; }
+        //public object extensionAttribute6 { get; set; }
+        //public object extensionAttribute7 { get; set; }
+
+        public DateTimeOffset? extensionAttribute8 { get; set; }
+        
+        //public object extensionAttribute9 { get; set; }
+        //public object extensionAttribute10 { get; set; }
+        //public object extensionAttribute11 { get; set; }
+        //public object extensionAttribute12 { get; set; }
+        //public object extensionAttribute13 { get; set; }
+        //public object extensionAttribute14 { get; set; }
+        //public object extensionAttribute15 { get; set; }
     }
 }

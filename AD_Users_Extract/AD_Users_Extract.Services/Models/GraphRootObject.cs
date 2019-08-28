@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TestBed.Services.Models
+namespace AD_Users_Extract.Services.Models
 {
     public class GraphRootObject
     {

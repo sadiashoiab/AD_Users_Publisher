@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using AD_Users_Extract.Controllers;
+using AD_Users_Extract.Services;
+using AD_Users_Extract.Services.Interfaces;
+using AD_Users_Extract.Services.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestBed.Controllers;
-using TestBed.Services;
-using TestBed.Services.Interfaces;
-using TestBed.Services.Models;
 
-namespace TestBed.Tests
+namespace AD_Users_Extract.Tests
 {
     [TestClass]
     public class UserControllerTests

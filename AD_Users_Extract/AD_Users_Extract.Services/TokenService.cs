@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TestBed.Services.Interfaces;
+using AD_Users_Extract.Services.Interfaces;
 
-namespace TestBed.Services
+namespace AD_Users_Extract.Services
 {
     public class TokenService : ITokenService
     {
@@ -32,6 +32,9 @@ namespace TestBed.Services
             {
                 case TokenEnum.Franchise:
                     prefix = "NA"; 
+                    break;
+                case TokenEnum.HomeOffice:
+                    prefix = "HO"; 
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(tokenEnum), $"Provided tokenEnum ({tokenEnum.ToString()}) is invalid.");

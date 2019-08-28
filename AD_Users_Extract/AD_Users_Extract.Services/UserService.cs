@@ -3,25 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AD_Users_Extract.Services.Interfaces;
+using AD_Users_Extract.Services.Models;
 using Microsoft.Extensions.Configuration;
-using TestBed.Services.Interfaces;
-using TestBed.Services.Models;
 
-namespace TestBed.Services
+namespace AD_Users_Extract.Services
 {
     public class UserService : IUserService
     {
         private const string _odataInitialName = "@odata.type";
         private const string _odataReplacementName = "odatatype";
         private const string _odataTypeGroupName = "#microsoft.graph.group";
+        private const string _memberPropertiesToSelect = "$select=onPremisesLastSyncDateTime,companyName,givenName,mail,mobilePhone,surname,jobTitle,id,userPrincipalName,officeLocation,city,country,postalCode,state,streetAddress,onPremisesExtensionAttributes,businessPhones";
 
         private readonly IGraphApiService _graphApiService;
+        private readonly IGoogleApiService _googleApiService;
         private readonly string _graphApiUrl;
 
-        public UserService(IConfiguration config, IGraphApiService graphApiService)
+        public UserService(IConfiguration config, IGraphApiService graphApiService, IGoogleApiService googleApiService)
         {
             _graphApiUrl = config["GraphApiUrl"];
             _graphApiService = graphApiService;
+            _googleApiService = googleApiService;
         }
 
         public async Task<List<GraphUser>> GetUsers(string groupId, string token, int syncDurationInHours = 0)
@@ -31,21 +34,41 @@ namespace TestBed.Services
                 throw new ArgumentOutOfRangeException();
             }
 
-            var url = $"{_graphApiUrl}/groups/{groupId}/members";//?$top=999";//"?$select=onPremisesLastSyncDateTime,companyName,givenName,mail,mobilePhone,surname,jobTitle,id,userPrincipalName,officeLocation";
+            var url = $"{_graphApiUrl}/groups/{groupId}/members?{_memberPropertiesToSelect}";
             var duration = syncDurationInHours * -1;
             var usersList = await GetGraphUsers(url, duration, token);
             await GetGraphGroupUsers(usersList, duration, token);
+            await PopulateUserTimeZones(usersList);
+
             return usersList;
+        }
+
+        // todo: refactor this to do many requests at once, rather than processing them synchronously
+        private async Task PopulateUserTimeZones(List<GraphUser> usersList)
+        {
+            var distinctOfficeLocations = usersList.Select(user => new {user.officeLocation, user.postalCode, user.city, user.state, user.streetAddress}).Distinct();
+            var officeTimeZones = new Dictionary<string, string>();
+            foreach (var location in distinctOfficeLocations)
+            {
+                // google timezone service requires lat/lng for it to provide a timezone, therefore we need to use the
+                // google geocode service to get the primary office's lat/lng before calling the timezone service
+                var googleLocation = await _googleApiService.GeoCode(location.streetAddress, location.city, location.state, location.postalCode);
+                var googleTimeZone = await _googleApiService.TimeZone(googleLocation);
+                officeTimeZones.Add(location.officeLocation, googleTimeZone);
+            }
+
+            foreach (var user in usersList)
+            {
+                user.timeZoneId = officeTimeZones[user.officeLocation];
+            }
         }
 
         private async Task<List<GraphUser>> GetGraphUsers(string url, int duration, string token)
         {
             bool keepIterating;
             var usersList = new List<GraphUser>();
-            var count = 0;
             do
             {
-                count++;
                 var json = await RetrieveAndAddGraphUsers(usersList, url, duration, token);
                 keepIterating = AreMoreGraphUsersAvailable(json, out url);
             } while (keepIterating);
@@ -67,7 +90,7 @@ namespace TestBed.Services
                     var nextUrl = nextLinkJsonElement.GetString();
                     if (!string.IsNullOrWhiteSpace(nextUrl))
                     {
-                        url = nextLinkJsonElement.GetString();
+                        url = nextUrl;
                         keepIterating = true;
                     }
                 }
@@ -75,7 +98,6 @@ namespace TestBed.Services
 
             return keepIterating;
         }
-
 
         // note: i do not have a "live" example of this occuring, however a mocked a unit test that does
         private async Task GetGraphGroupUsers(List<GraphUser> usersList, int duration, string token)
@@ -87,7 +109,7 @@ namespace TestBed.Services
                 {
                     if (groupUser.odatatype.Equals(_odataTypeGroupName))
                     {
-                        var url = $"{_graphApiUrl}/groups/{groupUser.id}/members?$top=999";
+                        var url = $"{_graphApiUrl}/groups/{groupUser.id}/members?$top=999&{_memberPropertiesToSelect}";
                         var _ = await RetrieveAndAddGraphUsers(usersList, url, duration, token);
                     }
 

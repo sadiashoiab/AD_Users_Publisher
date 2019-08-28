@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
-using AD_Users_Extract.Services.Interfaces;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 
-namespace AD_Users_Extract.Services
+namespace AD_Users_Publisher.Services
 {
     public class AzureKeyVaultService : IAzureKeyVaultService
     {
