@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Exceptions;
 using Azure_AD_Users_Publisher.Services.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace Azure_AD_Users_Publisher.Services
 {
@@ -13,13 +14,15 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly CacheControlHeaderValue _noCacheControlHeaderValue = new CacheControlHeaderValue() {NoCache = true};
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAzureKeyVaultService _azureKeyVaultService;
-        
+        private readonly string _resourceUrl;
+
         private string ContentBody { get; set; }
 
-        public TokenService(IHttpClientFactory httpClientFactory, IAzureKeyVaultService azureKeyVaultService)
+        public TokenService(IHttpClientFactory httpClientFactory, IAzureKeyVaultService azureKeyVaultService, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
             _azureKeyVaultService = azureKeyVaultService;
+            _resourceUrl = configuration["ProgramDataUrl"];
         }
 
         private async Task<string> GetClientBody()
@@ -29,7 +32,8 @@ namespace Azure_AD_Users_Publisher.Services
                 var clientIdTask = _azureKeyVaultService.GetSecret("BearerTokenClientId");
                 var clientSecretTask = _azureKeyVaultService.GetSecret("BearerTokenClientSecret");
                 await Task.WhenAll(clientIdTask, clientSecretTask);
-                ContentBody = $"client_id={await clientIdTask}&client_secret={await clientSecretTask}&grant_type=client_credentials&resource=https://hiscprogramdatadv.azurewebsites.net";
+                // todo: get the resource url from the config
+                ContentBody = $"client_id={await clientIdTask}&client_secret={await clientSecretTask}&grant_type=client_credentials&resource={_resourceUrl}";
             }
 
             return ContentBody;
