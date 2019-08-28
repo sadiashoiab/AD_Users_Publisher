@@ -11,7 +11,7 @@ namespace Azure_AD_Users_Publisher.Services
     {
         private const string _tokenUri = "https://login.microsoftonline.com/HOMEINSTEADINC1.onmicrosoft.com/oauth2/token";
         
-        private readonly CacheControlHeaderValue _noCacheControlHeaderValue = new CacheControlHeaderValue() {NoCache = true};
+        private readonly CacheControlHeaderValue _noCacheControlHeaderValue = new CacheControlHeaderValue {NoCache = true};
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAzureKeyVaultService _azureKeyVaultService;
         private readonly string _resourceUrl;
@@ -27,12 +27,13 @@ namespace Azure_AD_Users_Publisher.Services
 
         private async Task<string> GetClientBody()
         {
+            // note: technically this can be called many times and we should lock the setting of this appropriately
+            // todo: rework to lock access so we do not have race issues
             if (string.IsNullOrWhiteSpace(ContentBody))
             {
                 var clientIdTask = _azureKeyVaultService.GetSecret("BearerTokenClientId");
                 var clientSecretTask = _azureKeyVaultService.GetSecret("BearerTokenClientSecret");
                 await Task.WhenAll(clientIdTask, clientSecretTask);
-                // todo: get the resource url from the config
                 ContentBody = $"client_id={await clientIdTask}&client_secret={await clientSecretTask}&grant_type=client_credentials&resource={_resourceUrl}";
             }
 
