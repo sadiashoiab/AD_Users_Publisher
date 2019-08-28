@@ -167,5 +167,18 @@ namespace AD_Users_Publisher.Tests
             // ACT
             var _ = await unitUnderTest.RetrieveFranchises(ProgramDataSources.Invalid, bearerToken);
         }
+
+        [TestMethod]
+        public void EnumExtension_GetDescription()
+        {
+            // ARRANGE
+            var noDescriptionEnumValue = ProgramDataSources.Invalid;
+
+            // ACT
+            var description = noDescriptionEnumValue.GetDescription();
+
+            // ASSERT
+            Assert.IsTrue(string.IsNullOrWhiteSpace(description));
+        }
     }
 }
