@@ -39,7 +39,7 @@ namespace Azure_AD_Users_Publisher.Services
                     throw new ArgumentOutOfRangeException(nameof(source));
             }
 
-            return $"{_programDataUrl}{source.GetDescription()}/franchises";
+            return $"{_programDataUrl}/v1/{source.GetDescription()}/franchises";
         }
 
         private async Task<HttpResponseMessage> SendAsync(string url, string bearerToken)

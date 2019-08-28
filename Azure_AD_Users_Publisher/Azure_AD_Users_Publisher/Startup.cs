@@ -51,8 +51,9 @@ namespace Azure_AD_Users_Publisher
 
             services.AddApplicationInsightsTelemetry();
 
+            services.AddSingleton<IAzureKeyVaultService, AzureKeyVaultService>();
+
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IAzureKeyVaultService, AzureKeyVaultService>();
             services.AddScoped<IProgramDataService, ProgramDataService>();
         }
 

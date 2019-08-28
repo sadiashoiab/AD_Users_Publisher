@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services;
 using Azure_AD_Users_Publisher.Services.Interfaces;
@@ -49,7 +50,32 @@ namespace Azure_AD_Users_Publisher.Controllers
             //    }
             //}
 
-            return Ok("value");
+            //_queueClient.RegisterMessageHandler(
+            //    async (message, token) =>
+            //    {
+            //        try
+            //        {
+            //            processMessage(message); // await Task.Delay(...)
+            //            await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            await _queueClient.DeadLetterAsync(message.SystemProperties.LockToken);
+            //        }
+            //    },
+            //    new MessageHandlerOptions(OnException)
+            //    {
+            //        AutoComplete = false,
+            //        MaxConcurrentCalls = MaxConcurrentCalls,
+            //        MaxAutoRenewDuration = MaxAutoRenewDuration
+            //    }
+            //);
+
+            var salesforce = $"[{string.Join(',', salesforceFranchises)}]";
+            var clearCare = $"[{string.Join(',', clearCareFranchises)}]";
+            var stringOutput = @"{""salesforceFranchises"":" + salesforce + @",""clearCareFranchises"":" + clearCare + "}";
+
+            return Ok(stringOutput);
         }
     }
 }
