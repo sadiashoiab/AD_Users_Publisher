@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services;
 using Azure_AD_Users_Publisher.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Azure_AD_Users_Publisher.Controllers
 {
@@ -12,10 +9,10 @@ namespace Azure_AD_Users_Publisher.Controllers
     [ApiController]
     public class PublishController : ControllerBase
     {
-        private readonly ITokenService _tokenService;
+        private readonly IHISCTokenService _tokenService;
         private readonly IProgramDataService _programDataService;
 
-        public PublishController(ITokenService tokenService, IProgramDataService programDataService)
+        public PublishController(IHISCTokenService tokenService, IProgramDataService programDataService)
         {
             _tokenService = tokenService;
             _programDataService = programDataService;

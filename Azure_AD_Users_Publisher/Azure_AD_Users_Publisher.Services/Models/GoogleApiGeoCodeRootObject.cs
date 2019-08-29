@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Azure_AD_Users_Extract.Services.Models
+namespace Azure_AD_Users_Publisher.Services.Models
 {
     public class GoogleApiGeoCodeRootObject
     {

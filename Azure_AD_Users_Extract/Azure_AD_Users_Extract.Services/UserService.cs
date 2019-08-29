@@ -17,14 +17,12 @@ namespace Azure_AD_Users_Extract.Services
         private const string _memberPropertiesToSelect = "$select=onPremisesLastSyncDateTime,companyName,givenName,mail,mobilePhone,surname,jobTitle,id,userPrincipalName,officeLocation,city,country,postalCode,state,streetAddress,onPremisesExtensionAttributes,businessPhones";
 
         private readonly IGraphApiService _graphApiService;
-        private readonly IGoogleApiService _googleApiService;
         private readonly string _graphApiUrl;
 
-        public UserService(IConfiguration configuration, IGraphApiService graphApiService, IGoogleApiService googleApiService)
+        public UserService(IConfiguration configuration, IGraphApiService graphApiService)
         {
             _graphApiUrl = configuration["GraphApiUrl"];
             _graphApiService = graphApiService;
-            _googleApiService = googleApiService;
         }
 
         public async Task<List<GraphUser>> GetUsers(string groupId, string token, int syncDurationInHours = 0)
@@ -38,29 +36,8 @@ namespace Azure_AD_Users_Extract.Services
             var duration = syncDurationInHours * -1;
             var usersList = await GetGraphUsers(url, duration, token);
             await GetGraphGroupUsers(usersList, duration, token);
-            await PopulateUserTimeZones(usersList);
 
             return usersList;
-        }
-
-        // todo: refactor this to do many requests at once, rather than processing them synchronously
-        private async Task PopulateUserTimeZones(List<GraphUser> usersList)
-        {
-            var distinctOfficeLocations = usersList.Select(user => new {user.officeLocation, user.postalCode, user.city, user.state, user.streetAddress}).Distinct();
-            var officeTimeZones = new Dictionary<string, string>();
-            foreach (var location in distinctOfficeLocations)
-            {
-                // google timezone service requires lat/lng for it to provide a timezone, therefore we need to use the
-                // google geocode service to get the primary office's lat/lng before calling the timezone service
-                var googleLocation = await _googleApiService.GeoCode(location.streetAddress, location.city, location.state, location.postalCode);
-                var googleTimeZone = await _googleApiService.TimeZone(googleLocation);
-                officeTimeZones.Add(location.officeLocation, googleTimeZone);
-            }
-
-            foreach (var user in usersList)
-            {
-                user.timeZoneId = officeTimeZones[user.officeLocation];
-            }
         }
 
         private async Task<List<GraphUser>> GetGraphUsers(string url, int duration, string token)

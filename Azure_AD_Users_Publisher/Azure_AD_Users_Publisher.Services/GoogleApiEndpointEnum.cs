@@ -1,4 +1,4 @@
-﻿namespace Azure_AD_Users_Extract.Services
+﻿namespace Azure_AD_Users_Publisher.Services
 {
     public enum GoogleApiEndpointEnum
     {

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Azure_AD_Users_Publisher.Services
 {
-    public class SalesforceTokenService : ITokenService
+    public class SalesforceTokenService : ISalesforceTokenService
     {
         private readonly CacheControlHeaderValue _noCacheControlHeaderValue =
             new CacheControlHeaderValue {NoCache = true};

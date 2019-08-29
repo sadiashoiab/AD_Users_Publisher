@@ -59,10 +59,14 @@ namespace Azure_AD_Users_Publisher
 
             services.AddApplicationInsightsTelemetry();
 
-            services.AddSingleton<ITokenService, HISCTokenService>();
+            services.AddSingleton<IHISCTokenService, HISCTokenService>();
+            services.AddSingleton<ISalesforceTokenService, SalesforceTokenService>();
             services.AddSingleton<IProgramDataService, ProgramDataService>();
             services.AddSingleton<IAzureKeyVaultService, AzureKeyVaultService>();
             services.AddSingleton<IMessageProcessor, SalesforceMessageProcessor>();
+            services.AddSingleton<IGoogleApiService, GoogleApiService>();
+            services.AddSingleton<ISalesforceUserPublishService, SalesforceUserPublishService>();
+            services.AddSingleton<ITimeZoneService, TimeZoneService>();
 
             services.AddHostedService<SubscriptionClientHostedService>();
         }
