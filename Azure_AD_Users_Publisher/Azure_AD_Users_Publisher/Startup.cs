@@ -26,6 +26,8 @@ namespace Azure_AD_Users_Publisher
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMemoryCache();
+
             services
                 .AddHttpClient("TokenApiHttpClient",
                     client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
@@ -34,6 +36,12 @@ namespace Azure_AD_Users_Publisher
 
             services
                 .AddHttpClient("ProgramDataHttpClient",
+                    client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
+                .AddTransientHttpErrorPolicy(builder =>
+                    builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
+
+            services
+                .AddHttpClient("SalesforcePublishHttpClient",
                     client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
                 .AddTransientHttpErrorPolicy(builder =>
                     builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
@@ -51,10 +59,12 @@ namespace Azure_AD_Users_Publisher
 
             services.AddApplicationInsightsTelemetry();
 
+            services.AddSingleton<ITokenService, HISCTokenService>();
+            services.AddSingleton<IProgramDataService, ProgramDataService>();
             services.AddSingleton<IAzureKeyVaultService, AzureKeyVaultService>();
+            services.AddSingleton<IMessageProcessor, SalesforceMessageProcessor>();
 
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IProgramDataService, ProgramDataService>();
+            services.AddHostedService<SubscriptionClientHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
