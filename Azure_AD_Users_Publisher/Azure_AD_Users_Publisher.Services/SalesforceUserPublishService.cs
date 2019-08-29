@@ -43,6 +43,10 @@ namespace Azure_AD_Users_Publisher.Services
             if (!responseMessage.IsSuccessStatusCode)
             {
                 _logger.LogError($"Unexpected Status Code returned when Publishing User to Salesforce. User ID: {user.ExternalId}, Data: {json}");
+
+                var responseContentJson = await responseMessage.Content.ReadAsStringAsync();
+                var salesforcePublishResponse = System.Text.Json.JsonSerializer.Deserialize<SalesforcePublishResponse>(responseContentJson);
+                _logger.LogError($"Salesforce Publish Response Error Message: {salesforcePublishResponse.error.errorMessage}, when publishing User: {json}");
                 throw new UnexpectedStatusCodeException(responseMessage);
             }
         }
