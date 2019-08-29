@@ -20,7 +20,7 @@ namespace Azure_AD_Users_Extract.Services
         {
             var azureTokenProvider = new AzureServiceTokenProvider();
             var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureTokenProvider.KeyVaultTokenCallback));
-            var secret = await keyVaultClient.GetSecretAsync(_url + name);
+            var secret = await keyVaultClient.GetSecretAsync($"{_url}{name}");
             return secret.Value;
         }
     }

@@ -51,10 +51,13 @@ namespace Azure_AD_Users_Publisher
 
             services.AddApplicationInsightsTelemetry();
 
-            services.AddSingleton<IAzureKeyVaultService, AzureKeyVaultService>();
-
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IProgramDataService, ProgramDataService>();
+
+            services.AddSingleton<IAzureKeyVaultService, AzureKeyVaultService>();
+            services.AddSingleton<IMessageProcessor, SalesforceMessageProcessor>();
+
+            services.AddHostedService<SubscriptionClientHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
