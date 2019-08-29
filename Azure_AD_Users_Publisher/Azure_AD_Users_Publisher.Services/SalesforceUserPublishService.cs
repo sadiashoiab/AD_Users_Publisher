@@ -15,9 +15,9 @@ namespace Azure_AD_Users_Publisher.Services
 
         private readonly ILogger<SalesforceUserPublishService> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ITokenService _tokenService;
+        private readonly ISalesforceTokenService _tokenService;
 
-        public SalesforceUserPublishService(ILogger<SalesforceUserPublishService> logger, IHttpClientFactory httpClientFactory, ITokenService tokenService)
+        public SalesforceUserPublishService(ILogger<SalesforceUserPublishService> logger, IHttpClientFactory httpClientFactory, ISalesforceTokenService tokenService)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;

@@ -12,12 +12,12 @@ namespace Azure_AD_Users_Publisher.Services
     public class SalesforceMessageProcessor : IMessageProcessor
     {
         private readonly ILogger<SalesforceMessageProcessor> _logger;
-        private readonly ITokenService _tokenService;
+        private readonly IHISCTokenService _tokenService;
         private readonly IProgramDataService _programDataService;
         private readonly ITimeZoneService _timeZoneService;
         private readonly ISalesforceUserPublishService _salesforceUserPublishService;
 
-        public SalesforceMessageProcessor(ILogger<SalesforceMessageProcessor> logger, ITokenService tokenService, IProgramDataService programDataService, ITimeZoneService timeZoneService, ISalesforceUserPublishService salesforceUserPublishService)
+        public SalesforceMessageProcessor(ILogger<SalesforceMessageProcessor> logger, IHISCTokenService tokenService, IProgramDataService programDataService, ITimeZoneService timeZoneService, ISalesforceUserPublishService salesforceUserPublishService)
         {
             _logger = logger;
             _tokenService = tokenService;

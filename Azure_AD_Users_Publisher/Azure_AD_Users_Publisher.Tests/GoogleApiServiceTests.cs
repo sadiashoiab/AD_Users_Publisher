@@ -2,15 +2,15 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Azure_AD_Users_Extract.Services;
-using Azure_AD_Users_Extract.Services.Exceptions;
-using Azure_AD_Users_Extract.Services.Interfaces;
-using Azure_AD_Users_Extract.Services.Models;
-using Azure_AD_Users_Extract.Tests.Stubs;
+using Azure_AD_Users_Publisher.Services;
+using Azure_AD_Users_Publisher.Services.Exceptions;
+using Azure_AD_Users_Publisher.Services.Interfaces;
+using Azure_AD_Users_Publisher.Services.Models;
+using Azure_AD_Users_Publisher.Tests.Stubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Azure_AD_Users_Extract.Tests
+namespace Azure_AD_Users_Publisher.Tests
 {
     [TestClass]
     public class GoogleApiServiceTests

@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Azure_AD_Users_Publisher.Services
 {
-    public class HISCTokenService : ITokenService
+    public class HISCTokenService : IHISCTokenService
     {
         private const string _cacheKey = "_HISCToken";
         

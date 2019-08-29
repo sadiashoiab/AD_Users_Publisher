@@ -3,13 +3,12 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Encodings.Web;
-using System.Text.Json;
 using System.Threading.Tasks;
-using Azure_AD_Users_Extract.Services.Exceptions;
-using Azure_AD_Users_Extract.Services.Interfaces;
-using Azure_AD_Users_Extract.Services.Models;
+using Azure_AD_Users_Publisher.Services.Exceptions;
+using Azure_AD_Users_Publisher.Services.Interfaces;
+using Azure_AD_Users_Publisher.Services.Models;
 
-namespace Azure_AD_Users_Extract.Services
+namespace Azure_AD_Users_Publisher.Services
 {
     public class GoogleApiService : IGoogleApiService
     {
@@ -74,7 +73,7 @@ namespace Azure_AD_Users_Extract.Services
             var url = await BuildApiUrl(GoogleApiEndpointEnum.GeoCode, query);
             var responseMessage = await SendAsync(url);
             var json = await responseMessage.Content.ReadAsStringAsync();
-            var geoCodeResults = JsonSerializer.Deserialize<GoogleApiGeoCodeRootObject>(json);
+            var geoCodeResults = System.Text.Json.JsonSerializer.Deserialize<GoogleApiGeoCodeRootObject>(json);
             if (geoCodeResults.results == null || !geoCodeResults.results.Any())
             {
                 var innerException = new UnexpectedDataException("query", query);
@@ -91,7 +90,7 @@ namespace Azure_AD_Users_Extract.Services
             var url = await BuildApiUrl(GoogleApiEndpointEnum.TimeZone, query);
             var responseMessage = await SendAsync(url);
             var json = await responseMessage.Content.ReadAsStringAsync();
-            var timeZoneResult = JsonSerializer.Deserialize<GoogleApiTimeZoneResult>(json);
+            var timeZoneResult = System.Text.Json.JsonSerializer.Deserialize<GoogleApiTimeZoneResult>(json);
             return timeZoneResult.timeZoneId;
         }
     }
