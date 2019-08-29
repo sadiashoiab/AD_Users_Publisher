@@ -40,7 +40,11 @@ namespace Azure_AD_Users_Publisher.Services
             var serviceBusConnectionString = await _azureKeyVaultService.GetSecret(_serviceBusConnectionStringSecretName);
             _subscriptionClient = new SubscriptionClient(serviceBusConnectionString, _topicName, _subscriptionName);
 
-            cancellationToken.Register(async () => { await _subscriptionClient.CloseAsync(); });
+            cancellationToken.Register(async () =>
+            {
+                await _subscriptionClient.CloseAsync();
+                _logger.LogDebug($"{_nameToken} has called CloseAsync because of cancel.");
+            });
 
             // Configure the message handler options in terms of exception handling, number of concurrent messages to deliver, etc.
             var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
