@@ -26,6 +26,8 @@ namespace Azure_AD_Users_Publisher
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMemoryCache();
+
             services
                 .AddHttpClient("TokenApiHttpClient",
                     client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
@@ -51,9 +53,8 @@ namespace Azure_AD_Users_Publisher
 
             services.AddApplicationInsightsTelemetry();
 
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IProgramDataService, ProgramDataService>();
-
+            services.AddSingleton<ITokenService, TokenService>();
+            services.AddSingleton<IProgramDataService, ProgramDataService>();
             services.AddSingleton<IAzureKeyVaultService, AzureKeyVaultService>();
             services.AddSingleton<IMessageProcessor, SalesforceMessageProcessor>();
 

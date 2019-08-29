@@ -6,6 +6,7 @@ using Azure_AD_Users_Publisher.Services;
 using Azure_AD_Users_Publisher.Services.Exceptions;
 using Azure_AD_Users_Publisher.Services.Interfaces;
 using Azure_AD_Users_Publisher.Tests.Stubs;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -32,6 +33,7 @@ namespace Azure_AD_Users_Publisher.Tests
         public async Task RetrieveToken_Success()
         {
             // ARRANGE
+            var memoryCacheMock = new Mock<IMemoryCache>();
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var keyVaultServiceMock = new Mock<IAzureKeyVaultService>();
             var configuration = (IConfiguration) _context.Properties["configuration"];
@@ -49,7 +51,7 @@ namespace Azure_AD_Users_Publisher.Tests
             );
 
             var client = new HttpClient(clientHandlerStub);
-            var unitUnderTest = new TokenService(httpClientFactoryMock.Object, keyVaultServiceMock.Object, configuration);
+            var unitUnderTest = new TokenService(memoryCacheMock.Object, httpClientFactoryMock.Object, keyVaultServiceMock.Object, configuration);
 
             httpClientFactoryMock.Setup(mock => mock.CreateClient(It.IsAny<string>()))
                 .Returns(client).Verifiable();
@@ -76,6 +78,7 @@ namespace Azure_AD_Users_Publisher.Tests
         public async Task RetrieveDataWithUnsuccessfulResponse()
         {
             // ARRANGE
+            var memoryCacheMock = new Mock<IMemoryCache>();
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var keyVaultServiceMock = new Mock<IAzureKeyVaultService>();
             var configuration = (IConfiguration) _context.Properties["configuration"];
@@ -90,7 +93,7 @@ namespace Azure_AD_Users_Publisher.Tests
             });
 
             var client = new HttpClient(clientHandlerStub);
-            var unitUnderTest = new TokenService(httpClientFactoryMock.Object, keyVaultServiceMock.Object, configuration);
+            var unitUnderTest = new TokenService(memoryCacheMock.Object, httpClientFactoryMock.Object, keyVaultServiceMock.Object, configuration);
 
             httpClientFactoryMock.Setup(mock => mock.CreateClient(It.IsAny<string>()))
                 .Returns(client).Verifiable();
@@ -112,12 +115,13 @@ namespace Azure_AD_Users_Publisher.Tests
         public async Task RetrieveData_SuccessfulResponseAndUnexpectedDataResponse()
         {
             // ARRANGE
+            var memoryCacheMock = new Mock<IMemoryCache>();
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var keyVaultServiceMock = new Mock<IAzureKeyVaultService>();
             var configuration = (IConfiguration) _context.Properties["configuration"];
             var clientHandlerStub = new DelegatingHandlerStub();
             var client = new HttpClient(clientHandlerStub);
-            var unitUnderTest = new TokenService(httpClientFactoryMock.Object, keyVaultServiceMock.Object, configuration);
+            var unitUnderTest = new TokenService(memoryCacheMock.Object, httpClientFactoryMock.Object, keyVaultServiceMock.Object, configuration);
 
             httpClientFactoryMock.Setup(mock => mock.CreateClient(It.IsAny<string>()))
                 .Returns(client).Verifiable();

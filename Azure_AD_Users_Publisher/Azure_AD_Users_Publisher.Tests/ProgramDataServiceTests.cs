@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services;
 using Azure_AD_Users_Publisher.Services.Exceptions;
 using Azure_AD_Users_Publisher.Tests.Stubs;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -33,6 +34,7 @@ namespace Azure_AD_Users_Publisher.Tests
         public async Task RetrieveFranchises_Salesforce_Success()
         { 
             // ARRANGE
+            var memoryCacheMock = new Mock<IMemoryCache>();
             var configuration = (IConfiguration) _context.Properties["configuration"];
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var jsonResponse = "[100,9999,997,713,101,169,3009,235]";
@@ -48,7 +50,7 @@ namespace Azure_AD_Users_Publisher.Tests
             );
 
             var client = new HttpClient(clientHandlerStub);
-            var unitUnderTest = new ProgramDataService(configuration, httpClientFactoryMock.Object);
+            var unitUnderTest = new ProgramDataService(memoryCacheMock.Object, configuration, httpClientFactoryMock.Object);
 
             httpClientFactoryMock.Setup(mock => mock.CreateClient(It.IsAny<string>()))
                 .Returns(client).Verifiable();
@@ -71,6 +73,7 @@ namespace Azure_AD_Users_Publisher.Tests
         public async Task RetrieveFranchises_ClearCare_Success()
         { 
             // ARRANGE
+            var memoryCacheMock = new Mock<IMemoryCache>();
             var configuration = (IConfiguration) _context.Properties["configuration"];
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var jsonResponse = "[100,9999,997,713,101,169,3009]";
@@ -86,7 +89,7 @@ namespace Azure_AD_Users_Publisher.Tests
             );
 
             var client = new HttpClient(clientHandlerStub);
-            var unitUnderTest = new ProgramDataService(configuration, httpClientFactoryMock.Object);
+            var unitUnderTest = new ProgramDataService(memoryCacheMock.Object, configuration, httpClientFactoryMock.Object);
 
             httpClientFactoryMock.Setup(mock => mock.CreateClient(It.IsAny<string>()))
                 .Returns(client).Verifiable();
@@ -110,6 +113,7 @@ namespace Azure_AD_Users_Publisher.Tests
         public async Task RetrieveFranchises_UnsuccessfulResponse()
         {
             // ARRANGE
+            var memoryCacheMock = new Mock<IMemoryCache>();
             var configuration = (IConfiguration) _context.Properties["configuration"];
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
 
@@ -123,7 +127,7 @@ namespace Azure_AD_Users_Publisher.Tests
                 return Task.FromResult(response);
             });
             var client = new HttpClient(clientHandlerStub);
-            var unitUnderTest = new ProgramDataService(configuration, httpClientFactoryMock.Object);
+            var unitUnderTest = new ProgramDataService(memoryCacheMock.Object, configuration, httpClientFactoryMock.Object);
 
             httpClientFactoryMock.Setup(mock => mock.CreateClient(It.IsAny<string>()))
                 .Returns(client).Verifiable();
@@ -139,11 +143,12 @@ namespace Azure_AD_Users_Publisher.Tests
         public async Task RetrieveFranchises_SuccessfulResponseAndUnexpectedDataResponse()
         {
             // ARRANGE
+            var memoryCacheMock = new Mock<IMemoryCache>();
             var configuration = (IConfiguration) _context.Properties["configuration"];
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var clientHandlerStub = new DelegatingHandlerStub();
             var client = new HttpClient(clientHandlerStub);
-            var unitUnderTest = new ProgramDataService(configuration, httpClientFactoryMock.Object);
+            var unitUnderTest = new ProgramDataService(memoryCacheMock.Object, configuration, httpClientFactoryMock.Object);
 
             httpClientFactoryMock.Setup(mock => mock.CreateClient(It.IsAny<string>()))
                 .Returns(client).Verifiable();
@@ -159,9 +164,10 @@ namespace Azure_AD_Users_Publisher.Tests
         public async Task RetrieveFranchises_ArgumentOutOfRangeException()
         {
             // ARRANGE
+            var memoryCacheMock = new Mock<IMemoryCache>();
             var configuration = (IConfiguration) _context.Properties["configuration"];
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            var unitUnderTest = new ProgramDataService(configuration, httpClientFactoryMock.Object);
+            var unitUnderTest = new ProgramDataService(memoryCacheMock.Object, configuration, httpClientFactoryMock.Object);
             var bearerToken = "SAMPLETOKEN";
 
             // ACT

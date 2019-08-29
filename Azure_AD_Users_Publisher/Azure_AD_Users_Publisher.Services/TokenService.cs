@@ -1,9 +1,12 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Exceptions;
 using Azure_AD_Users_Publisher.Services.Interfaces;
+using Azure_AD_Users_Publisher.Services.Models;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 
 namespace Azure_AD_Users_Publisher.Services
@@ -11,8 +14,10 @@ namespace Azure_AD_Users_Publisher.Services
     public class TokenService : ITokenService
     {
         private const string _tokenUri = "https://login.microsoftonline.com/HOMEINSTEADINC1.onmicrosoft.com/oauth2/token";
+        private const string _cacheKey = "_Token";
         
         private readonly CacheControlHeaderValue _noCacheControlHeaderValue = new CacheControlHeaderValue {NoCache = true};
+        private readonly IMemoryCache _memoryCache;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAzureKeyVaultService _azureKeyVaultService;
         private readonly string _resourceUrl;
@@ -20,8 +25,9 @@ namespace Azure_AD_Users_Publisher.Services
 
         private string ContentBody { get; set; }
 
-        public TokenService(IHttpClientFactory httpClientFactory, IAzureKeyVaultService azureKeyVaultService, IConfiguration configuration)
+        public TokenService(IMemoryCache memoryCache, IHttpClientFactory httpClientFactory, IAzureKeyVaultService azureKeyVaultService, IConfiguration configuration)
         {
+            _memoryCache = memoryCache;
             _httpClientFactory = httpClientFactory;
             _azureKeyVaultService = azureKeyVaultService;
             _resourceUrl = configuration["ProgramDataUrl"];
@@ -56,7 +62,7 @@ namespace Azure_AD_Users_Publisher.Services
             return ContentBody;
         }
 
-        public async Task<string> RetrieveToken()
+        private async Task<BearerTokenResponse> RequestBearerToken()
         {
             var client = _httpClientFactory.CreateClient("TokenApiHttpClient");
 
@@ -79,24 +85,27 @@ namespace Azure_AD_Users_Publisher.Services
                 throw new UnexpectedDataException(nameof(responseMessage.Content));
             }
 
-            var token = await ParseAccessTokenFromResponseContent(responseMessage.Content);
-            return token;
+            var json = await responseMessage.Content.ReadAsStringAsync();
+            var bearerTokenResponse = System.Text.Json.JsonSerializer.Deserialize<BearerTokenResponse>(json);
+            return bearerTokenResponse;
         }
 
-        private async Task<string> ParseAccessTokenFromResponseContent(HttpContent httpContent)
+        public async Task<string> RetrieveToken()
         {
-            var json = await httpContent.ReadAsStringAsync();
-            using (var jsonDocument = System.Text.Json.JsonDocument.Parse(json))
+            if (!_memoryCache.TryGetValue(_cacheKey, out string token))
             {
-                var propertyExisted = jsonDocument.RootElement.TryGetProperty("access_token", out var accessTokenJsonElement);
-                if (propertyExisted)
-                {
-                    var accessToken = accessTokenJsonElement.GetString();
-                    return accessToken;
-                }
+                var bearerTokenResponse = await RequestBearerToken();
+                token = bearerTokenResponse.access_token;
 
-                throw new UnexpectedDataException(nameof(accessTokenJsonElement));
+                var cacheOptions = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpiration = DateTimeOffset.FromUnixTimeSeconds(bearerTokenResponse.expires_on_as_unix_time_seconds)
+                };
+
+                _memoryCache.Set(_cacheKey, token, cacheOptions);
             }
+
+            return token;
         }
     }
 }
