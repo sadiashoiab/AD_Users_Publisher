@@ -11,26 +11,28 @@ using Microsoft.Extensions.Configuration;
 
 namespace Azure_AD_Users_Publisher.Services
 {
-    public class TokenService : ITokenService
+    public class HISCTokenService : ITokenService
     {
-        private const string _tokenUri = "https://login.microsoftonline.com/HOMEINSTEADINC1.onmicrosoft.com/oauth2/token";
-        private const string _cacheKey = "_Token";
+        private const string _cacheKey = "_HISCToken";
         
         private readonly CacheControlHeaderValue _noCacheControlHeaderValue = new CacheControlHeaderValue {NoCache = true};
         private readonly IMemoryCache _memoryCache;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAzureKeyVaultService _azureKeyVaultService;
         private readonly string _resourceUrl;
-        static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1,1);
+        private readonly string _tokenUrl;
+
+        private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1,1);
 
         private string ContentBody { get; set; }
 
-        public TokenService(IMemoryCache memoryCache, IHttpClientFactory httpClientFactory, IAzureKeyVaultService azureKeyVaultService, IConfiguration configuration)
+        public HISCTokenService(IMemoryCache memoryCache, IHttpClientFactory httpClientFactory, IAzureKeyVaultService azureKeyVaultService, IConfiguration configuration)
         {
             _memoryCache = memoryCache;
             _httpClientFactory = httpClientFactory;
             _azureKeyVaultService = azureKeyVaultService;
             _resourceUrl = configuration["ProgramDataUrl"];
+            _tokenUrl = configuration["HISCTokenUrl"];
         }
 
         private async Task<string> GetClientBody()
@@ -62,11 +64,11 @@ namespace Azure_AD_Users_Publisher.Services
             return ContentBody;
         }
 
-        private async Task<BearerTokenResponse> RequestBearerToken()
+        private async Task<HISCTokenResponse> RequestBearerToken()
         {
             var client = _httpClientFactory.CreateClient("TokenApiHttpClient");
 
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, _tokenUri);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, _tokenUrl);
             requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
 
             var contentBody = await GetClientBody();
@@ -86,7 +88,7 @@ namespace Azure_AD_Users_Publisher.Services
             }
 
             var json = await responseMessage.Content.ReadAsStringAsync();
-            var bearerTokenResponse = System.Text.Json.JsonSerializer.Deserialize<BearerTokenResponse>(json);
+            var bearerTokenResponse = System.Text.Json.JsonSerializer.Deserialize<HISCTokenResponse>(json);
             return bearerTokenResponse;
         }
 

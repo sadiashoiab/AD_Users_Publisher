@@ -34,7 +34,7 @@ namespace Azure_AD_Users_Publisher.Tests
         public async Task RetrieveFranchises_Salesforce_Success()
         { 
             // ARRANGE
-            var memoryCacheMock = new Mock<IMemoryCache>();
+            var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var configuration = (IConfiguration) _context.Properties["configuration"];
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var jsonResponse = "[100,9999,997,713,101,169,3009,235]";
@@ -50,7 +50,7 @@ namespace Azure_AD_Users_Publisher.Tests
             );
 
             var client = new HttpClient(clientHandlerStub);
-            var unitUnderTest = new ProgramDataService(memoryCacheMock.Object, configuration, httpClientFactoryMock.Object);
+            var unitUnderTest = new ProgramDataService(memoryCache, configuration, httpClientFactoryMock.Object);
 
             httpClientFactoryMock.Setup(mock => mock.CreateClient(It.IsAny<string>()))
                 .Returns(client).Verifiable();
@@ -73,7 +73,7 @@ namespace Azure_AD_Users_Publisher.Tests
         public async Task RetrieveFranchises_ClearCare_Success()
         { 
             // ARRANGE
-            var memoryCacheMock = new Mock<IMemoryCache>();
+            var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var configuration = (IConfiguration) _context.Properties["configuration"];
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var jsonResponse = "[100,9999,997,713,101,169,3009]";
@@ -89,7 +89,7 @@ namespace Azure_AD_Users_Publisher.Tests
             );
 
             var client = new HttpClient(clientHandlerStub);
-            var unitUnderTest = new ProgramDataService(memoryCacheMock.Object, configuration, httpClientFactoryMock.Object);
+            var unitUnderTest = new ProgramDataService(memoryCache, configuration, httpClientFactoryMock.Object);
 
             httpClientFactoryMock.Setup(mock => mock.CreateClient(It.IsAny<string>()))
                 .Returns(client).Verifiable();

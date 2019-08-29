@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 
-namespace Azure_AD_Users_Publisher.Services
+namespace Azure_AD_Users_Publisher.Services.Interfaces
 {
     public interface IMessageProcessor
     {

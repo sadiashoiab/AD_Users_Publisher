@@ -40,6 +40,12 @@ namespace Azure_AD_Users_Publisher
                 .AddTransientHttpErrorPolicy(builder =>
                     builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
 
+            services
+                .AddHttpClient("SalesforcePublishHttpClient",
+                    client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
+                .AddTransientHttpErrorPolicy(builder =>
+                    builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
+
             services.AddMvc(options => { options.Filters.Add<ExceptionActionFilter>(); })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -53,7 +59,7 @@ namespace Azure_AD_Users_Publisher
 
             services.AddApplicationInsightsTelemetry();
 
-            services.AddSingleton<ITokenService, TokenService>();
+            services.AddSingleton<ITokenService, HISCTokenService>();
             services.AddSingleton<IProgramDataService, ProgramDataService>();
             services.AddSingleton<IAzureKeyVaultService, AzureKeyVaultService>();
             services.AddSingleton<IMessageProcessor, SalesforceMessageProcessor>();

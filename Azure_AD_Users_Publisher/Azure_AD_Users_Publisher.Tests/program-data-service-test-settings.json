@@ -1,3 +1,4 @@
 {
-  "ProgramDataUrl": "https://hiscprogramdatadv.azurewebsites.net"
+  "ProgramDataUrl": "https://hiscprogramdatadv.azurewebsites.net",
+  "HISCTokenUrl": "https://login.microsoftonline.com/HOMEINSTEADINC1.onmicrosoft.com/oauth2/token"
 }

@@ -2,7 +2,7 @@
 
 namespace Azure_AD_Users_Publisher.Services.Models
 {
-    public class BearerTokenResponse
+    public class HISCTokenResponse
     {
         public string token_type { get; set; }
         public string expires_in { get; set; }
