@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Serialization;
 using Polly;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -33,6 +34,15 @@ namespace Azure_AD_Users_Extract
                     builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
 
             services.AddMvc(options => { options.Filters.Add<ExceptionActionFilter>(); })
+                .AddJsonOptions(options =>
+                {
+                    var resolver  = options.SerializerSettings.ContractResolver;
+                    if (resolver != null)
+                    {
+                        var res = resolver as DefaultContractResolver;
+                        res.NamingStrategy = null;  // <<!-- this removes the camelCasing
+                    }
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSwaggerGen(c => {  
@@ -51,7 +61,7 @@ namespace Azure_AD_Users_Extract
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IGraphApiService, GraphApiService>();
 
-            services.AddHostedService<SubscriptionClientHostedService>();
+            services.AddHostedService<TopicClientHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
 {
   "ProgramDataUrl": "https://hiscprogramdatadv.azurewebsites.net",
+  "ProgramDataCacheDurationInMinutes": 30,
   "HISCTokenUrl": "https://login.microsoftonline.com/HOMEINSTEADINC1.onmicrosoft.com/oauth2/token"
 }
