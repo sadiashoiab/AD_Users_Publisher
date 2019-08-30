@@ -16,6 +16,6 @@
         public string PostalCode { get; set; }
         public string CountryCode { get; set; }
         public string TimeZone { get; set; }
-        public string IsOwner { get; set; }
+        public bool IsOwner { get; set; }
     }
 }
