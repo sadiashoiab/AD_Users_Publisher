@@ -1,9 +1,9 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Azure_AD_Users_Publisher.Services.Exceptions;
-using Azure_AD_Users_Publisher.Services.Interfaces;
 using Azure_AD_Users_Publisher.Services.Models;
+using Azure_AD_Users_Shared.Exceptions;
+using Azure_AD_Users_Shared.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Azure_AD_Users_Publisher.Services
@@ -48,6 +48,7 @@ namespace Azure_AD_Users_Publisher.Services
                 var responseContentJson = await responseMessage.Content.ReadAsStringAsync();
                 var salesforcePublishResponse = System.Text.Json.JsonSerializer.Deserialize<SalesforcePublishResponse>(responseContentJson);
                 _logger.LogError($"Salesforce Publish Response Error Message: {salesforcePublishResponse.error.errorMessage}, when publishing User: {json}");
+
                 throw new UnexpectedStatusCodeException(responseMessage);
             }
         }

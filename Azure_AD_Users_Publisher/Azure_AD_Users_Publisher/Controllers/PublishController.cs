@@ -1,10 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services;
-using Azure_AD_Users_Publisher.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Azure_AD_Users_Publisher.Controllers
 {
+    // todo: remove the ExcludeFromCodeCoverage once we know what endpoints and functionality we desire
+    //       right now this is just a placeholder controller and serves no purpose for the app
+    [ExcludeFromCodeCoverage]
     [Route("api/[controller]")]
     [ApiController]
     public class PublishController : ControllerBase

@@ -1,4 +1,4 @@
-﻿namespace Azure_AD_Users_Publisher.Services.Models
+﻿namespace Azure_AD_Users_Shared.Models
 {
     //{   
     //"FirstName": "{{content.givenName}}",

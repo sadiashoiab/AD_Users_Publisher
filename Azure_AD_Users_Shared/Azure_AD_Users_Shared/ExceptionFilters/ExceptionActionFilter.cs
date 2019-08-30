@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 
-namespace Azure_AD_Users_Extract.Filters
+namespace Azure_AD_Users_Shared.ExceptionFilters
 {
     public class ExceptionActionFilter : ExceptionFilterAttribute
     {

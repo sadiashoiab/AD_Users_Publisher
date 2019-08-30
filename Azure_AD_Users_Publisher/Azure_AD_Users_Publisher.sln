@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure_AD_Users_Publisher.Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure_AD_Users_Publisher.Services", "Azure_AD_Users_Publisher.Services\Azure_AD_Users_Publisher.Services.csproj", "{C93D89EA-1FE4-4695-B7C9-4F3C50B2AF8C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure_AD_Users_Shared", "..\Azure_AD_Users_Shared\Azure_AD_Users_Shared\Azure_AD_Users_Shared.csproj", "{5419A946-8E05-41AE-8B04-02A5D743C32E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure_AD_Users_Shared.Tests", "..\Azure_AD_Users_Shared\Azure_AD_Users_Shared.Tests\Azure_AD_Users_Shared.Tests.csproj", "{80E0056F-0EEA-4B9E-A17A-96E2CF9551B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{C93D89EA-1FE4-4695-B7C9-4F3C50B2AF8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C93D89EA-1FE4-4695-B7C9-4F3C50B2AF8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C93D89EA-1FE4-4695-B7C9-4F3C50B2AF8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5419A946-8E05-41AE-8B04-02A5D743C32E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5419A946-8E05-41AE-8B04-02A5D743C32E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5419A946-8E05-41AE-8B04-02A5D743C32E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5419A946-8E05-41AE-8B04-02A5D743C32E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80E0056F-0EEA-4B9E-A17A-96E2CF9551B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80E0056F-0EEA-4B9E-A17A-96E2CF9551B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80E0056F-0EEA-4B9E-A17A-96E2CF9551B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80E0056F-0EEA-4B9E-A17A-96E2CF9551B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

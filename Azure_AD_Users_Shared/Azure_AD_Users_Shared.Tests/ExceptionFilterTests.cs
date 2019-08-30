@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Azure_AD_Users_Publisher.Filters;
+using Azure_AD_Users_Shared.ExceptionFilters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -12,10 +12,10 @@ using Microsoft.Extensions.Logging.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Azure_AD_Users_Publisher.Tests
+namespace Azure_AD_Users_Shared.Tests
 {
     [TestClass]
-    public class ExceptionActionFilterTests
+    public class ExceptionFilterTests
     {
         [TestMethod]
         public void OnException_Executes()

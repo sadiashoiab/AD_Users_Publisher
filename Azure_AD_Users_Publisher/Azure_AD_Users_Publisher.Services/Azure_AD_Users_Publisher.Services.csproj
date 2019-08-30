@@ -14,4 +14,8 @@
     <PackageReference Include="System.Text.Json" Version="4.6.0-preview8.19405.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Azure_AD_Users_Shared\Azure_AD_Users_Shared\Azure_AD_Users_Shared.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Azure_AD_Users_Extract.Services.Interfaces;
-using Azure_AD_Users_Extract.Services.Models;
+using Azure_AD_Users_Extract.Services;
+using Azure_AD_Users_Shared.Models;
 using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -29,7 +29,7 @@ namespace Azure_AD_Users_Extract.Benchmarks
         }
 
         [Benchmark]
-        public async Task<List<GraphUser>> GetUsers()
+        public async Task<List<SalesforceUser>> GetUsers()
         {
             return await _userService.GetUsers("bob", _token);
         }

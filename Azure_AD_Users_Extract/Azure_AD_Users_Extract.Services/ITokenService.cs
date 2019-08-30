@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Azure_AD_Users_Extract.Services.Interfaces
+namespace Azure_AD_Users_Extract.Services
 {
     public interface ITokenService
     {

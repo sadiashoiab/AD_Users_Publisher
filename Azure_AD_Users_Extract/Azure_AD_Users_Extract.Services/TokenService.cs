@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Azure_AD_Users_Extract.Services.Interfaces;
+using Azure_AD_Users_Shared.Services;
 
 namespace Azure_AD_Users_Extract.Services
 {

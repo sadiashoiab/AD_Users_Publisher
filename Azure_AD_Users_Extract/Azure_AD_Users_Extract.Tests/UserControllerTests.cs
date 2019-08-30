@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Azure_AD_Users_Extract.Controllers;
 using Azure_AD_Users_Extract.Services;
-using Azure_AD_Users_Extract.Services.Interfaces;
 using Azure_AD_Users_Extract.Services.Models;
+using Azure_AD_Users_Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -30,7 +30,7 @@ namespace Azure_AD_Users_Extract.Tests
                 .ReturnsAsync(() => token).Verifiable();
 
             userServiceMock.Setup(mock => mock.GetUsers(groupId, token, syncDuration))
-                .ReturnsAsync(() => new List<GraphUser> {new GraphUser()}).Verifiable();
+                .ReturnsAsync(() => new List<SalesforceUser> {new SalesforceUser()}).Verifiable();
 
             // ACT
             var results = await unitUnderTest.Franchise(groupId, syncDuration);

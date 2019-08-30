@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
 
-namespace Azure_AD_Users_Publisher.Services.Interfaces
+namespace Azure_AD_Users_Publisher.Services
 {
     public interface IGoogleApiService
     {

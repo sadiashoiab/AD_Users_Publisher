@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Azure_AD_Users_Publisher.Services.Interfaces
+namespace Azure_AD_Users_Publisher.Services
 {
     public interface IProgramDataService
     {

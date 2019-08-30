@@ -3,10 +3,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services;
-using Azure_AD_Users_Publisher.Services.Exceptions;
-using Azure_AD_Users_Publisher.Services.Interfaces;
 using Azure_AD_Users_Publisher.Services.Models;
-using Azure_AD_Users_Publisher.Tests.Stubs;
+using Azure_AD_Users_Shared.Exceptions;
+using Azure_AD_Users_Shared.Services;
+using Azure_AD_Users_Shared.Stubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
