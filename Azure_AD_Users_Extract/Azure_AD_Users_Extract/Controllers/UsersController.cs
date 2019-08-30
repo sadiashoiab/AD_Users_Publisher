@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure_AD_Users_Extract.Services;
-using Azure_AD_Users_Extract.Services.Models;
+using Azure_AD_Users_Shared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -24,7 +24,9 @@ namespace Azure_AD_Users_Extract.Controllers
         }
 
         // GET users
-        [ProducesResponseType(typeof(List<GraphUser>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<SalesforceUser>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Produces("application/json")]
         [HttpGet("franchise")]
         public async Task<IActionResult> Franchise([FromQuery]string groupId, [FromQuery]int syncDurationInHours = 0)
         {
