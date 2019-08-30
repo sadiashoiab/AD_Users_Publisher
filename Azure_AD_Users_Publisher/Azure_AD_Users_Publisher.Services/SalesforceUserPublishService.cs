@@ -4,24 +4,25 @@ using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
 using Azure_AD_Users_Shared.Exceptions;
 using Azure_AD_Users_Shared.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Azure_AD_Users_Publisher.Services
 {
     public class SalesforceUserPublishService : ISalesforceUserPublishService
     {
-        // todo: move to configuration file
-        private const string _publishUrl = "https://homeinsteadinc--dev.my.salesforce.com/services/apexrest/UserManager/V1/";
         private readonly CacheControlHeaderValue _noCacheControlHeaderValue = new CacheControlHeaderValue {NoCache = true};
 
         private readonly ILogger<SalesforceUserPublishService> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly string _publishUrl;
         private readonly ISalesforceTokenService _tokenService;
 
-        public SalesforceUserPublishService(ILogger<SalesforceUserPublishService> logger, IHttpClientFactory httpClientFactory, ISalesforceTokenService tokenService)
+        public SalesforceUserPublishService(ILogger<SalesforceUserPublishService> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration, ISalesforceTokenService tokenService)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
+            _publishUrl = configuration["SalesforcePublishUrl"];
             _tokenService = tokenService;
         }
 
