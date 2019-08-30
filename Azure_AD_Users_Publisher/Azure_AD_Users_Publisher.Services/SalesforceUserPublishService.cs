@@ -26,7 +26,6 @@ namespace Azure_AD_Users_Publisher.Services
             _tokenService = tokenService;
         }
 
-
         public async Task Publish(SalesforceUser user)
         {
             var client = _httpClientFactory.CreateClient("SalesforcePublishHttpClient");
