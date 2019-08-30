@@ -31,11 +31,6 @@ namespace Azure_AD_Users_Extract
                     client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
                 .AddTransientHttpErrorPolicy(builder =>
                     builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
-            services
-                .AddHttpClient("GoogleApiHttpClient",
-                    client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
-                .AddTransientHttpErrorPolicy(builder =>
-                    builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
 
             services.AddMvc(options => { options.Filters.Add<ExceptionActionFilter>(); })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -43,8 +38,8 @@ namespace Azure_AD_Users_Extract
             services.AddSwaggerGen(c => {  
                 c.SwaggerDoc("v1", new Info {  
                     Version = "v1",  
-                    Title = "AD_Users_Extract API",  
-                    Description = "AD_Users_Extract ASP.NET Core Web API"  
+                    Title = "Azure_AD_Users_Extract API",  
+                    Description = "Azure_AD_Users_Extract ASP.NET Core Web API"  
                 });  
             });
 
@@ -75,7 +70,7 @@ namespace Azure_AD_Users_Extract
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "AD_Users_Extract API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Azure_AD_Users_Extract API V1");
             });
         }
     }

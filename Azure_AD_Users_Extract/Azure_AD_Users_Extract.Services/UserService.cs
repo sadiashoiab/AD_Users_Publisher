@@ -48,7 +48,6 @@ namespace Azure_AD_Users_Extract.Services
                     LastName = graphUser.surname,
                     Email = graphUser.mail,
                     FranchiseNumber = graphUser.officeLocation,
-                    OperatingSystem = "",
                     ExternalId = graphUser.id,
                     FederationId = graphUser.userPrincipalName,
                     MobilePhone = graphUser.mobilePhone,
@@ -57,8 +56,7 @@ namespace Azure_AD_Users_Extract.Services
                     State = graphUser.state,
                     PostalCode = graphUser.postalCode,
                     CountryCode = graphUser.country,
-                    TimeZone = "",
-                    IsOwner = graphUser.owner.ToString()
+                    IsOwner = graphUser.owner
                 })
                 .ToList();
         }
