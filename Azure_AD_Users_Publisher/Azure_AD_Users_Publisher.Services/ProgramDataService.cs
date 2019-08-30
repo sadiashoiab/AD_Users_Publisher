@@ -12,14 +12,16 @@ namespace Azure_AD_Users_Publisher.Services
     {
         private const string _cacheKeyPrefix = "_ProgramData_";
         
-        private readonly string _programDataUrl;
         private readonly IMemoryCache _memoryCache;
+        private readonly string _programDataUrl;
+        private readonly int _programDataCacheDurationInMinutes;
         private readonly IHttpClientFactory _httpClientFactory;
 
         public ProgramDataService(IMemoryCache memoryCache, IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _memoryCache = memoryCache;
             _programDataUrl = configuration["ProgramDataUrl"];
+            _programDataCacheDurationInMinutes = int.Parse(configuration["ProgramDataCacheDurationInMinutes"]);
             _httpClientFactory = httpClientFactory;
         }
 
@@ -40,9 +42,7 @@ namespace Azure_AD_Users_Publisher.Services
 
                 var cacheOptions = new MemoryCacheEntryOptions
                 {
-                    // default cache for 30 minutes
-                    // todo: move this to configuration later
-                    AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(30)
+                    AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(_programDataCacheDurationInMinutes)
                 };
 
                 _memoryCache.Set($"{_cacheKeyPrefix}{source.GetDescription()}", results, cacheOptions);

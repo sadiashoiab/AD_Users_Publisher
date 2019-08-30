@@ -13,6 +13,7 @@ namespace Azure_AD_Users_Publisher
             CreateWebHostBuilder(args).Build().Run();
         }
 
+        // todo: update to use configuration that understands the environment
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()

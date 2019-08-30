@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Azure_AD_Users_Shared.Models;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 
 namespace Azure_AD_Users_Publisher.Services
 {
@@ -11,11 +12,13 @@ namespace Azure_AD_Users_Publisher.Services
 
         private readonly IMemoryCache _memoryCache;
         private readonly IGoogleApiService _googleApiService;
+        private readonly int _franchiseTimeZoneCacheDurationInHours;
 
-        public TimeZoneService(IMemoryCache memoryCache, IGoogleApiService googleApiService)
+        public TimeZoneService(IMemoryCache memoryCache, IGoogleApiService googleApiService, IConfiguration configuration)
         {
             _memoryCache = memoryCache;
             _googleApiService = googleApiService;
+            _franchiseTimeZoneCacheDurationInHours = int.Parse(configuration["FranchiseTimeZoneCacheDurationInHours"]);
         }
 
         // todo: refactor all services that cache to have a common CachingService
@@ -30,9 +33,7 @@ namespace Azure_AD_Users_Publisher.Services
 
                 var cacheOptions = new MemoryCacheEntryOptions
                 {
-                    // todo: move this to configuration later
-                    // cache franchise's timezone for 18 hours by default
-                    AbsoluteExpiration = DateTimeOffset.UtcNow.AddHours(18),
+                    AbsoluteExpiration = DateTimeOffset.UtcNow.AddHours(_franchiseTimeZoneCacheDurationInHours),
                 };
 
                 _memoryCache.Set(cacheKey, timeZone, cacheOptions);

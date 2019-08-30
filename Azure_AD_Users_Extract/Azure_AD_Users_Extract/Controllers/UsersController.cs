@@ -38,6 +38,8 @@ namespace Azure_AD_Users_Extract.Controllers
                 _logger.LogInformation($"{users.Count} Franchise users were retrieved");
             }
 
+            // todo: get hosted service and publish users to bus dynamically
+
             return Ok(users);
         }
 

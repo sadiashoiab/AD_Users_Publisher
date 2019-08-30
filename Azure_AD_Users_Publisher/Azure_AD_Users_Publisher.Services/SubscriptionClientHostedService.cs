@@ -19,6 +19,7 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly string _topicName;
         private readonly string _subscriptionName;
         private readonly string _serviceBusConnectionStringSecretName;
+
         private SubscriptionClient _subscriptionClient;
 
         public SubscriptionClientHostedService(ILogger<SubscriptionClientHostedService> logger,
