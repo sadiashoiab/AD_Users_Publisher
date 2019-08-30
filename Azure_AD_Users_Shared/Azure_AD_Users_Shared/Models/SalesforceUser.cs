@@ -1,23 +1,5 @@
-﻿namespace Azure_AD_Users_Publisher.Services.Models
+﻿namespace Azure_AD_Users_Shared.Models
 {
-    //{   
-    //"FirstName": "{{content.givenName}}",
-    //"LastName": "{{content.surname}}",
-    //"Email": "{{content.mail}}",
-    //"FranchiseNumber": "{{content.officeLocation}}",   
-    //"OperatingSystem": "N/A",
-    //"ExternalId": {{content.id}},
-    //"FederationId": "{{content.userPrincipalName}}",
-    //"MobilePhone":"{{content.mobilePhone}}",
-    //"Address": "{{content.streetAddress}}",
-    //"City": "{{content.city}}",
-    //"State": "{{content.state}}",
-    //"PostalCode": "{{content.postalCode}}",
-    //"CountryCode": "{{content.country}}",
-    //"TimeZone": "",
-    //"IsOwner": "{{content.owner}}"
-    //}
-
     public class SalesforceUser
     {
         public string FirstName { get; set; }

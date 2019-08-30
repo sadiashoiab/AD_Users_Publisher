@@ -4,9 +4,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Azure_AD_Users_Publisher.Services.Exceptions;
-using Azure_AD_Users_Publisher.Services.Interfaces;
 using Azure_AD_Users_Publisher.Services.Models;
+using Azure_AD_Users_Shared.Exceptions;
+using Azure_AD_Users_Shared.Services;
 
 namespace Azure_AD_Users_Publisher.Services
 {

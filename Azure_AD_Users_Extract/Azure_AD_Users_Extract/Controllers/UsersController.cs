@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure_AD_Users_Extract.Services;
-using Azure_AD_Users_Extract.Services.Interfaces;
 using Azure_AD_Users_Extract.Services.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

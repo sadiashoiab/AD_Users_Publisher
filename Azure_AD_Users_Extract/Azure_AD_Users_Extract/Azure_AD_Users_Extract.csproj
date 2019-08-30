@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Azure_AD_Users_Shared\Azure_AD_Users_Shared\Azure_AD_Users_Shared.csproj" />
     <ProjectReference Include="..\Azure_AD_Users_Extract.Services\Azure_AD_Users_Extract.Services.csproj" />
   </ItemGroup>
 

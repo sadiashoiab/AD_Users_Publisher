@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 
-namespace Azure_AD_Users_Extract.Services.Exceptions
+namespace Azure_AD_Users_Shared.Exceptions
 {
     public class UnexpectedStatusCodeException : ApplicationException
     {

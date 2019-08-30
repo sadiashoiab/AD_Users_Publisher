@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure_AD_Users_Shared", "Azure_AD_Users_Shared\Azure_AD_Users_Shared.csproj", "{5D95E043-73B0-4A64-B5F2-C7C0A84CCB85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure_AD_Users_Shared.Tests", "Azure_AD_Users_Shared.Tests\Azure_AD_Users_Shared.Tests.csproj", "{68A07254-B02C-447A-8FAE-5C4D338338D2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5D95E043-73B0-4A64-B5F2-C7C0A84CCB85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D95E043-73B0-4A64-B5F2-C7C0A84CCB85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D95E043-73B0-4A64-B5F2-C7C0A84CCB85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D95E043-73B0-4A64-B5F2-C7C0A84CCB85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68A07254-B02C-447A-8FAE-5C4D338338D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68A07254-B02C-447A-8FAE-5C4D338338D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68A07254-B02C-447A-8FAE-5C4D338338D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68A07254-B02C-447A-8FAE-5C4D338338D2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E3FEF343-E025-48C7-A235-51D09A407D4E}
+	EndGlobalSection
+EndGlobal

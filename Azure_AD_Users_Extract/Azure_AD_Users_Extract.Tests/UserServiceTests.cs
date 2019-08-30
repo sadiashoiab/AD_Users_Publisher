@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Azure_AD_Users_Extract.Services;
-using Azure_AD_Users_Extract.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -58,9 +57,6 @@ namespace Azure_AD_Users_Extract.Tests
             graphApiServiceMock.Verify();
             Assert.IsNotNull(results);
             Assert.AreEqual(2, results.Count);
-
-            var onPremResults = results.Where(r => r.onPremisesLastSyncDateTime.HasValue).ToList();
-            Assert.AreEqual(2, onPremResults.Count);
         }
 
                 [TestMethod]
@@ -85,9 +81,6 @@ namespace Azure_AD_Users_Extract.Tests
             graphApiServiceMock.Verify();
             Assert.IsNotNull(results);
             Assert.AreEqual(38, results.Count);
-
-            var onPremResults = results.Where(r => r.onPremisesLastSyncDateTime.HasValue).ToList();
-            Assert.AreEqual(2, onPremResults.Count);
         }
 
 
@@ -119,9 +112,6 @@ namespace Azure_AD_Users_Extract.Tests
             graphApiServiceMock.Verify();
             Assert.IsNotNull(results);
             Assert.AreEqual(3, results.Count);
-
-            var onPremResults = results.Where(r => r.onPremisesLastSyncDateTime != null).ToList();
-            Assert.AreEqual(3, onPremResults.Count);
         }
     }
 }

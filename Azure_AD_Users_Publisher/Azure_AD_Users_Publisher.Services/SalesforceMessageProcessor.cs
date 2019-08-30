@@ -2,8 +2,8 @@
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure_AD_Users_Publisher.Services.Interfaces;
 using Azure_AD_Users_Publisher.Services.Models;
+using Azure_AD_Users_Shared.Models;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Logging;
 

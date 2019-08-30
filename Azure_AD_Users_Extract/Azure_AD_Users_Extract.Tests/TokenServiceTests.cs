@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Azure_AD_Users_Extract.Services;
-using Azure_AD_Users_Extract.Services.Interfaces;
+using Azure_AD_Users_Shared.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 

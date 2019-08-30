@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Azure_AD_Users_Extract.Services.Interfaces;
 using Azure_AD_Users_Extract.Services.Models;
+using Azure_AD_Users_Shared.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace Azure_AD_Users_Extract.Services
@@ -25,7 +25,7 @@ namespace Azure_AD_Users_Extract.Services
             _graphApiService = graphApiService;
         }
 
-        public async Task<List<GraphUser>> GetUsers(string groupId, string token, int syncDurationInHours = 0)
+        public async Task<List<SalesforceUser>> GetUsers(string groupId, string token, int syncDurationInHours = 0)
         {
             if (string.IsNullOrWhiteSpace(groupId) || string.IsNullOrWhiteSpace(token) || syncDurationInHours < 0)
             {
@@ -36,8 +36,31 @@ namespace Azure_AD_Users_Extract.Services
             var duration = syncDurationInHours * -1;
             var usersList = await GetGraphUsers(url, duration, token);
             await GetGraphGroupUsers(usersList, duration, token);
+            var salesforceUsers = MapGraphUsersToSalesforceUsers(usersList);
+            return salesforceUsers;
+        }
 
-            return usersList;
+        private List<SalesforceUser> MapGraphUsersToSalesforceUsers(List<GraphUser> usersList)
+        {
+            return usersList.Select(graphUser => new SalesforceUser
+                {
+                    FirstName = graphUser.givenName,
+                    LastName = graphUser.surname,
+                    Email = graphUser.mail,
+                    FranchiseNumber = graphUser.officeLocation,
+                    OperatingSystem = "",
+                    ExternalId = graphUser.id,
+                    FederationId = graphUser.userPrincipalName,
+                    MobilePhone = graphUser.mobilePhone,
+                    Address = graphUser.streetAddress,
+                    City = graphUser.city,
+                    State = graphUser.state,
+                    PostalCode = graphUser.postalCode,
+                    CountryCode = graphUser.country,
+                    TimeZone = "",
+                    IsOwner = graphUser.owner.ToString()
+                })
+                .ToList();
         }
 
         private async Task<List<GraphUser>> GetGraphUsers(string url, int duration, string token)

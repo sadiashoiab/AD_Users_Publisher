@@ -2,8 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Azure_AD_Users_Publisher.Services.Exceptions;
-using Azure_AD_Users_Publisher.Services.Interfaces;
+using Azure_AD_Users_Shared.Exceptions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 

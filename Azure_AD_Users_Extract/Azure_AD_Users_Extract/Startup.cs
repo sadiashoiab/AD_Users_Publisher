@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using Azure_AD_Users_Extract.Filters;
 using Azure_AD_Users_Extract.Services;
-using Azure_AD_Users_Extract.Services.Interfaces;
+using Azure_AD_Users_Shared.ExceptionFilters;
+using Azure_AD_Users_Shared.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
