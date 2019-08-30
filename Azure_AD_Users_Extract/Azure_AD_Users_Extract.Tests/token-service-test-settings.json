@@ -1,4 +1,4 @@
 {
   "AzureActiveDirectoryInstanceFormat": "https://login.microsoftonline.com/{0}",
-  "KeyVaultUrl": "https://hisc-dev-grandpad-keys.vault.azure.net/secrets/"
+  "KeyVaultUrl": "https://hisc-azure-ad-users-dev.vault.azure.net/secrets/"
 }
