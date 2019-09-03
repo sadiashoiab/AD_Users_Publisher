@@ -79,16 +79,15 @@ namespace Azure_AD_Users_Extract.Services
             var startTime = DateTime.UtcNow;
             _logger.LogDebug($"Starting retrieval and processing of franchise users at {DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}.");
 
-            // todo: Sadia do we need to have both of these? can we just have one publisher application?
             var url = $"{_azureADUsersFranchiseExtractUrl}?groupId={_franchiseUsersReoccurrenceGroupId}&syncDurationInHours={_franchiseUsersReoccurrenceSyncDurationInHours}";
             var responseMessage = await SendAsync(url);
             var json = await responseMessage.Content.ReadAsStringAsync();
-            var results = System.Text.Json.JsonSerializer.Deserialize<List<SalesforceUser>>(json);
+            var results = System.Text.Json.JsonSerializer.Deserialize<List<AzureActiveDirectoryUser>>(json);
 
-            foreach (var salesforceUser in results)
+            foreach (var azureActiveDirectoryUser in results)
             {
-                var salesforceUserJson = System.Text.Json.JsonSerializer.Serialize(salesforceUser);
-                var message = new Message(Encoding.UTF8.GetBytes(salesforceUserJson));
+                var useJson = System.Text.Json.JsonSerializer.Serialize(azureActiveDirectoryUser);
+                var message = new Message(Encoding.UTF8.GetBytes(useJson));
                 await _topicClient.SendAsync(message);
             }
 

@@ -24,7 +24,7 @@ namespace Azure_AD_Users_Extract.Controllers
         }
 
         // GET users
-        [ProducesResponseType(typeof(List<SalesforceUser>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<AzureActiveDirectoryUser>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Produces("application/json")]
         [HttpGet("franchise")]

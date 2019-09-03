@@ -52,12 +52,12 @@ namespace Azure_AD_Users_Publisher.Tests
                 .Verifiable();
 
             var timeZone = "Americas/NewYork";
-            timeZoneServiceMock.Setup(mock => mock.RetrieveTimeZone(It.IsAny<SalesforceUser>()))
+            timeZoneServiceMock.Setup(mock => mock.RetrieveTimeZone(It.IsAny<AzureActiveDirectoryUser>()))
                 .ReturnsAsync(timeZone)
                 .Verifiable();
 
             var subscriptionClientMock = new Mock<ISubscriptionClient>();
-            var salesforceUser = new SalesforceUser
+            var salesforceUser = new AzureActiveDirectoryUser
             {
                 Address = "11218 John Galt Blvd.",
                 FranchiseNumber = "100"
@@ -83,7 +83,7 @@ namespace Azure_AD_Users_Publisher.Tests
                     It.IsAny<Func<object, Exception, string>>()),
                 Times.Once);
             timeZoneServiceMock.Verify();
-            salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<SalesforceUser>()));
+            salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<AzureActiveDirectoryUser>()));
             subscriptionClientMock.Verify();
         }
 
@@ -124,12 +124,12 @@ namespace Azure_AD_Users_Publisher.Tests
                 .Verifiable();
 
             var timeZone = "Americas/NewYork";
-            timeZoneServiceMock.Setup(mock => mock.RetrieveTimeZone(It.IsAny<SalesforceUser>()))
+            timeZoneServiceMock.Setup(mock => mock.RetrieveTimeZone(It.IsAny<AzureActiveDirectoryUser>()))
                 .ReturnsAsync(timeZone)
                 .Verifiable();
 
             var subscriptionClientMock = new Mock<ISubscriptionClient>();
-            var salesforceUser = new SalesforceUser
+            var salesforceUser = new AzureActiveDirectoryUser
             {
                 Address = "11218 John Galt Blvd.",
                 FranchiseNumber = "100"
@@ -155,7 +155,7 @@ namespace Azure_AD_Users_Publisher.Tests
                     It.IsAny<Func<object, Exception, string>>()),
                 Times.Once);
             timeZoneServiceMock.Verify();
-            salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<SalesforceUser>()));
+            salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<AzureActiveDirectoryUser>()));
             subscriptionClientMock.Verify();
         }
 
@@ -189,7 +189,7 @@ namespace Azure_AD_Users_Publisher.Tests
                 .Verifiable();
 
             var subscriptionClientMock = new Mock<ISubscriptionClient>();
-            var salesforceUser = new SalesforceUser
+            var salesforceUser = new AzureActiveDirectoryUser
             {
                 Address = "11218 John Galt Blvd.",
                 FranchiseNumber = "100"

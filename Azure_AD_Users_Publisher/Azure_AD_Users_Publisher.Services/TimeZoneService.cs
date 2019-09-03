@@ -21,7 +21,7 @@ namespace Azure_AD_Users_Publisher.Services
             _franchiseTimeZoneCacheDurationInHours = int.Parse(configuration["FranchiseTimeZoneCacheDurationInHours"]);
         }
 
-        public async Task<string> RetrieveTimeZone(SalesforceUser user)
+        public async Task<string> RetrieveTimeZone(AzureActiveDirectoryUser user)
         {
             var cacheKey = $"{_cacheKeyPrefix}{user.FranchiseNumber}";
             if (!_memoryCache.TryGetValue(cacheKey, out string timeZone))

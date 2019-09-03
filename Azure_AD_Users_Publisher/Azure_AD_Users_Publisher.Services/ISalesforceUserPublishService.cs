@@ -5,6 +5,6 @@ namespace Azure_AD_Users_Publisher.Services
 {
     public interface ISalesforceUserPublishService
     {
-        Task Publish(SalesforceUser user);
+        Task Publish(AzureActiveDirectoryUser user);
     }
 }

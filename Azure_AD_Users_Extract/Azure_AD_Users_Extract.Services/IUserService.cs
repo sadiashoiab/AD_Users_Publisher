@@ -6,6 +6,6 @@ namespace Azure_AD_Users_Extract.Services
 {
     public interface IUserService
     {
-        Task<List<SalesforceUser>> GetUsers(string groupId, string token, int syncDurationInHours = 0);
+        Task<List<AzureActiveDirectoryUser>> GetUsers(string groupId, string token, int syncDurationInHours = 0);
     }
 }

@@ -29,7 +29,7 @@ namespace Azure_AD_Users_Extract.Tests
                 .ReturnsAsync(() => token).Verifiable();
 
             userServiceMock.Setup(mock => mock.GetUsers(groupId, token, syncDuration))
-                .ReturnsAsync(() => new List<SalesforceUser> {new SalesforceUser()}).Verifiable();
+                .ReturnsAsync(() => new List<AzureActiveDirectoryUser> {new AzureActiveDirectoryUser()}).Verifiable();
 
             // ACT
             var results = await unitUnderTest.Franchise(groupId, syncDuration);

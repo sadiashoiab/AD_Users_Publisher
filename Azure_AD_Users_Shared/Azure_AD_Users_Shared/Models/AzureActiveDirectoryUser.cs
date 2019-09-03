@@ -3,7 +3,7 @@
 namespace Azure_AD_Users_Shared.Models
 {
     [ExcludeFromCodeCoverage]
-    public class SalesforceUser
+    public class AzureActiveDirectoryUser
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

@@ -25,7 +25,7 @@ namespace Azure_AD_Users_Extract.Services
             _graphApiService = graphApiService;
         }
 
-        public async Task<List<SalesforceUser>> GetUsers(string groupId, string token, int syncDurationInHours = 0)
+        public async Task<List<AzureActiveDirectoryUser>> GetUsers(string groupId, string token, int syncDurationInHours = 0)
         {
             if (string.IsNullOrWhiteSpace(groupId) || string.IsNullOrWhiteSpace(token) || syncDurationInHours < 0)
             {
@@ -36,13 +36,13 @@ namespace Azure_AD_Users_Extract.Services
             var duration = syncDurationInHours * -1;
             var usersList = await GetGraphUsers(url, duration, token);
             await GetGraphGroupUsers(usersList, duration, token);
-            var salesforceUsers = MapGraphUsersToSalesforceUsers(usersList);
-            return salesforceUsers;
+            var azureActiveDirectoryUsers = MapGraphUsersToAzureActiveDirectoryUsers(usersList);
+            return azureActiveDirectoryUsers;
         }
 
-        private List<SalesforceUser> MapGraphUsersToSalesforceUsers(List<GraphUser> usersList)
+        private List<AzureActiveDirectoryUser> MapGraphUsersToAzureActiveDirectoryUsers(List<GraphUser> usersList)
         {
-            return usersList.Select(graphUser => new SalesforceUser
+            return usersList.Select(graphUser => new AzureActiveDirectoryUser
                 {
                     FirstName = graphUser.givenName,
                     LastName = graphUser.surname,

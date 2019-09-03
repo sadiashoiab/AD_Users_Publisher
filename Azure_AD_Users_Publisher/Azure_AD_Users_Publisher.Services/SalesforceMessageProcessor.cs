@@ -30,7 +30,7 @@ namespace Azure_AD_Users_Publisher.Services
             CancellationToken cancellationToken)
         {
             var messageBody = Encoding.UTF8.GetString(message.Body);
-            var user = System.Text.Json.JsonSerializer.Deserialize<SalesforceUser>(messageBody);
+            var user = System.Text.Json.JsonSerializer.Deserialize<AzureActiveDirectoryUser>(messageBody);
 
             var syncUser = await ShouldUserBeSyncedToSalesforce(user);
             if (syncUser)
@@ -56,7 +56,7 @@ namespace Azure_AD_Users_Publisher.Services
             return message.SystemProperties.IsLockTokenSet ? message.SystemProperties.LockToken : null;
         }
 
-        private async Task<string> GetUserOperatingSystem(SalesforceUser user)
+        private async Task<string> GetUserOperatingSystem(AzureActiveDirectoryUser user)
         {
             var parsed = int.TryParse(user.FranchiseNumber, out var userFranchiseNumber);
             if (parsed)
@@ -71,7 +71,7 @@ namespace Azure_AD_Users_Publisher.Services
             return "N/A";
         }
 
-        private async Task<bool> ShouldUserBeSyncedToSalesforce(SalesforceUser user)
+        private async Task<bool> ShouldUserBeSyncedToSalesforce(AzureActiveDirectoryUser user)
         {
             var parsed = int.TryParse(user.FranchiseNumber, out var userFranchiseNumber);
             if (parsed)

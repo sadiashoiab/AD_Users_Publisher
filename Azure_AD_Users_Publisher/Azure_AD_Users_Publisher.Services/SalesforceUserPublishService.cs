@@ -25,7 +25,7 @@ namespace Azure_AD_Users_Publisher.Services
             _tokenService = tokenService;
         }
 
-        public async Task Publish(SalesforceUser user)
+        public async Task Publish(AzureActiveDirectoryUser user)
         {
             var client = _httpClientFactory.CreateClient("SalesforcePublishHttpClient");
             var bearerToken = await _tokenService.RetrieveToken();
@@ -47,10 +47,6 @@ namespace Azure_AD_Users_Publisher.Services
                 var responseContentJson = await responseMessage.Content.ReadAsStringAsync();
                 var salesforcePublishResponse = System.Text.Json.JsonSerializer.Deserialize<SalesforcePublishResponse>(responseContentJson);
                 _logger.LogError($"Salesforce Publish Response Error Message: {salesforcePublishResponse.error.errorMessage}, when publishing User: {json}");
-
-                // todo: Sadia, what do you want to happen if the publish to Salesforce errors besides log the error?
-                //       do you want to move the message that is on the service bus to deadletter, or do you want to keep it on the bus for later processing?
-                //throw new UnexpectedStatusCodeException(responseMessage);
             }
         }
     }
