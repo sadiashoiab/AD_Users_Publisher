@@ -86,8 +86,8 @@ namespace Azure_AD_Users_Extract.Services
 
             foreach (var azureActiveDirectoryUser in results)
             {
-                var useJson = System.Text.Json.JsonSerializer.Serialize(azureActiveDirectoryUser);
-                var message = new Message(Encoding.UTF8.GetBytes(useJson));
+                var userJson = System.Text.Json.JsonSerializer.Serialize(azureActiveDirectoryUser);
+                var message = new Message(Encoding.UTF8.GetBytes(userJson));
                 await _topicClient.SendAsync(message);
             }
 
