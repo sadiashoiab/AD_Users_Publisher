@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Azure_AD_Users_Extract.Controllers;
 using Azure_AD_Users_Extract.Services;
-using Azure_AD_Users_Extract.Services.Models;
 using Azure_AD_Users_Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

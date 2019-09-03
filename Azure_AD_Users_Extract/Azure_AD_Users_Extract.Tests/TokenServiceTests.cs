@@ -5,7 +5,7 @@ using Azure_AD_Users_Shared.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace AD_Users_Extract.Tests
+namespace Azure_AD_Users_Extract.Tests
 {
     [TestClass]
     public class TokenServiceTests

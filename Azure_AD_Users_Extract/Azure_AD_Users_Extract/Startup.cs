@@ -37,10 +37,10 @@ namespace Azure_AD_Users_Extract
                 .AddJsonOptions(options =>
                 {
                     var resolver  = options.SerializerSettings.ContractResolver;
-                    if (resolver != null)
+                    var res = (DefaultContractResolver) resolver;
+                    if (res != null)
                     {
-                        var res = resolver as DefaultContractResolver;
-                        res.NamingStrategy = null;  // <<!-- this removes the camelCasing
+                        res.NamingStrategy = null; // <-- this removes the default camelCasing of object property names when serializing to Json
                     }
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

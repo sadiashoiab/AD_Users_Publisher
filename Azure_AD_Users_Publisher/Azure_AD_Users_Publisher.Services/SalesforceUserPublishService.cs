@@ -2,7 +2,6 @@
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
-using Azure_AD_Users_Shared.Exceptions;
 using Azure_AD_Users_Shared.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

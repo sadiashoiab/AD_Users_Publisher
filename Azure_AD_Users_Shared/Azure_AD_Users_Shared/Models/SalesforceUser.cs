@@ -1,5 +1,8 @@
-﻿namespace Azure_AD_Users_Shared.Models
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Azure_AD_Users_Shared.Models
 {
+    [ExcludeFromCodeCoverage]
     public class SalesforceUser
     {
         public string FirstName { get; set; }

@@ -13,6 +13,7 @@ namespace Azure_AD_Users_Shared.Services
         {
             _url = configuration["KeyVaultUrl"];
         }
+        // todo: look to swap this out and use the Azure Key Vault Configuration Provider that is in ASP.NET Core 
 
         // todo: this method is not testable due to usage of requiring a valid AzureServiceTokenProvider, refactor later.
         public async Task<string> GetSecret(string name)

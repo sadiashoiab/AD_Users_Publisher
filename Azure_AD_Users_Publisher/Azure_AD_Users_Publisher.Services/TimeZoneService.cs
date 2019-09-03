@@ -21,8 +21,6 @@ namespace Azure_AD_Users_Publisher.Services
             _franchiseTimeZoneCacheDurationInHours = int.Parse(configuration["FranchiseTimeZoneCacheDurationInHours"]);
         }
 
-        // todo: refactor all services that cache to have a common CachingService
-        //       should take a cacheKeyPrefix, Func, MemoryCacheOptions?
         public async Task<string> RetrieveTimeZone(SalesforceUser user)
         {
             var cacheKey = $"{_cacheKeyPrefix}{user.FranchiseNumber}";

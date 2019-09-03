@@ -48,7 +48,12 @@ namespace Azure_AD_Users_Publisher.Services
                 await _salesforceUserPublishService.Publish(user);
             }
 
-            await receiver.CompleteAsync(message.SystemProperties.LockToken);
+            await receiver.CompleteAsync(GetLockToken(message));
+        }
+
+        private string GetLockToken(Message message)
+        {
+            return message.SystemProperties.IsLockTokenSet ? message.SystemProperties.LockToken : null;
         }
 
         private async Task<string> GetUserOperatingSystem(SalesforceUser user)
