@@ -38,8 +38,6 @@ namespace Azure_AD_Users_Extract.Controllers
                 _logger.LogInformation($"{users.Count} Franchise users were retrieved");
             }
 
-            // todo: do we need to push the users to the service bus when calling the endpoint?
-
             return Ok(users);
         }
 
