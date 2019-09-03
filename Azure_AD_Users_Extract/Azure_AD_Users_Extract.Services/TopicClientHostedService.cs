@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -70,8 +71,12 @@ namespace Azure_AD_Users_Extract.Services
                 _logger.LogDebug($"{_nameToken} has called CloseAsync because of cancel.");
             });
 
-            // note: create the time, but wait 10 seconds before we start executing work from it.
-            _reoccurrenceTimer = new Timer(RetrieveAndProcessExtractUsers, null, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(_reoccurrenceInMinutes));
+            if (_reoccurrenceInMinutes > 0)
+            {
+                // note: create the time, but wait 10 seconds before we start executing work from it.
+                _reoccurrenceTimer = new Timer(RetrieveAndProcessExtractUsers, null, TimeSpan.FromSeconds(10),
+                    TimeSpan.FromMinutes(_reoccurrenceInMinutes));
+            }
         }
 
         private async void RetrieveAndProcessExtractUsers(object state)
@@ -84,6 +89,9 @@ namespace Azure_AD_Users_Extract.Services
             var json = await responseMessage.Content.ReadAsStringAsync();
             var results = System.Text.Json.JsonSerializer.Deserialize<List<AzureActiveDirectoryUser>>(json);
 
+            // todo: remove this after "limited" testing is complete
+            results = LimitUsersForTesting(results);
+
             foreach (var azureActiveDirectoryUser in results)
             {
                 var userJson = System.Text.Json.JsonSerializer.Serialize(azureActiveDirectoryUser);
@@ -95,6 +103,13 @@ namespace Azure_AD_Users_Extract.Services
             _logger.LogDebug($"Finished retrieval and processing of franchise users at {DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}.");
             var userString =  (results.Count > 1) ? "user" : "users";
             _logger.LogDebug($"Sent {results.Count} {userString} to the topic in {(endTime - startTime).TotalSeconds} seconds.");
+        }
+
+        // todo: remove this after "limited" testing is complete
+        private List<AzureActiveDirectoryUser> LimitUsersForTesting(List<AzureActiveDirectoryUser> results)
+        {
+            var limitedUsers = results.Where(user => user.FranchiseNumber.EndsWith("100")).Take(10);
+            return limitedUsers.ToList();
         }
 
         private async Task<HttpResponseMessage> SendAsync(string url)
