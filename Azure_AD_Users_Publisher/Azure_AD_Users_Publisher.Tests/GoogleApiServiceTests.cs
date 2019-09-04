@@ -21,7 +21,8 @@ namespace Azure_AD_Users_Publisher.Tests
             // ARRANGE
             var keyVaultServiceMock = new Mock<IAzureKeyVaultService>();
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            var geoCodeResult = "{\"results\":[{\"address_components\":[{\"long_name\":\"68046\",\"short_name\":\"68046\",\"types\":[\"postal_code\"]},{\"long_name\":\"Papillion\",\"short_name\":\"Papillion\",\"types\":[\"locality\",\"political\"]},{\"long_name\":\"Nebraska\",\"short_name\":\"NE\",\"types\":[\"administrative_area_level_1\",\"political\"]},{\"long_name\":\"United States\",\"short_name\":\"US\",\"types\":[\"country\",\"political\"]}],\"formatted_address\":\"Papillion, NE 68046, USA\",\"geometry\":{\"bounds\":{\"northeast\":{\"lat\":41.1763281,\"lng\":-96.004504},\"southwest\":{\"lat\":41.053171,\"lng\":-96.11961079999999}},\"location\":{\"lat\":41.1319017,\"lng\":-96.0573302},\"location_type\":\"APPROXIMATE\",\"viewport\":{\"northeast\":{\"lat\":41.1763281,\"lng\":-96.004504},\"southwest\":{\"lat\":41.053171,\"lng\":-96.11961079999999}}},\"place_id\":\"ChIJn5ksLKiKk4cR42I8-mYyieY\",\"types\":[\"postal_code\"]}],\"status\":\"OK\"}";
+            var geoCodeResult =
+                "{\"results\":[{\"address_components\":[{\"long_name\":\"68046\",\"short_name\":\"68046\",\"types\":[\"postal_code\"]},{\"long_name\":\"Papillion\",\"short_name\":\"Papillion\",\"types\":[\"locality\",\"political\"]},{\"long_name\":\"Nebraska\",\"short_name\":\"NE\",\"types\":[\"administrative_area_level_1\",\"political\"]},{\"long_name\":\"United States\",\"short_name\":\"US\",\"types\":[\"country\",\"political\"]}],\"formatted_address\":\"Papillion, NE 68046, USA\",\"geometry\":{\"bounds\":{\"northeast\":{\"lat\":41.1763281,\"lng\":-96.004504},\"southwest\":{\"lat\":41.053171,\"lng\":-96.11961079999999}},\"location\":{\"lat\":41.1319017,\"lng\":-96.0573302},\"location_type\":\"APPROXIMATE\",\"viewport\":{\"northeast\":{\"lat\":41.1763281,\"lng\":-96.004504},\"southwest\":{\"lat\":41.053171,\"lng\":-96.11961079999999}}},\"place_id\":\"ChIJn5ksLKiKk4cR42I8-mYyieY\",\"types\":[\"postal_code\"]}],\"status\":\"OK\"}";
 
             var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) =>
                 {
@@ -145,7 +146,8 @@ namespace Azure_AD_Users_Publisher.Tests
             // ARRANGE
             var keyVaultServiceMock = new Mock<IAzureKeyVaultService>();
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            var geoCodeResult = "{\"dstOffset\":3600,\"rawOffset\":-18000,\"status\":\"OK\",\"timeZoneId\":\"America/New_York\",\"timeZoneName\":\"Eastern Daylight Time\"}";
+            var geoCodeResult =
+                "{\"dstOffset\":3600,\"rawOffset\":-18000,\"status\":\"OK\",\"timeZoneId\":\"America/New_York\",\"timeZoneName\":\"Eastern Daylight Time\"}";
 
             var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) =>
                 {
@@ -169,7 +171,7 @@ namespace Azure_AD_Users_Publisher.Tests
 
             var location = new GoogleApiLocation
             {
-                lat = 41.1319017, 
+                lat = 41.1319017,
                 lng = -96.0573302
             };
 

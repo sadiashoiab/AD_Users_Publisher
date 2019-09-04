@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Azure_AD_Users_Extract.Services;
 using Azure_AD_Users_Shared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Azure_AD_Users_Extract.Controllers
 {
@@ -12,42 +12,39 @@ namespace Azure_AD_Users_Extract.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly ILogger _logger;
-        private readonly ITokenService _tokenService;
-        private readonly IUserService _userService;
+        private readonly IFranchiseUserService _franchiseUserService;
 
-        public UsersController(ILogger<UsersController> logger, ITokenService tokenService, IUserService userService)
+        public UsersController(IFranchiseUserService franchiseUserService)
         {
-            _logger = logger;
-            _tokenService = tokenService;
-            _userService = userService;
+            _franchiseUserService = franchiseUserService;
         }
 
         // GET users
-        [ProducesResponseType(typeof(List<SalesforceUser>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<AzureActiveDirectoryUser>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Produces("application/json")]
         [HttpGet("franchise")]
         public async Task<IActionResult> Franchise([FromQuery]string groupId, [FromQuery]int syncDurationInHours = 0)
         {
-            var token = await _tokenService.RetrieveToken(TokenEnum.Franchise);
-            var users = await _userService.GetUsers(groupId, token, syncDurationInHours);
-
-            if (users?.Count > 0)
-            {
-                _logger.LogInformation($"{users.Count} Franchise users were retrieved");
-            }
-
+            var users = await _franchiseUserService.GetFranchiseUsers(groupId, syncDurationInHours);
             return Ok(users);
         }
 
-        // note: this is here for a quick way to force an error
-        //[ProducesResponseType(typeof(Exception), StatusCodes.Status500InternalServerError)]
-        //[HttpGet("/error")]
-        //public IActionResult ThrowException()
-        //{
-        //    var innerException = new Exception("this is the inner exception message");
-        //    throw new Exception("this is the outer exception message", innerException);
-        //}
+        [ProducesResponseType(typeof(List<AzureActiveDirectoryUser>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Produces("application/json")]
+        [HttpGet("filteredFranchise")]
+        public async Task<IActionResult> FranchiseFilteredUsers([FromQuery]string groupId, string officeLocation, [FromQuery]int syncDurationInHours = 0)
+        {
+            var sanitizedOfficeLocation = officeLocation?.Trim();
+            if (string.IsNullOrWhiteSpace(sanitizedOfficeLocation))
+            {
+                var users = await _franchiseUserService.GetFranchiseUsers(groupId, syncDurationInHours);
+                var filteredUsers = users.Where(user => user.FranchiseNumber.Equals(officeLocation)).ToList();
+                return Ok(filteredUsers);
+            }
+
+            return BadRequest();
+        }
     }
 }

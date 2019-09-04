@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Azure_AD_Users_Extract.Services;
 using Microsoft.Extensions.Configuration;

@@ -29,7 +29,7 @@ namespace Azure_AD_Users_Extract.Benchmarks
         }
 
         [Benchmark]
-        public async Task<List<SalesforceUser>> GetUsers()
+        public async Task<List<AzureActiveDirectoryUser>> GetUsers()
         {
             return await _userService.GetUsers("bob", _token);
         }

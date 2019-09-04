@@ -3,11 +3,13 @@ using System.Diagnostics.CodeAnalysis;
 using Azure_AD_Users_Extract.Services;
 using Azure_AD_Users_Shared.ExceptionFilters;
 using Azure_AD_Users_Shared.Services;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Serialization;
 using Polly;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -33,6 +35,15 @@ namespace Azure_AD_Users_Extract
                     builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
 
             services.AddMvc(options => { options.Filters.Add<ExceptionActionFilter>(); })
+                .AddJsonOptions(options =>
+                {
+                    var resolver  = options.SerializerSettings.ContractResolver;
+                    var res = (DefaultContractResolver) resolver;
+                    if (res != null)
+                    {
+                        res.NamingStrategy = null; // <-- this removes the default camelCasing of object property names when serializing to Json
+                    }
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSwaggerGen(c => {  
@@ -43,12 +54,16 @@ namespace Azure_AD_Users_Extract
                 });  
             });
 
-            services.AddApplicationInsightsTelemetry();
+            var appInsightServiceOptions = new ApplicationInsightsServiceOptions {EnableDebugLogger = true};
+            services.AddApplicationInsightsTelemetry(appInsightServiceOptions);
 
-            services.AddScoped<IAzureKeyVaultService, AzureKeyVaultService>();
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IGraphApiService, GraphApiService>();
+            services.AddSingleton<IAzureKeyVaultService, AzureKeyVaultService>();
+            services.AddSingleton<ITokenService, TokenService>();
+            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IGraphApiService, GraphApiService>();
+            services.AddSingleton<IFranchiseUserService, FranchiseUserService>();
+
+            services.AddHostedService<TopicClientHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

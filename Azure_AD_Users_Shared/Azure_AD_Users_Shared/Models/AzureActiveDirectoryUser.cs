@@ -1,6 +1,10 @@
-﻿namespace Azure_AD_Users_Shared.Models
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+
+namespace Azure_AD_Users_Shared.Models
 {
-    public class SalesforceUser
+    [ExcludeFromCodeCoverage]
+    public class AzureActiveDirectoryUser
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -17,5 +21,6 @@
         public string CountryCode { get; set; }
         public string TimeZone { get; set; }
         public bool IsOwner { get; set; }
+        public DateTimeOffset? DeactivationDateTimeOffset { get; set; }
     }
 }

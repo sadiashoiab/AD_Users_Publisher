@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure_AD_Users_Shared.Services;
@@ -19,6 +20,7 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly string _topicName;
         private readonly string _subscriptionName;
         private readonly string _serviceBusConnectionStringSecretName;
+
         private SubscriptionClient _subscriptionClient;
 
         public SubscriptionClientHostedService(ILogger<SubscriptionClientHostedService> logger,
@@ -46,12 +48,16 @@ namespace Azure_AD_Users_Publisher.Services
                 _logger.LogDebug($"{_nameToken} has called CloseAsync because of cancel.");
             });
 
+            var processors = Environment.ProcessorCount;
+            _logger.LogDebug($"Number of logical processors: {processors}, using {processors} as the number of MaxConcurrentCalls for processing messages.");
+
             // Configure the message handler options in terms of exception handling, number of concurrent messages to deliver, etc.
             var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
             {
                 // Maximum number of concurrent calls to the callback ProcessMessagesAsync(), set to 1 for simplicity.
                 // Set it according to how many messages the application wants to process in parallel.
-                MaxConcurrentCalls = 1,
+                //MaxConcurrentCalls = 1,
+                MaxConcurrentCalls = processors,
 
                 // Indicates whether the message pump should automatically complete the messages after returning from user callback.
                 // False below indicates the complete operation is handled by the user callback as in ProcessMessagesAsync().
@@ -70,7 +76,7 @@ namespace Azure_AD_Users_Publisher.Services
 
         private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
-            _logger.LogError($"Message handler encountered an exception {exceptionReceivedEventArgs.Exception}.");
+            _logger.LogError(exceptionReceivedEventArgs.Exception, "Message handler encountered an exception.");
             
             var context = exceptionReceivedEventArgs.ExceptionReceivedContext;
             _logger.LogError("Exception context for troubleshooting:");

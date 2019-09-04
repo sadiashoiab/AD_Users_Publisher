@@ -4,8 +4,8 @@ using Azure_AD_Users_Shared.Models;
 
 namespace Azure_AD_Users_Extract.Services
 {
-    public interface IUserService
+    public interface IFranchiseUserService
     {
-        Task<List<AzureActiveDirectoryUser>> GetUsers(string groupId, string token, int syncDurationInHours = 0);
+        Task<List<AzureActiveDirectoryUser>> GetFranchiseUsers(string groupId, int syncDurationInHours = 0);
     }
 }

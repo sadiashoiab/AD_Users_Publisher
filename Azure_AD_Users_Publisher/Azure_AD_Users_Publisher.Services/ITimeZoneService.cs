@@ -5,6 +5,6 @@ namespace Azure_AD_Users_Publisher.Services
 {
     public interface ITimeZoneService
     {
-        Task<string> RetrieveTimeZone(SalesforceUser user);
+        Task<string> RetrieveTimeZone(AzureActiveDirectoryUser user);
     }
 }
