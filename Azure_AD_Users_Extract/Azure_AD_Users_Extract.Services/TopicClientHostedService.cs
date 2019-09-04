@@ -92,22 +92,17 @@ namespace Azure_AD_Users_Extract.Services
             // todo: remove after development testing completes
             var filteredExtractUsers = FilterActiveUsers(results);
 
-            await ProcessExtractedUsers(filteredExtractUsers);
-
-            var endTime = DateTime.UtcNow;
-            _logger.LogDebug($"Finished retrieval and processing of franchise users at {DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}.");
-            var userString =  (results.Count > 1) ? "user" : "users";
-            _logger.LogDebug($"Sent {results.Count} {userString} to the topic in {(endTime - startTime).TotalSeconds} seconds.");
-        }
-
-        private async Task ProcessExtractedUsers(List<AzureActiveDirectoryUser> activeUsers)
-        {
-            foreach (var user in activeUsers)
+            foreach (var user in filteredExtractUsers)
             {
                 var userJson = System.Text.Json.JsonSerializer.Serialize(user);
                 var message = new Message(Encoding.UTF8.GetBytes(userJson));
                 await _topicClient.SendAsync(message);
             }
+
+            var endTime = DateTime.UtcNow;
+            _logger.LogDebug($"Finished retrieval and processing of franchise users at {DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}.");
+            var userString =  (results.Count > 1) ? "user" : "users";
+            _logger.LogDebug($"Sent {results.Count} {userString} to the topic in {(endTime - startTime).TotalSeconds} seconds.");
         }
 
         // todo: remove after development testing completes
