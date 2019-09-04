@@ -104,7 +104,7 @@ namespace Azure_AD_Users_Extract.Services
         // todo: remove after development testing completes
         private List<AzureActiveDirectoryUser> FilterUsers(List<AzureActiveDirectoryUser> results)
         {
-            var franchiseUsers = results.Where(user => user.FranchiseNumber.Contains("838")).ToList();
+            var franchiseUsers = results.Where(user => user.FranchiseNumber != null && user.FranchiseNumber.Contains("838")).ToList();
             //var franchiseUserJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
             //var limitedJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
             return franchiseUsers;
