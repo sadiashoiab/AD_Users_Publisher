@@ -55,7 +55,7 @@ namespace Azure_AD_Users_Publisher.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Exception when Publishing User to Salesforce: {ex.Message}, StackTrace: {ex.StackTrace}");
+                    _logger.LogError(ex, $"Exception when Publishing User to Salesforce. StackTrace: {ex.StackTrace}");
                 }
             }
         }
@@ -85,7 +85,7 @@ namespace Azure_AD_Users_Publisher.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Exception when Deactivating User to Salesforce: {ex.Message}, StackTrace: {ex.StackTrace}");
+                    _logger.LogError(ex, $"Exception when Deactivating User to Salesforce. StackTrace: {ex.StackTrace}");
                 }
             }
         }

@@ -76,7 +76,7 @@ namespace Azure_AD_Users_Publisher.Services
 
         private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
-            _logger.LogError($"Message handler encountered an exception {exceptionReceivedEventArgs.Exception}.");
+            _logger.LogError(exceptionReceivedEventArgs.Exception, "Message handler encountered an exception.");
             
             var context = exceptionReceivedEventArgs.ExceptionReceivedContext;
             _logger.LogError("Exception context for troubleshooting:");
