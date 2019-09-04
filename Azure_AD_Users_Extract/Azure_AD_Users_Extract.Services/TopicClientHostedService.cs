@@ -69,8 +69,10 @@ namespace Azure_AD_Users_Extract.Services
 
             if (_reoccurrenceInMinutes > 0)
             {
-                // note: create the time, but wait 10 seconds before we start executing work from it.
-                _reoccurrenceTimer = new Timer(RetrieveAndProcessExtractUsers, null, TimeSpan.FromSeconds(10),
+                // note: create the timer, but wait 10 seconds before we start executing work from it.
+                _reoccurrenceTimer = new Timer(RetrieveAndProcessExtractUsers,
+                    null, 
+                    TimeSpan.FromSeconds(10),
                     TimeSpan.FromMinutes(_reoccurrenceInMinutes));
             }
         }
