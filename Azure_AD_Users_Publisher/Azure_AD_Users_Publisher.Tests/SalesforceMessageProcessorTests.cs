@@ -78,12 +78,13 @@ namespace Azure_AD_Users_Publisher.Tests
             loggerMock.Verify(mock => mock.Log(
                     LogLevel.Information,
                     It.IsAny<EventId>(),
-                    It.Is<FormattedLogValues>(v => v.ToString().Contains("will be published to Salesforce.")),
+                    It.Is<FormattedLogValues>(v => v.ToString().Contains("will be Published.")),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<object, Exception, string>>()),
                 Times.Once);
             timeZoneServiceMock.Verify();
-            salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<AzureActiveDirectoryUser>()));
+            // todo: add verify back once allowed to call and invoke has been re-enabled
+            //salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<AzureActiveDirectoryUser>()));
             subscriptionClientMock.Verify();
         }
 
@@ -150,12 +151,13 @@ namespace Azure_AD_Users_Publisher.Tests
             loggerMock.Verify(mock => mock.Log(
                     LogLevel.Information,
                     It.IsAny<EventId>(),
-                    It.Is<FormattedLogValues>(v => v.ToString().Contains("will be published to Salesforce.")),
+                    It.Is<FormattedLogValues>(v => v.ToString().Contains("will be Published.")),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<object, Exception, string>>()),
                 Times.Once);
             timeZoneServiceMock.Verify();
-            salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<AzureActiveDirectoryUser>()));
+            // todo: add verify back once allowed to call and invoke has been re-enabled
+            //salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<AzureActiveDirectoryUser>()));
             subscriptionClientMock.Verify();
         }
 
