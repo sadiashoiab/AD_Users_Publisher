@@ -30,7 +30,7 @@ namespace Azure_AD_Users_Extract
                 {
                     builder.AddApplicationInsights(hostingContext.Configuration.GetSection("ApplicationInsights")["InstrumentationKey"].ToString());
                     builder.AddFilter<ApplicationInsightsLoggerProvider>("", LogLevel.Trace);
-                    builder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Warning);
+                    builder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Information);
                     builder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     builder.AddConsole();
                     builder.AddDebug();
