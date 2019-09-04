@@ -32,7 +32,6 @@ namespace Azure_AD_Users_Publisher.Controllers
             var salesforceFranchises = await salesforceFranchisesTask;
             var clearCareFranchises = await clearCareFranchisesTask;
 
-
             var salesforce = $"[{string.Join(',', salesforceFranchises)}]";
             var clearCare = $"[{string.Join(',', clearCareFranchises)}]";
             var stringOutput = @"{""salesforceFranchises"":" + salesforce + @",""clearCareFranchises"":" + clearCare + "}";
