@@ -20,15 +20,15 @@ namespace Azure_AD_Users_Extract.Controllers
         }
 
         // GET users
-        [ProducesResponseType(typeof(List<AzureActiveDirectoryUser>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [Produces("application/json")]
-        [HttpGet("franchise")]
-        public async Task<IActionResult> Franchise([FromQuery]string groupId, [FromQuery]int syncDurationInHours = 0)
-        {
-            var users = await _franchiseUserService.GetFranchiseUsers(groupId, syncDurationInHours);
-            return Ok(users);
-        }
+        //[ProducesResponseType(typeof(List<AzureActiveDirectoryUser>), StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        //[Produces("application/json")]
+        //[HttpGet("franchise")]
+        //public async Task<IActionResult> Franchise([FromQuery]string groupId, [FromQuery]int syncDurationInHours = 0)
+        //{
+        //    var users = await _franchiseUserService.GetFranchiseUsers(groupId, syncDurationInHours);
+        //    return Ok(users);
+        //}
 
         [ProducesResponseType(typeof(List<AzureActiveDirectoryUser>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -40,7 +40,7 @@ namespace Azure_AD_Users_Extract.Controllers
             if (!string.IsNullOrWhiteSpace(sanitizedOfficeLocation))
             {
                 var users = await _franchiseUserService.GetFranchiseUsers(groupId, syncDurationInHours);
-                var filteredUsers = users.Where(user => user.FranchiseNumber.Equals(officeLocation)).ToList();
+                var filteredUsers = users.Where(user => user.FranchiseNumber != null && user.FranchiseNumber.Equals(officeLocation)).ToList();
                 return Ok(filteredUsers);
             }
 

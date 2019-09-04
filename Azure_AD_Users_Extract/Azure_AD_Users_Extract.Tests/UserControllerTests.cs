@@ -25,7 +25,7 @@ namespace Azure_AD_Users_Extract.Tests
                 .ReturnsAsync(() => new List<AzureActiveDirectoryUser> {new AzureActiveDirectoryUser()}).Verifiable();
 
             // ACT
-            var results = await unitUnderTest.Franchise(groupId, syncDuration);
+            var results = await unitUnderTest.FranchiseFilteredUsers(groupId, "838", syncDuration);
 
             // ASSERT
             franchiseUserServiceMock.Verify();
