@@ -47,7 +47,8 @@ namespace Azure_AD_Users_Publisher.Services
             if (user.DeactivationDateTimeOffset.HasValue)
             {
                 _logger.LogInformation($"User with ID: {user.ExternalId} will be Deactivated.");
-                await _salesforceUserPublishService.DeactivateUser(user);
+                // todo: remove once we have approval we can start hitting the service automatically
+                //await _salesforceUserPublishService.DeactivateUser(user);
             }
             else
             {
@@ -64,7 +65,8 @@ namespace Azure_AD_Users_Publisher.Services
                 // todo: remove this after salesforce endpoint has been modified to accept the State coming from Azure AD
                 user.State = "NE";
 
-                await _salesforceUserPublishService.Publish(user);
+                // todo: remove once we have approval we can start hitting the service automatically
+                //await _salesforceUserPublishService.Publish(user);
             }
         }
 
