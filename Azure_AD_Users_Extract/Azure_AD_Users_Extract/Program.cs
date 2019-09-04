@@ -3,6 +3,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 
 namespace Azure_AD_Users_Extract
 {
@@ -17,19 +18,22 @@ namespace Azure_AD_Users_Extract
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .ConfigureLogging((hostingContext, builder) =>
-                {
-                    builder.AddApplicationInsights();
-                    builder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                    builder.AddConsole();
-                    builder.AddDebug();
-                }).ConfigureAppConfiguration((hostingContext, config) =>
+                .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     var environment = hostingContext.HostingEnvironment;
                     config.AddJsonFile("appsettings.json", false, true);
                     // note: set ASPNETCORE_ENVIRONMENT environment variable to pull in environment specific configurations.
                     //       depending on what OS you are deploying to, this CAN be case sensitive
                     config.AddJsonFile($"appsettings.{environment.EnvironmentName}.json", true, true);
+                })
+                .ConfigureLogging((hostingContext, builder) =>
+                {
+                    builder.AddApplicationInsights(hostingContext.Configuration.GetSection("ApplicationInsights")["InstrumentationKey"].ToString());
+                    builder.AddFilter<ApplicationInsightsLoggerProvider>("", LogLevel.Trace);
+                    builder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Warning);
+                    builder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    builder.AddConsole();
+                    builder.AddDebug();
                 });
     }
 }

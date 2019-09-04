@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Azure_AD_Users_Extract.Services;
 using Azure_AD_Users_Shared.ExceptionFilters;
 using Azure_AD_Users_Shared.Services;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -53,7 +54,8 @@ namespace Azure_AD_Users_Extract
                 });  
             });
 
-            services.AddApplicationInsightsTelemetry();
+            var appInsightServiceOptions = new ApplicationInsightsServiceOptions {EnableDebugLogger = true};
+            services.AddApplicationInsightsTelemetry(appInsightServiceOptions);
 
             services.AddSingleton<IAzureKeyVaultService, AzureKeyVaultService>();
 

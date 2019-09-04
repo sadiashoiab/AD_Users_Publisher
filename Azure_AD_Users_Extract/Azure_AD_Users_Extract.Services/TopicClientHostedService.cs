@@ -90,7 +90,7 @@ namespace Azure_AD_Users_Extract.Services
             var results = System.Text.Json.JsonSerializer.Deserialize<List<AzureActiveDirectoryUser>>(json);
 
             // todo: remove after development testing completes
-            var filteredExtractUsers = FilterActiveUsers(results);
+            var filteredExtractUsers = FilterUsers(results);
 
             foreach (var user in filteredExtractUsers)
             {
@@ -106,7 +106,7 @@ namespace Azure_AD_Users_Extract.Services
         }
 
         // todo: remove after development testing completes
-        private List<AzureActiveDirectoryUser> FilterActiveUsers(List<AzureActiveDirectoryUser> results)
+        private List<AzureActiveDirectoryUser> FilterUsers(List<AzureActiveDirectoryUser> results)
         {
             var franchiseUsers = results.Where(user => user.FranchiseNumber.Contains("838")).ToList();
             //var franchiseUserJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
