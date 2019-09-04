@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure_AD_Users_Shared.Exceptions;
 using Azure_AD_Users_Shared.Models;
 using Azure_AD_Users_Shared.Services;
 using Microsoft.Azure.ServiceBus;
@@ -22,7 +20,7 @@ namespace Azure_AD_Users_Extract.Services
 
         private readonly ILogger<TopicClientHostedService> _logger;
         private readonly IAzureKeyVaultService _azureKeyVaultService;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IFranchiseUserService _franchiseUserService;
         private readonly string _topicName;
         private readonly string _serviceBusConnectionStringSecretName;
         private readonly int _reoccurrenceInMinutes;
@@ -30,22 +28,20 @@ namespace Azure_AD_Users_Extract.Services
         private Timer _reoccurrenceTimer;
         private TopicClient _topicClient;
         private string _franchiseUsersReoccurrenceGroupId;
-        private string _franchiseUsersReoccurrenceSyncDurationInHours;
-        private string _azureADUsersFranchiseExtractUrl;
+        private int _franchiseUsersReoccurrenceSyncDurationInHours;
 
         public TopicClientHostedService(ILogger<TopicClientHostedService> logger,
             IAzureKeyVaultService azureKeyVaultService,
             IConfiguration configuration,
-            IHttpClientFactory httpClientFactory)
+            IFranchiseUserService franchiseUserService)
         {
             _logger = logger;
             _azureKeyVaultService = azureKeyVaultService;
-            _httpClientFactory = httpClientFactory;
+            _franchiseUserService = franchiseUserService;
 
             _topicName = configuration["ExtractTopicName"];
             _serviceBusConnectionStringSecretName = configuration["ServiceBusConnectionStringSecretName"];
             _reoccurrenceInMinutes = int.Parse(configuration["ReoccurrenceInMinutes"]);
-            _azureADUsersFranchiseExtractUrl = configuration["AzureADUsersFranchiseExtractUrl"];
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -61,7 +57,7 @@ namespace Azure_AD_Users_Extract.Services
 
             var serviceBusConnectionString = await serviceBusConnectionStringTask;
             _franchiseUsersReoccurrenceGroupId = await franchiseUsersReoccurrenceGroupIdTask;
-            _franchiseUsersReoccurrenceSyncDurationInHours = await franchiseUsersReoccurrenceSyncDurationInHoursTask;
+            _franchiseUsersReoccurrenceSyncDurationInHours = int.Parse(await franchiseUsersReoccurrenceSyncDurationInHoursTask);
 
             _topicClient = new TopicClient(serviceBusConnectionString, _topicName);
 
@@ -84,10 +80,7 @@ namespace Azure_AD_Users_Extract.Services
             var startTime = DateTime.UtcNow;
             _logger.LogDebug($"Starting retrieval and processing of franchise users at {DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}.");
 
-            var url = $"{_azureADUsersFranchiseExtractUrl}?groupId={_franchiseUsersReoccurrenceGroupId}&syncDurationInHours={_franchiseUsersReoccurrenceSyncDurationInHours}";
-            var responseMessage = await SendAsync(url);
-            var json = await responseMessage.Content.ReadAsStringAsync();
-            var results = System.Text.Json.JsonSerializer.Deserialize<List<AzureActiveDirectoryUser>>(json);
+            var results = await _franchiseUserService.GetFranchiseUsers(_franchiseUsersReoccurrenceGroupId, _franchiseUsersReoccurrenceSyncDurationInHours);
 
             // todo: remove after development testing completes
             var filteredExtractUsers = FilterUsers(results);
@@ -100,9 +93,10 @@ namespace Azure_AD_Users_Extract.Services
             }
 
             var endTime = DateTime.UtcNow;
-            _logger.LogDebug($"Finished retrieval and processing of franchise users at {DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}.");
-            var userString =  (results.Count > 1) ? "user" : "users";
-            _logger.LogDebug($"Sent {results.Count} {userString} to the topic in {(endTime - startTime).TotalSeconds} seconds.");
+            var elapsed = endTime - startTime;
+            _logger.LogDebug($"Finished retrieval and processing of franchise users at {endTime.ToString(CultureInfo.InvariantCulture)}.");
+            var userString =  results.Count > 1 ? "user" : "users";
+            _logger.LogDebug($"Sent {results.Count} {userString} to the topic in {elapsed.TotalSeconds} seconds.");
         }
 
         // todo: remove after development testing completes
@@ -112,25 +106,6 @@ namespace Azure_AD_Users_Extract.Services
             //var franchiseUserJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
             //var limitedJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
             return franchiseUsers;
-        }
-
-        private async Task<HttpResponseMessage> SendAsync(string url)
-        {
-            var client = _httpClientFactory.CreateClient("ExtractHttpClient");
-
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-            var responseMessage = await client.SendAsync(requestMessage);
-            if (!responseMessage.IsSuccessStatusCode)
-            {
-                throw new UnexpectedStatusCodeException(responseMessage);
-            }
-
-            if (responseMessage.Content == null)
-            {
-                throw new UnexpectedDataException(nameof(responseMessage.Content));
-            }
-
-            return responseMessage;
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
