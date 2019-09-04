@@ -36,9 +36,15 @@ namespace Azure_AD_Users_Extract.Controllers
         [HttpGet("filteredFranchise")]
         public async Task<IActionResult> FranchiseFilteredUsers([FromQuery]string groupId, string officeLocation, [FromQuery]int syncDurationInHours = 0)
         {
-            var users = await _franchiseUserService.GetFranchiseUsers(groupId, syncDurationInHours);
-            var filteredUsers = users.Where(user => user.FranchiseNumber.Equals(officeLocation)).ToList();
-            return Ok(filteredUsers);
+            var sanitizedOfficeLocation = officeLocation?.Trim();
+            if (string.IsNullOrWhiteSpace(sanitizedOfficeLocation))
+            {
+                var users = await _franchiseUserService.GetFranchiseUsers(groupId, syncDurationInHours);
+                var filteredUsers = users.Where(user => user.FranchiseNumber.Equals(officeLocation)).ToList();
+                return Ok(filteredUsers);
+            }
+
+            return BadRequest();
         }
     }
 }
