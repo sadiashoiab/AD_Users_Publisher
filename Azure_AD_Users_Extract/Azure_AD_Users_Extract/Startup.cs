@@ -58,10 +58,10 @@ namespace Azure_AD_Users_Extract
             services.AddApplicationInsightsTelemetry(appInsightServiceOptions);
 
             services.AddSingleton<IAzureKeyVaultService, AzureKeyVaultService>();
-
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IGraphApiService, GraphApiService>();
+            services.AddSingleton<ITokenService, TokenService>();
+            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IGraphApiService, GraphApiService>();
+            services.AddSingleton<IFranchiseUserService, FranchiseUserService>();
 
             services.AddHostedService<TopicClientHostedService>();
         }
