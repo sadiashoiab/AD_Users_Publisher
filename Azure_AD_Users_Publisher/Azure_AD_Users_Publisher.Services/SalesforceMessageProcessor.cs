@@ -32,6 +32,21 @@ namespace Azure_AD_Users_Publisher.Services
             var messageBody = Encoding.UTF8.GetString(message.Body);
             var user = System.Text.Json.JsonSerializer.Deserialize<AzureActiveDirectoryUser>(messageBody);
 
+            if (user.DeactivationDateTimeOffset.HasValue)
+            {
+                await _salesforceUserPublishService.DeactivateUser(user);
+            }
+            else
+            {
+                await ProcessActiveUser(user);
+            }
+
+
+            await receiver.CompleteAsync(GetLockToken(message));
+        }
+
+        private async Task ProcessActiveUser(AzureActiveDirectoryUser user)
+        {
             var syncUser = await ShouldUserBeSyncedToSalesforce(user);
             if (syncUser)
             {
@@ -44,11 +59,10 @@ namespace Azure_AD_Users_Publisher.Services
 
                 user.OperatingSystem = await operatingSystemTask;
                 user.TimeZone = await timeZoneTask;
+                user.State = "NE";
 
                 await _salesforceUserPublishService.Publish(user);
             }
-
-            await receiver.CompleteAsync(GetLockToken(message));
         }
 
         private string GetLockToken(Message message)

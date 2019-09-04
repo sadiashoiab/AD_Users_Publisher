@@ -56,7 +56,8 @@ namespace Azure_AD_Users_Extract.Services
                     State = graphUser.state,
                     PostalCode = graphUser.postalCode,
                     CountryCode = graphUser.country,
-                    IsOwner = graphUser.owner
+                    IsOwner = graphUser.owner,
+                    DeactivationDateTimeOffset = graphUser.onPremisesExtensionAttributes?.extensionAttribute8
                 })
                 .ToList();
         }

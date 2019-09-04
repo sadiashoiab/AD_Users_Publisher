@@ -89,15 +89,10 @@ namespace Azure_AD_Users_Extract.Services
             var json = await responseMessage.Content.ReadAsStringAsync();
             var results = System.Text.Json.JsonSerializer.Deserialize<List<AzureActiveDirectoryUser>>(json);
 
-            // todo: remove this after "limited" testing is complete
-            results = LimitUsersForTesting(results);
+            // todo: remove after development testing completes
+            var filteredExtractUsers = FilterActiveUsers(results);
 
-            foreach (var azureActiveDirectoryUser in results)
-            {
-                var userJson = System.Text.Json.JsonSerializer.Serialize(azureActiveDirectoryUser);
-                var message = new Message(Encoding.UTF8.GetBytes(userJson));
-                await _topicClient.SendAsync(message);
-            }
+            await ProcessExtractedUsers(filteredExtractUsers);
 
             var endTime = DateTime.UtcNow;
             _logger.LogDebug($"Finished retrieval and processing of franchise users at {DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}.");
@@ -105,11 +100,23 @@ namespace Azure_AD_Users_Extract.Services
             _logger.LogDebug($"Sent {results.Count} {userString} to the topic in {(endTime - startTime).TotalSeconds} seconds.");
         }
 
-        // todo: remove this after "limited" testing is complete
-        private List<AzureActiveDirectoryUser> LimitUsersForTesting(List<AzureActiveDirectoryUser> results)
+        private async Task ProcessExtractedUsers(List<AzureActiveDirectoryUser> activeUsers)
         {
-            var limitedUsers = results.Where(user => user.FranchiseNumber.EndsWith("100")).Take(10);
-            return limitedUsers.ToList();
+            foreach (var user in activeUsers)
+            {
+                var userJson = System.Text.Json.JsonSerializer.Serialize(user);
+                var message = new Message(Encoding.UTF8.GetBytes(userJson));
+                await _topicClient.SendAsync(message);
+            }
+        }
+
+        // todo: remove after development testing completes
+        private List<AzureActiveDirectoryUser> FilterActiveUsers(List<AzureActiveDirectoryUser> results)
+        {
+            var franchiseUsers = results.Where(user => user.FranchiseNumber.Contains("838")).ToList();
+            //var franchiseUserJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
+            //var limitedJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
+            return franchiseUsers;
         }
 
         private async Task<HttpResponseMessage> SendAsync(string url)

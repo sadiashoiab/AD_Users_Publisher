@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Azure_AD_Users_Shared.Models
 {
@@ -20,5 +21,6 @@ namespace Azure_AD_Users_Shared.Models
         public string CountryCode { get; set; }
         public string TimeZone { get; set; }
         public bool IsOwner { get; set; }
+        public DateTimeOffset? DeactivationDateTimeOffset { get; set; }
     }
 }
