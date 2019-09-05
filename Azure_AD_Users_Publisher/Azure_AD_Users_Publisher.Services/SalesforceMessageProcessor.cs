@@ -63,9 +63,6 @@ namespace Azure_AD_Users_Publisher.Services
                 user.OperatingSystem = await operatingSystemTask;
                 user.TimeZone = await timeZoneTask;
 
-                // todo: remove this after salesforce endpoint has been modified to accept the State coming from Azure AD
-                user.State = "NE";
-
                 var salesforceUser = new SalesforceUser
                 {
                     FirstName = user.FirstName,
