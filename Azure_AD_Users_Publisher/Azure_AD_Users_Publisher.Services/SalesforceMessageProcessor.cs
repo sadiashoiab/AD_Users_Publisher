@@ -58,11 +58,6 @@ namespace Azure_AD_Users_Publisher.Services
                 var operatingSystemTask = GetUserOperatingSystem(user);
                 var timeZoneTask = _timeZoneService.RetrieveTimeZone(user);
 
-                await Task.WhenAll(operatingSystemTask, timeZoneTask);
-
-                user.OperatingSystem = await operatingSystemTask;
-                user.TimeZone = await timeZoneTask;
-
                 var salesforceUser = new SalesforceUser
                 {
                     FirstName = user.FirstName,
@@ -79,6 +74,11 @@ namespace Azure_AD_Users_Publisher.Services
                     CountryCode = user.CountryCode,
                     IsOwner = user.IsOwner
                 };
+
+                await Task.WhenAll(operatingSystemTask, timeZoneTask);
+
+                salesforceUser.OperatingSystem = await operatingSystemTask;
+                salesforceUser.TimeZone = await timeZoneTask;
 
                 // todo: remove once we have approval we can start hitting the service automatically
                 //await _salesforceUserPublishService.Publish(salesforceUser);
