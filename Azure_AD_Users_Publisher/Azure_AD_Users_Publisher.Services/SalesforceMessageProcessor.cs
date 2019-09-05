@@ -45,14 +45,14 @@ namespace Azure_AD_Users_Publisher.Services
 
         private async Task ProcessSalesforceUser(AzureActiveDirectoryUser user)
         {
-            if (user.DeactivationDateTimeOffset.HasValue)
-            {
-                _logger.LogInformation($"User with ID: {user.ExternalId} will be Deactivated.");
-                // todo: remove once we have approval we can start hitting the service automatically
-                //await _salesforceUserPublishService.DeactivateUser(user);
-            }
-            else
-            {
+            // todo: remove once we have approval we can start hitting the service automatically
+            //if (user.DeactivationDateTimeOffset.HasValue)
+            //{
+            //    _logger.LogInformation($"User with ID: {user.ExternalId} will be Deactivated.");
+            //    //await _salesforceUserPublishService.DeactivateUser(user);
+            //}
+            //else
+            //{
                 _logger.LogInformation($"User with ID: {user.ExternalId} will be Published.");
 
                 var operatingSystemTask = GetUserOperatingSystem(user);
@@ -80,9 +80,8 @@ namespace Azure_AD_Users_Publisher.Services
                 salesforceUser.OperatingSystem = await operatingSystemTask;
                 salesforceUser.TimeZone = await timeZoneTask;
 
-                // todo: remove once we have approval we can start hitting the service automatically
-                //await _salesforceUserPublishService.Publish(salesforceUser);
-            }
+                await _salesforceUserPublishService.Publish(salesforceUser);
+            //}
         }
 
         private string GetLockToken(Message message)
