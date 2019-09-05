@@ -98,15 +98,15 @@ namespace Azure_AD_Users_Extract.Services
             var elapsed = endTime - startTime;
             _logger.LogDebug($"Finished retrieval and processing of franchise users at {endTime.ToString(CultureInfo.InvariantCulture)}.");
             var userString =  results.Count > 1 ? "user" : "users";
-            _logger.LogDebug($"Sent {results.Count} {userString} to the topic in {elapsed.TotalSeconds} seconds.");
+            _logger.LogDebug($"Sent {results.Count} {userString} to the topic: {_topicName} in {elapsed.TotalSeconds} seconds.");
         }
 
         // todo: remove after development testing completes
         private List<AzureActiveDirectoryUser> FilterUsers(List<AzureActiveDirectoryUser> results)
         {
             var franchiseUsers = results.Where(user => user.FranchiseNumber != null && user.FranchiseNumber.Contains("838")).ToList();
-            //var franchiseUserJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
-            //var limitedJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
+            var franchiseUsersJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
+            _logger.LogDebug($"Filtered {results.Count} users down to {franchiseUsers.Count} FranchiseNumber 838 Users{Environment.NewLine}{Environment.NewLine}{franchiseUsersJson}");
             return franchiseUsers;
         }
 
