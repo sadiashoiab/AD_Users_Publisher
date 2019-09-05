@@ -84,7 +84,7 @@ namespace Azure_AD_Users_Publisher.Services
                 };
 
                 // todo: remove once we have approval we can start hitting the service automatically
-                await _salesforceUserPublishService.Publish(salesforceUser);
+                //await _salesforceUserPublishService.Publish(salesforceUser);
             }
         }
 
