@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Azure_AD_Users_Publisher.Services.Models;
 using Azure_AD_Users_Shared.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -33,7 +34,7 @@ namespace Azure_AD_Users_Publisher.Services
             return client;
         }
 
-        public async Task Publish(AzureActiveDirectoryUser user)
+        public async Task Publish(SalesforceUser user)
         {
             var client = await GetHttpClient();
 
@@ -66,11 +67,6 @@ namespace Azure_AD_Users_Publisher.Services
 
             var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"{_publishUrl}{user.ExternalId}");
             requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
-
-            //var json = System.Text.Json.JsonSerializer.Serialize(user);
-            //var content = new StringContent(json);
-            //content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            //requestMessage.Content = content;
 
             var responseMessage = await client.SendAsync(requestMessage);
             if (!responseMessage.IsSuccessStatusCode)

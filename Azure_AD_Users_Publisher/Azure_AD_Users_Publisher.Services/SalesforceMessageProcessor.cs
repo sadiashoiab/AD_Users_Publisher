@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure_AD_Users_Publisher.Services.Models;
 using Azure_AD_Users_Shared.Models;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Logging;
@@ -65,8 +66,25 @@ namespace Azure_AD_Users_Publisher.Services
                 // todo: remove this after salesforce endpoint has been modified to accept the State coming from Azure AD
                 user.State = "NE";
 
+                var salesforceUser = new SalesforceUser
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    FranchiseNumber = user.FranchiseNumber,
+                    ExternalId = user.ExternalId,
+                    FederationId = user.FederationId,
+                    MobilePhone = user.MobilePhone,
+                    Address = user.Address,
+                    City = user.City,
+                    State = user.State,
+                    PostalCode = user.PostalCode,
+                    CountryCode = user.CountryCode,
+                    IsOwner = user.IsOwner
+                };
+
                 // todo: remove once we have approval we can start hitting the service automatically
-                //await _salesforceUserPublishService.Publish(user);
+                await _salesforceUserPublishService.Publish(salesforceUser);
             }
         }
 
