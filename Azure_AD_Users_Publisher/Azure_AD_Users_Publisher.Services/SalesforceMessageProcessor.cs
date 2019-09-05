@@ -49,7 +49,7 @@ namespace Azure_AD_Users_Publisher.Services
             //if (user.DeactivationDateTimeOffset.HasValue)
             //{
             //    _logger.LogInformation($"User with ID: {user.ExternalId} will be Deactivated.");
-            //    //await _salesforceUserPublishService.DeactivateUser(user);
+            //    await _salesforceUserPublishService.DeactivateUser(user);
             //}
             //else
             //{

@@ -49,7 +49,7 @@ namespace Azure_AD_Users_Publisher.Services
             });
 
             var processors = Environment.ProcessorCount;
-            _logger.LogDebug($"Number of logical processors: {processors}, using {processors} as the number of MaxConcurrentCalls for processing messages.");
+            _logger.LogDebug($"Number of logical processors: {processors}, using {processors + 1} as the number of MaxConcurrentCalls for processing messages.");
 
             // Configure the message handler options in terms of exception handling, number of concurrent messages to deliver, etc.
             var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
@@ -57,7 +57,7 @@ namespace Azure_AD_Users_Publisher.Services
                 // Maximum number of concurrent calls to the callback ProcessMessagesAsync(), set to 1 for simplicity.
                 // Set it according to how many messages the application wants to process in parallel.
                 //MaxConcurrentCalls = 1,
-                MaxConcurrentCalls = processors,
+                MaxConcurrentCalls = processors + 1,
 
                 // Indicates whether the message pump should automatically complete the messages after returning from user callback.
                 // False below indicates the complete operation is handled by the user callback as in ProcessMessagesAsync().

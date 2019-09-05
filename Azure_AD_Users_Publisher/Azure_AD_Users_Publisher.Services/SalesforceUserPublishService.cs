@@ -52,7 +52,7 @@ namespace Azure_AD_Users_Publisher.Services
                 try
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                    _logger.LogError($"Publishing User to Salesforce Response Content: {responseContent}, for User: {json}");
+                    _logger.LogError($"Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User: {json}");
                 }
                 catch (Exception ex)
                 {
