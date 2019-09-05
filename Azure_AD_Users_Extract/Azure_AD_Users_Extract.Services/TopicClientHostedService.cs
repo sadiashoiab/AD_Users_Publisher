@@ -106,7 +106,7 @@ namespace Azure_AD_Users_Extract.Services
         {
             var franchiseUsers = results.Where(user => user.FranchiseNumber != null && user.FranchiseNumber.Contains("838")).ToList();
             var franchiseUsersJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
-            _logger.LogDebug($"Filtered {results.Count} users down to {franchiseUsers.Count} FranchiseNumber 838 Users{Environment.NewLine}{Environment.NewLine}{franchiseUsersJson}");
+            _logger.LogDebug($"Filtered {results.Count} Users down to {franchiseUsers.Count} FranchiseNumber 838 Users{Environment.NewLine}{Environment.NewLine}{franchiseUsersJson}");
             return franchiseUsers;
         }
 
