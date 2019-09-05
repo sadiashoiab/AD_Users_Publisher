@@ -32,7 +32,6 @@ namespace Azure_AD_Users_Publisher
                     builder.AddFilter<ApplicationInsightsLoggerProvider>("", LogLevel.Trace);
                     builder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Information);
                     builder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                    builder.AddConsole();
                     builder.AddDebug();
                 });
     }
