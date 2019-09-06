@@ -5,7 +5,7 @@ namespace Azure_AD_Users_Publisher.Services
 {
     public interface IGoogleApiService
     {
-        Task<GoogleApiLocation> GeoCode(string streetAddress, string city, string state, string postalCode);
-        Task<GoogleApiTimeZone> TimeZone(GoogleApiLocation location);
+        Task<GoogleApiGeoCodeResult> GeoCode(string streetAddress, string city, string state, string postalCode);
+        Task<GoogleApiTimeZoneResult> TimeZone(GoogleApiLocation location);
     }
 }

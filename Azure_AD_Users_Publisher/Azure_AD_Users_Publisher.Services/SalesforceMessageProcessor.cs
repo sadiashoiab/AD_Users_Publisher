@@ -40,7 +40,9 @@ namespace Azure_AD_Users_Publisher.Services
                 _logger.LogInformation($"User with ID: {user.ExternalId} will be Published.");
 
                 var operatingSystemTask = GetUserOperatingSystem(user);
-                var timeZoneTask = _timeZoneService.RetrieveTimeZone(user);
+                var timeZoneTask = _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
+
+                await Task.WhenAll(operatingSystemTask, timeZoneTask);
 
                 var salesforceUser = new SalesforceUser
                 {
@@ -56,13 +58,10 @@ namespace Azure_AD_Users_Publisher.Services
                     State = user.State,
                     PostalCode = user.PostalCode,
                     CountryCode = user.CountryCode,
-                    IsOwner = user.IsOwner
+                    IsOwner = user.IsOwner,
+                    OperatingSystem = await operatingSystemTask,
+                    TimeZone = await timeZoneTask
                 };
-
-                await Task.WhenAll(operatingSystemTask, timeZoneTask);
-
-                salesforceUser.OperatingSystem = await operatingSystemTask;
-                salesforceUser.TimeZone = await timeZoneTask;
 
                 await _salesforceUserPublishService.Publish(salesforceUser);
                 //}

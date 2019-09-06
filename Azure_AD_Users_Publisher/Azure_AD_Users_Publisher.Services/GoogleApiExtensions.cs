@@ -4,7 +4,7 @@ using Azure_AD_Users_Publisher.Services.Models;
 
 namespace Azure_AD_Users_Publisher.Services
 {
-    public static class GoogleApiTimeZoneExtensions
+    public static class GoogleApiExtensions
     {
         private struct SalesforceSupportedTimeZone
         {
@@ -123,9 +123,9 @@ namespace Azure_AD_Users_Publisher.Services
             new SalesforceSupportedTimeZone(-39600, "Samoa Standard Time", "Pacific/Pago_Pago")
         };
 
-        public static string ToSalesforceTimeZone(this GoogleApiTimeZone googleTimeZone)
+        public static string ToSalesforceTimeZone(this GoogleApiTimeZoneResult googleTimeZoneResult)
         {
-            var timeZoneOffset = googleTimeZone.rawOffset + googleTimeZone.dstOffset;
+            var timeZoneOffset = googleTimeZoneResult.rawOffset + googleTimeZoneResult.dstOffset;
             var matches = _salesforceSupportedTimeZones.Where(timeZone => timeZone.TimeZoneOffset == timeZoneOffset).ToList();
 
             if (matches.Count == 1)
@@ -135,7 +135,7 @@ namespace Azure_AD_Users_Publisher.Services
 
             if (matches.Any())
             {
-                var timeZoneNameMatches = matches.Where(match => match.TimeZoneName.Equals(googleTimeZone.timeZoneName)).ToList();
+                var timeZoneNameMatches = matches.Where(match => match.TimeZoneName.Equals(googleTimeZoneResult.timeZoneName)).ToList();
 
                 if (timeZoneNameMatches.Any())
                 {
@@ -144,6 +144,12 @@ namespace Azure_AD_Users_Publisher.Services
             }
 
             return string.Empty;
+        }
+
+        public static string ToCountryCode(this GoogleApiGeoCodeResult googleApiGeoCodeResult)
+        {
+            var countryCode = googleApiGeoCodeResult?.address_components?.FirstOrDefault(component => component.types.Contains("country"))?.short_name;
+            return countryCode;
         }
     }
 }

@@ -5,6 +5,6 @@ namespace Azure_AD_Users_Publisher.Services
 {
     public interface ITimeZoneService
     {
-        Task<string> RetrieveTimeZone(AzureActiveDirectoryUser user);
+        Task<string> RetrieveTimeZoneAndPopulateUsersCountryCode(AzureActiveDirectoryUser user);
     }
 }

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services;
 using Azure_AD_Users_Shared.Models;
-using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -52,7 +49,7 @@ namespace Azure_AD_Users_Publisher.Tests
                 .Verifiable();
 
             var timeZone = "Americas/NewYork";
-            timeZoneServiceMock.Setup(mock => mock.RetrieveTimeZone(It.IsAny<AzureActiveDirectoryUser>()))
+            timeZoneServiceMock.Setup(mock => mock.RetrieveTimeZoneAndPopulateUsersCountryCode(It.IsAny<AzureActiveDirectoryUser>()))
                 .ReturnsAsync(timeZone)
                 .Verifiable();
 
@@ -117,7 +114,7 @@ namespace Azure_AD_Users_Publisher.Tests
                 .Verifiable();
 
             var timeZone = "Americas/NewYork";
-            timeZoneServiceMock.Setup(mock => mock.RetrieveTimeZone(It.IsAny<AzureActiveDirectoryUser>()))
+            timeZoneServiceMock.Setup(mock => mock.RetrieveTimeZoneAndPopulateUsersCountryCode(It.IsAny<AzureActiveDirectoryUser>()))
                 .ReturnsAsync(timeZone)
                 .Verifiable();
 
