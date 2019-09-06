@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Azure_AD_Users_Shared.Models;
 using Microsoft.Extensions.Caching.Memory;
@@ -27,22 +28,28 @@ namespace Azure_AD_Users_Publisher.Services
         public async Task<string> RetrieveTimeZoneAndPopulateUsersCountryCode(AzureActiveDirectoryUser user)
         {
             var cacheKey = $"{_cacheKeyPrefix}{user.FranchiseNumber}";
-            if (!_memoryCache.TryGetValue(cacheKey, out string timeZone))
+            if (!_memoryCache.TryGetValue(cacheKey, out CacheTimeZoneCountry timeZoneCountry))
             {
-                timeZone = await GetSalesforceSupportedTimeZoneAndPopulateUsersCountryCodeIfAvailable(user);
+                timeZoneCountry = new CacheTimeZoneCountry();
+                timeZoneCountry.TimeZone = await GetSalesforceSupportedTimeZoneAndPopulateUsersCountryCodeIfAvailable(user);
+                timeZoneCountry.Country = user.CountryCode;
 
-                if (!string.IsNullOrWhiteSpace(timeZone))
+                if (!string.IsNullOrWhiteSpace(timeZoneCountry.TimeZone))
                 {
                     var cacheOptions = new MemoryCacheEntryOptions
                     {
                         AbsoluteExpiration = DateTimeOffset.UtcNow.AddHours(_franchiseTimeZoneCacheDurationInHours),
                     };
 
-                    _memoryCache.Set(cacheKey, timeZone, cacheOptions);
+                    _memoryCache.Set(cacheKey, timeZoneCountry, cacheOptions);
                 }
             }
+            else
+            {
+                user.CountryCode = timeZoneCountry.Country;
+            }
 
-            return timeZone;
+            return timeZoneCountry.TimeZone;
         }
 
         private async Task<string> GetSalesforceSupportedTimeZoneAndPopulateUsersCountryCodeIfAvailable(AzureActiveDirectoryUser user)
@@ -62,6 +69,13 @@ namespace Azure_AD_Users_Publisher.Services
             }
 
             return timeZone;
+        }
+
+        [ExcludeFromCodeCoverage]
+        public class CacheTimeZoneCountry
+        {
+            public string TimeZone { get; set; }
+            public string Country { get; set; }
         }
     }
 }

@@ -102,13 +102,13 @@ namespace Azure_AD_Users_Extract.Services
         }
 
         // todo: remove after development testing completes
-        private List<AzureActiveDirectoryUser> FilterUsers(List<AzureActiveDirectoryUser> results)
-        {
-            var franchiseUsers = results.Where(user => user.FranchiseNumber != null && user.FranchiseNumber.Contains("407")).ToList();
-            var franchiseUsersJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
-            _logger.LogDebug($"Filtered {results.Count} Users down to {franchiseUsers.Count} FranchiseNumber 407 Users{Environment.NewLine}{Environment.NewLine}{franchiseUsersJson}");
-            return franchiseUsers;
-        }
+        //private List<AzureActiveDirectoryUser> FilterUsers(List<AzureActiveDirectoryUser> results)
+        //{
+        //    var franchiseUsers = results.Where(user => user.FranchiseNumber != null && user.FranchiseNumber.Contains("3009")).ToList();
+        //    var franchiseUsersJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
+        //    _logger.LogDebug($"Filtered {results.Count} Users down to {franchiseUsers.Count} FranchiseNumber 407 Users{Environment.NewLine}{Environment.NewLine}{franchiseUsersJson}");
+        //    return franchiseUsers;
+        //}
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {

@@ -1,7 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services;
 using Azure_AD_Users_Shared.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Azure_AD_Users_Publisher.Controllers
@@ -24,31 +27,55 @@ namespace Azure_AD_Users_Publisher.Controllers
             _timeZoneService = timeZoneService;
         }
 
-        [HttpGet("currentSalesforceFranchises")]
+        [ProducesResponseType(typeof(FranchiseResults), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Produces("application/json")]
+        [HttpGet("currentProgramDataFranchises")]
         public async Task<IActionResult> Get()
         {
             var token = await _tokenService.RetrieveToken();
-            var salesforceFranchisesTask = _programDataService.RetrieveFranchises(ProgramDataSources.Salesforce, token);
-            var clearCareFranchisesTask = _programDataService.RetrieveFranchises(ProgramDataSources.ClearCare, token);
+            var salesforceFranchisesTask = _programDataService.RetrieveFranchises(ProgramDataSources.Salesforce, token, false);
+            var clearCareFranchisesTask = _programDataService.RetrieveFranchises(ProgramDataSources.ClearCare, token, false);
             await Task.WhenAll(salesforceFranchisesTask, clearCareFranchisesTask);
 
-            var salesforceFranchises = await salesforceFranchisesTask;
-            var clearCareFranchises = await clearCareFranchisesTask;
+            var franchiseResults = new FranchiseResults
+            {
+                SalesforceFranchises = (await salesforceFranchisesTask).OrderBy(i => i).ToArray(),
+                ClearCareFranchises = (await clearCareFranchisesTask).OrderBy(i => i).ToArray()
+            };
 
-            var salesforce = $"[{string.Join(',', salesforceFranchises)}]";
-            var clearCare = $"[{string.Join(',', clearCareFranchises)}]";
-            var stringOutput = @"{""salesforceFranchises"":" + salesforce + @",""clearCareFranchises"":" + clearCare + "}";
-
-            return Ok(stringOutput);
+            return Ok(franchiseResults);
         }
 
-        [HttpGet("timeZone")]
-        public async Task<IActionResult> TimeZone()
+        [ProducesResponseType(typeof(AzureActiveDirectoryUser), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Produces("application/json")]
+        [HttpGet("populateUserCountryAndSalesforceSupportedTimeZone")]
+        public async Task<IActionResult> TimeZoneAndCountry([FromQuery] string franchiseNumber, [FromQuery] string address, [FromQuery] string city, [FromQuery] string state, [FromQuery] string postalCode)
         {
-            var userJson = "{\"FirstName\":\"Nikki\",\"LastName\":\"Sage\",\"Email\":\"nikki.sage@homeinstead.com\",\"FranchiseNumber\":\"3009\",\"OperatingSystem\":\"ClearCare\",\"ExternalId\":\"dc7287da-806a-4e8f-aea0-d2b1722c6b1a\",\"FederationId\":\"nikki.sage@homeinstead.com\",\"MobilePhone\":null,\"Address\":\"2009 Long Lake Rd, Suite 303\",\"City\":\"Sudbury\",\"State\":\"Ontario\",\"PostalCode\":\"P3E 6C3\",\"CountryCode\":null,\"TimeZone\":\"America/Toronto\",\"IsOwner\":false}";
-            var user = System.Text.Json.JsonSerializer.Deserialize<AzureActiveDirectoryUser>(userJson);
+            var user = new AzureActiveDirectoryUser
+            {
+                FranchiseNumber = franchiseNumber,
+                Address = address, 
+                City = city, 
+                State = state, 
+                PostalCode = postalCode
+            };
+
+            //var userJson = "{\"FirstName\":\"Nikki\",\"LastName\":\"Sage\",\"Email\":\"nikki.sage@homeinstead.com\",\"FranchiseNumber\":\"3009\",\"OperatingSystem\":\"ClearCare\",\"ExternalId\":\"dc7287da-806a-4e8f-aea0-d2b1722c6b1a\",\"FederationId\":\"nikki.sage@homeinstead.com\",\"MobilePhone\":null,\"Address\":\"2009 Long Lake Rd, Suite 303\",\"City\":\"Sudbury\",\"State\":\"Ontario\",\"PostalCode\":\"P3E 6C3\",\"CountryCode\":null,\"TimeZone\":\"America/Toronto\",\"IsOwner\":false}";
+            //var user = System.Text.Json.JsonSerializer.Deserialize<AzureActiveDirectoryUser>(userJson);
+
             var timeZone = await _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
-            return Ok(timeZone);
+            user.TimeZone = timeZone;
+            
+            return Ok(user);
+        }
+
+        [ExcludeFromCodeCoverage]
+        public class FranchiseResults
+        {
+            public int[] SalesforceFranchises { get; set; }
+            public int[] ClearCareFranchises { get; set; }
         }
     }
 }

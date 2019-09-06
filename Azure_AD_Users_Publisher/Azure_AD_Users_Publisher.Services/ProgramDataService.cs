@@ -34,7 +34,7 @@ namespace Azure_AD_Users_Publisher.Services
             return results;
         }
 
-        public async Task<int[]> RetrieveFranchises(ProgramDataSources source, string bearerToken)
+        public async Task<int[]> RetrieveFranchises(ProgramDataSources source, string bearerToken, bool cache = true)
         {
             if (!_memoryCache.TryGetValue($"{_cacheKeyPrefix}{source.GetDescription()}", out int[] results))
             {
@@ -45,7 +45,10 @@ namespace Azure_AD_Users_Publisher.Services
                     AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(_programDataCacheDurationInMinutes)
                 };
 
-                _memoryCache.Set($"{_cacheKeyPrefix}{source.GetDescription()}", results, cacheOptions);
+                if (cache)
+                {
+                    _memoryCache.Set($"{_cacheKeyPrefix}{source.GetDescription()}", results, cacheOptions);
+                }
             }
 
             return results;

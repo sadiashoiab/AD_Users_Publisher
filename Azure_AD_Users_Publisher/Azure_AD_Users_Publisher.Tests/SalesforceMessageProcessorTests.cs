@@ -41,10 +41,10 @@ namespace Azure_AD_Users_Publisher.Tests
             tokenServiceMock.Setup(mock => mock.RetrieveToken())
                 .ReturnsAsync(token)
                 .Verifiable();
-            programDataServiceMock.Setup(mock => mock.RetrieveFranchises(ProgramDataSources.Salesforce, token))
+            programDataServiceMock.Setup(mock => mock.RetrieveFranchises(ProgramDataSources.Salesforce, token, true))
                 .ReturnsAsync(salesforceFranchises)
                 .Verifiable();
-            programDataServiceMock.Setup(mock => mock.RetrieveFranchises(ProgramDataSources.ClearCare, token))
+            programDataServiceMock.Setup(mock => mock.RetrieveFranchises(ProgramDataSources.ClearCare, token, true))
                 .ReturnsAsync(clearCareFranchises)
                 .Verifiable();
 
@@ -106,10 +106,10 @@ namespace Azure_AD_Users_Publisher.Tests
             tokenServiceMock.Setup(mock => mock.RetrieveToken())
                 .ReturnsAsync(token)
                 .Verifiable();
-            programDataServiceMock.Setup(mock => mock.RetrieveFranchises(ProgramDataSources.Salesforce, token))
+            programDataServiceMock.Setup(mock => mock.RetrieveFranchises(ProgramDataSources.Salesforce, token, true))
                 .ReturnsAsync(salesforceFranchises)
                 .Verifiable();
-            programDataServiceMock.Setup(mock => mock.RetrieveFranchises(ProgramDataSources.ClearCare, token))
+            programDataServiceMock.Setup(mock => mock.RetrieveFranchises(ProgramDataSources.ClearCare, token, true))
                 .ReturnsAsync(clearCareFranchises)
                 .Verifiable();
 
@@ -167,7 +167,7 @@ namespace Azure_AD_Users_Publisher.Tests
             tokenServiceMock.Setup(mock => mock.RetrieveToken())
                 .ReturnsAsync(token)
                 .Verifiable();
-            programDataServiceMock.Setup(mock => mock.RetrieveFranchises(ProgramDataSources.Salesforce, token))
+            programDataServiceMock.Setup(mock => mock.RetrieveFranchises(ProgramDataSources.Salesforce, token, true))
                 .ReturnsAsync(salesforceFranchises)
                 .Verifiable();
 
@@ -261,7 +261,7 @@ namespace Azure_AD_Users_Publisher.Tests
             tokenServiceMock.InSequence(sequence).Setup(mock => mock.RetrieveToken()).ReturnsAsync(() => token).Verifiable();
             tokenServiceMock.InSequence(sequence).Setup(mock => mock.RetrieveToken()).Throws<System.IO.IOException>().Verifiable();
 
-            programDataServiceMock.Setup(mock => mock.RetrieveFranchises(ProgramDataSources.Salesforce, token))
+            programDataServiceMock.Setup(mock => mock.RetrieveFranchises(ProgramDataSources.Salesforce, token, true))
                 .ReturnsAsync(salesforceFranchises)
                 .Verifiable();
 
