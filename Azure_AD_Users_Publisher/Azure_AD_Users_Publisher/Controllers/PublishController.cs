@@ -1,7 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services;
 using Azure_AD_Users_Shared.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Azure_AD_Users_Publisher.Controllers
@@ -24,6 +26,9 @@ namespace Azure_AD_Users_Publisher.Controllers
             _timeZoneService = timeZoneService;
         }
 
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Produces("application/json")]
         [HttpGet("currentSalesforceFranchises")]
         public async Task<IActionResult> Get()
         {
@@ -42,13 +47,38 @@ namespace Azure_AD_Users_Publisher.Controllers
             return Ok(stringOutput);
         }
 
+        [ProducesResponseType(typeof(TimeZoneCountryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Produces("application/json")]
         [HttpGet("timeZone")]
-        public async Task<IActionResult> TimeZone()
+        public async Task<IActionResult> TimeZoneAndCountry([FromQuery] string address, [FromQuery] string city, [FromQuery] string state, [FromQuery] string postalCode)
         {
-            var userJson = "{\"FirstName\":\"Nikki\",\"LastName\":\"Sage\",\"Email\":\"nikki.sage@homeinstead.com\",\"FranchiseNumber\":\"3009\",\"OperatingSystem\":\"ClearCare\",\"ExternalId\":\"dc7287da-806a-4e8f-aea0-d2b1722c6b1a\",\"FederationId\":\"nikki.sage@homeinstead.com\",\"MobilePhone\":null,\"Address\":\"2009 Long Lake Rd, Suite 303\",\"City\":\"Sudbury\",\"State\":\"Ontario\",\"PostalCode\":\"P3E 6C3\",\"CountryCode\":null,\"TimeZone\":\"America/Toronto\",\"IsOwner\":false}";
-            var user = System.Text.Json.JsonSerializer.Deserialize<AzureActiveDirectoryUser>(userJson);
+            var user = new AzureActiveDirectoryUser
+            {
+                Address = address, 
+                City = city, 
+                State = state, 
+                PostalCode = postalCode
+            };
+
+            //var userJson = "{\"FirstName\":\"Nikki\",\"LastName\":\"Sage\",\"Email\":\"nikki.sage@homeinstead.com\",\"FranchiseNumber\":\"3009\",\"OperatingSystem\":\"ClearCare\",\"ExternalId\":\"dc7287da-806a-4e8f-aea0-d2b1722c6b1a\",\"FederationId\":\"nikki.sage@homeinstead.com\",\"MobilePhone\":null,\"Address\":\"2009 Long Lake Rd, Suite 303\",\"City\":\"Sudbury\",\"State\":\"Ontario\",\"PostalCode\":\"P3E 6C3\",\"CountryCode\":null,\"TimeZone\":\"America/Toronto\",\"IsOwner\":false}";
+            //var user = System.Text.Json.JsonSerializer.Deserialize<AzureActiveDirectoryUser>(userJson);
+
             var timeZone = await _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
-            return Ok(timeZone);
+            var response = new TimeZoneCountryResponse
+            {
+                SalesforceSupporedTimeZone = timeZone,
+                User = user
+            };
+
+            return Ok(response);
+        }
+
+        [ExcludeFromCodeCoverage]
+        public class TimeZoneCountryResponse
+        {
+            public string SalesforceSupporedTimeZone { get; set; }
+            public AzureActiveDirectoryUser User { get; set; }
         }
     }
 }
