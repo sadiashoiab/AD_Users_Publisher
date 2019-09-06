@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services;
 using Azure_AD_Users_Shared.Models;
@@ -39,8 +40,8 @@ namespace Azure_AD_Users_Publisher.Controllers
 
             var franchiseResults = new FranchiseResults
             {
-                SalesforceFranchises = await salesforceFranchisesTask,
-                ClearCareFranchises = await clearCareFranchisesTask
+                SalesforceFranchises = (await salesforceFranchisesTask).OrderBy(i => i).ToArray(),
+                ClearCareFranchises = (await clearCareFranchisesTask).OrderBy(i => i).ToArray()
             };
 
             return Ok(franchiseResults);
