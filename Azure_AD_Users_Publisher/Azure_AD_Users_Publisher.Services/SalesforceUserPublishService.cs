@@ -54,7 +54,8 @@ namespace Azure_AD_Users_Publisher.Services
                 try
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                    _logger.LogError($"{correlationId}, Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User: {json}");
+                    var message = $"{correlationId}, Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User: {json}";
+                    _logger.LogError(message);
                 }
                 catch (Exception ex)
                 {
