@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Azure_AD_Users_Shared.Models;
 using Microsoft.Extensions.Caching.Memory;
@@ -25,7 +24,7 @@ namespace Azure_AD_Users_Publisher.Services
             _franchiseTimeZoneCacheDurationInHours = int.Parse(configuration["FranchiseTimeZoneCacheDurationInHours"]);
         }
 
-        public async Task<string> RetrieveTimeZone(AzureActiveDirectoryUser user)
+        public async Task<string> RetrieveTimeZoneAndPopulateUsersCountryCode(AzureActiveDirectoryUser user)
         {
             var cacheKey = $"{_cacheKeyPrefix}{user.FranchiseNumber}";
             if (!_memoryCache.TryGetValue(cacheKey, out string timeZone))
