@@ -34,13 +34,14 @@ namespace Azure_AD_Users_Extract.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Produces("application/json")]
         [HttpGet("filteredFranchise")]
-        public async Task<IActionResult> FranchiseFilteredUsers([FromQuery]string groupId, string officeLocation, [FromQuery]int syncDurationInHours = 0)
+        public async Task<IActionResult> FranchiseFilteredUsers([FromQuery] string groupId, [FromQuery] string officeLocation, [FromQuery] int syncDurationInHours = 0)
         {
             var sanitizedOfficeLocation = officeLocation?.Trim();
             if (!string.IsNullOrWhiteSpace(sanitizedOfficeLocation))
             {
                 var users = await _franchiseUserService.GetFranchiseUsers(groupId, syncDurationInHours);
-                var filteredUsers = users.Where(user => user.FranchiseNumber != null && user.FranchiseNumber.Equals(officeLocation)).ToList();
+                var filteredUsers = users.Where(user =>
+                    user.FranchiseNumber != null && user.FranchiseNumber.Equals(officeLocation)).ToList();
                 return Ok(filteredUsers);
             }
 

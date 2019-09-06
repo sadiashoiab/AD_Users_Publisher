@@ -70,7 +70,7 @@ namespace Azure_AD_Users_Publisher
             services.AddSingleton<ISalesforceUserPublishService, SalesforceUserPublishService>();
             services.AddSingleton<ITimeZoneService, TimeZoneService>();
 
-            //services.AddHostedService<SubscriptionClientHostedService>();
+            services.AddHostedService<SubscriptionClientHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
