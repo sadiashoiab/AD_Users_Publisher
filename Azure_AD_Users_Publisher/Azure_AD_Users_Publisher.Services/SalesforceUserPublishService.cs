@@ -47,7 +47,6 @@ namespace Azure_AD_Users_Publisher.Services
             requestMessage.Content = content;
 
             _logger.LogDebug($"Publishing User to Salesforce: {json}");
-
             var responseMessage = await client.SendAsync(requestMessage);
             if (!responseMessage.IsSuccessStatusCode)
             {
@@ -58,7 +57,7 @@ namespace Azure_AD_Users_Publisher.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Exception when Publishing User to Salesforce. StackTrace: {ex.StackTrace}");
+                    _logger.LogError(ex, $"Exception when Publishing User: {json} to Salesforce. StackTrace: {ex.StackTrace}");
                 }
             }
         }
