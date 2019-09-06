@@ -44,9 +44,10 @@ namespace Azure_AD_Users_Publisher.Services
             var content = new StringContent(json);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             requestMessage.Content = content;
+            
             var correlationId = Guid.NewGuid();
-
             _logger.LogDebug($"{correlationId}, Publishing User to Salesforce: {json}");
+
             var responseMessage = await client.SendAsync(requestMessage);
             if (!responseMessage.IsSuccessStatusCode)
             {
