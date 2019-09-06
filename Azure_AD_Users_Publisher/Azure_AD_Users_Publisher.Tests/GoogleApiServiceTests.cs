@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,8 +52,8 @@ namespace Azure_AD_Users_Publisher.Tests
             // ASSERT
             keyVaultServiceMock.Verify();
             httpClientFactoryMock.Verify();
-            Assert.AreEqual(41.1319017, result.lat);
-            Assert.AreEqual(-96.0573302, result.lng);
+            Assert.AreEqual(41.1319017, result.geometry.location.lat);
+            Assert.AreEqual(-96.0573302, result.geometry.location.lng);
         }
 
         [TestMethod]
@@ -147,7 +148,7 @@ namespace Azure_AD_Users_Publisher.Tests
             var keyVaultServiceMock = new Mock<IAzureKeyVaultService>();
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var timeZoneResult = "{\"dstOffset\":3600,\"rawOffset\":-18000,\"status\":\"OK\",\"timeZoneId\":\"America/New_York\",\"timeZoneName\":\"Eastern Daylight Time\"}";
-            var expected = System.Text.Json.JsonSerializer.Deserialize<GoogleApiTimeZone>(timeZoneResult);
+            var expected = System.Text.Json.JsonSerializer.Deserialize<GoogleApiTimeZoneResult>(timeZoneResult);
             var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) =>
                 {
                     var response = new HttpResponseMessage(HttpStatusCode.OK)

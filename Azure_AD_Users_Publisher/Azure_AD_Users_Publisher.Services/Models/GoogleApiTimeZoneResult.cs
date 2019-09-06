@@ -3,7 +3,7 @@
 namespace Azure_AD_Users_Publisher.Services.Models
 {
     [ExcludeFromCodeCoverage]
-    public class GoogleApiTimeZone
+    public class GoogleApiTimeZoneResult
     {
         //{
         //    "dstOffset" : 3600,

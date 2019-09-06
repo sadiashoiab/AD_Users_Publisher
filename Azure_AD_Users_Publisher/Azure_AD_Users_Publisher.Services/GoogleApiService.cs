@@ -64,7 +64,7 @@ namespace Azure_AD_Users_Publisher.Services
             return responseMessage;
         }
 
-        public async Task<GoogleApiLocation> GeoCode(string streetAddress, string city, string state, string postalCode)
+        public async Task<GoogleApiGeoCodeResult> GeoCode(string streetAddress, string city, string state, string postalCode)
         {
             var address = $"{streetAddress}, {city}, {state}";
             var encodedAddress = _urlEncoder.Encode(address);
@@ -80,17 +80,17 @@ namespace Azure_AD_Users_Publisher.Services
                 throw new UnexpectedDataException("No results for query", innerException);
             }
 
-            return geoCodeResults.results.FirstOrDefault()?.geometry.location;
+            return geoCodeResults.results.FirstOrDefault();
         }
 
-        public async Task<GoogleApiTimeZone> TimeZone(GoogleApiLocation location)
+        public async Task<GoogleApiTimeZoneResult> TimeZone(GoogleApiLocation location)
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var query = $"location={location.lat.ToString(CultureInfo.InvariantCulture)},{location.lng.ToString(CultureInfo.InvariantCulture)}&timestamp={timestamp}";
             var url = await BuildApiUrl(GoogleApiEndpointEnum.TimeZone, query);
             var responseMessage = await SendAsync(url);
             var json = await responseMessage.Content.ReadAsStringAsync();
-            var timeZoneResult = System.Text.Json.JsonSerializer.Deserialize<GoogleApiTimeZone>(json);
+            var timeZoneResult = System.Text.Json.JsonSerializer.Deserialize<GoogleApiTimeZoneResult>(json);
             return timeZoneResult;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Azure_AD_Users_Shared.Models;
 using Microsoft.Extensions.Caching.Memory;
@@ -29,8 +30,14 @@ namespace Azure_AD_Users_Publisher.Services
             var cacheKey = $"{_cacheKeyPrefix}{user.FranchiseNumber}";
             if (!_memoryCache.TryGetValue(cacheKey, out string timeZone))
             {
-                var googleLocation = await _googleApiService.GeoCode(user.Address, user.City, user.State, user.PostalCode);
-                var result = await _googleApiService.TimeZone(googleLocation);
+                var geoCodeResult = await _googleApiService.GeoCode(user.Address, user.City, user.State, user.PostalCode);
+
+                if (string.IsNullOrWhiteSpace(user.CountryCode))
+                {
+                    user.CountryCode = geoCodeResult.ToCountryCode();
+                }
+
+                var result = await _googleApiService.TimeZone(geoCodeResult.geometry?.location);
                 timeZone = result.ToSalesforceTimeZone();
 
                 if (!string.IsNullOrWhiteSpace(timeZone))
