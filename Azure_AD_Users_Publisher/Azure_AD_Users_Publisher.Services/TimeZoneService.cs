@@ -29,15 +29,7 @@ namespace Azure_AD_Users_Publisher.Services
             var cacheKey = $"{_cacheKeyPrefix}{user.FranchiseNumber}";
             if (!_memoryCache.TryGetValue(cacheKey, out string timeZone))
             {
-                var geoCodeResult = await _googleApiService.GeoCode(user.Address, user.City, user.State, user.PostalCode);
-
-                if (string.IsNullOrWhiteSpace(user.CountryCode))
-                {
-                    user.CountryCode = geoCodeResult.ToCountryCode();
-                }
-
-                var result = await _googleApiService.TimeZone(geoCodeResult.geometry?.location);
-                timeZone = result.ToSalesforceTimeZone();
+                timeZone = await GetSalesforceSupportedTimeZoneAndPopulateUsersCountryCodeIfAvailable(user);
 
                 if (!string.IsNullOrWhiteSpace(timeZone))
                 {
@@ -48,10 +40,25 @@ namespace Azure_AD_Users_Publisher.Services
 
                     _memoryCache.Set(cacheKey, timeZone, cacheOptions);
                 }
-                else
-                {
-                    _logger.LogWarning($"No Salesforce Supported Time Zone was found for dstOffset: {result.dstOffset}, rawOffset: {result.rawOffset}, timeZoneName: {result.timeZoneName}");
-                }
+            }
+
+            return timeZone;
+        }
+
+        private async Task<string> GetSalesforceSupportedTimeZoneAndPopulateUsersCountryCodeIfAvailable(AzureActiveDirectoryUser user)
+        {
+            var geoCodeResult = await _googleApiService.GeoCode(user.Address, user.City, user.State, user.PostalCode);
+
+            if (string.IsNullOrWhiteSpace(user.CountryCode))
+            {
+                user.CountryCode = geoCodeResult.ToCountryCode();
+            }
+
+            var timeZoneResult = await _googleApiService.TimeZone(geoCodeResult.geometry?.location);
+            var timeZone = timeZoneResult.ToSalesforceTimeZone();
+            if (string.IsNullOrWhiteSpace(timeZone))
+            {
+                _logger.LogWarning($"No Salesforce Supported Time Zone was found for dstOffset: {timeZoneResult.dstOffset}, rawOffset: {timeZoneResult.rawOffset}, timeZoneName: {timeZoneResult.timeZoneName}");
             }
 
             return timeZone;
