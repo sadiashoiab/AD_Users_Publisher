@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure_AD_Users_Shared.Models;
 using Azure_AD_Users_Shared.Services;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
@@ -99,17 +100,21 @@ namespace Azure_AD_Users_Publisher.Services
         {
             try
             {
-                _logger.LogDebug($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{Encoding.UTF8.GetString(message.Body)}");
+                var messageBody = Encoding.UTF8.GetString(message.Body);
+                _logger.LogDebug($"Received message: SequenceNumber: {message.SystemProperties.SequenceNumber} Body: {messageBody}");
 
-                // note: right now we only have one way to process messages. however, we are expecting to have more soon. therefore, 
-                //       when we do we could register multiple IMessageProcessors and have the constructor take an enumeration
-                //       then filter use the appropriate processor for the appropriate message
-                await _messageProcessor.ProcessMessage(_subscriptionClient, message);
+                var user = System.Text.Json.JsonSerializer.Deserialize<AzureActiveDirectoryUser>(messageBody);
+                await _messageProcessor.ProcessUser(user);
+
+                if (!cancellationToken.IsCancellationRequested && !_subscriptionClient.IsClosedOrClosing && message.SystemProperties.IsLockTokenSet)
+                {
+                    await _subscriptionClient.CompleteAsync(message.SystemProperties.LockToken);
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Exception when processing message: {Encoding.UTF8.GetString(message.Body)}. StackTrace: {ex.StackTrace}");
-                if (!_subscriptionClient.IsClosedOrClosing)
+                if (!_subscriptionClient.IsClosedOrClosing && message.SystemProperties.IsLockTokenSet)
                 {
                     await _subscriptionClient.AbandonAsync(message.SystemProperties.LockToken);
                 }

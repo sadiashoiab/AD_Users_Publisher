@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
 using Azure_AD_Users_Shared.Models;
-using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Logging;
 
 namespace Azure_AD_Users_Publisher.Services
@@ -26,29 +24,19 @@ namespace Azure_AD_Users_Publisher.Services
             _salesforceUserPublishService = salesforceUserPublishService;
         }
 
-        public async Task ProcessMessage(ISubscriptionClient receiver, Message message)
+        public async Task ProcessUser(AzureActiveDirectoryUser user)
         {
-            var messageBody = Encoding.UTF8.GetString(message.Body);
-            var user = System.Text.Json.JsonSerializer.Deserialize<AzureActiveDirectoryUser>(messageBody);
             var syncUserToSalesforce = await ShouldUserBeSyncedToSalesforce(user);
             if (syncUserToSalesforce)
             {
-                await ProcessSalesforceUser(user);
-            }
-
-            await receiver.CompleteAsync(GetLockToken(message));
-        }
-
-        private async Task ProcessSalesforceUser(AzureActiveDirectoryUser user)
-        {
-            // todo: remove once we have approval we can start hitting the service automatically
-            //if (user.DeactivationDateTimeOffset.HasValue)
-            //{
-            //    _logger.LogInformation($"User with ID: {user.ExternalId} will be Deactivated.");
-            //    await _salesforceUserPublishService.DeactivateUser(user);
-            //}
-            //else
-            //{
+                // todo: remove once we have approval we can start hitting the service automatically
+                //if (user.DeactivationDateTimeOffset.HasValue)
+                //{
+                //    _logger.LogInformation($"User with ID: {user.ExternalId} will be Deactivated.");
+                //    await _salesforceUserPublishService.DeactivateUser(user);
+                //}
+                //else
+                //{
                 _logger.LogInformation($"User with ID: {user.ExternalId} will be Published.");
 
                 var operatingSystemTask = GetUserOperatingSystem(user);
@@ -77,12 +65,8 @@ namespace Azure_AD_Users_Publisher.Services
                 salesforceUser.TimeZone = await timeZoneTask;
 
                 await _salesforceUserPublishService.Publish(salesforceUser);
-            //}
-        }
-
-        private string GetLockToken(Message message)
-        {
-            return message.SystemProperties.IsLockTokenSet ? message.SystemProperties.LockToken : null;
+                //}
+            }
         }
 
         private async Task<string> GetUserOperatingSystem(AzureActiveDirectoryUser user)

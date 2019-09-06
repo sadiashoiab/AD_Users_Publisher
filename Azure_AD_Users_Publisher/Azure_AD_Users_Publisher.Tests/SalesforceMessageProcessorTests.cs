@@ -56,21 +56,14 @@ namespace Azure_AD_Users_Publisher.Tests
                 .ReturnsAsync(timeZone)
                 .Verifiable();
 
-            var subscriptionClientMock = new Mock<ISubscriptionClient>();
             var salesforceUser = new AzureActiveDirectoryUser
             {
                 Address = "11218 John Galt Blvd.",
                 FranchiseNumber = "100"
             };
-            var salesforceUserJson = System.Text.Json.JsonSerializer.Serialize(salesforceUser);
-            var message = new Message(Encoding.UTF8.GetBytes(salesforceUserJson));
-            var cancellationToken = new CancellationToken();
-
-            subscriptionClientMock.Setup(mock => mock.CompleteAsync(null))
-                .Returns(Task.CompletedTask).Verifiable();
 
             // ACT
-            await unitUnderTest.ProcessMessage(subscriptionClientMock.Object, message, cancellationToken);
+            await unitUnderTest.ProcessUser(salesforceUser);
 
             // ASSERT
             tokenServiceMock.Verify();
@@ -85,7 +78,6 @@ namespace Azure_AD_Users_Publisher.Tests
             timeZoneServiceMock.Verify();
             // todo: add verify back once allowed to call and invoke has been re-enabled
             //salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<AzureActiveDirectoryUser>()));
-            subscriptionClientMock.Verify();
         }
 
         [TestMethod]
@@ -129,21 +121,14 @@ namespace Azure_AD_Users_Publisher.Tests
                 .ReturnsAsync(timeZone)
                 .Verifiable();
 
-            var subscriptionClientMock = new Mock<ISubscriptionClient>();
             var salesforceUser = new AzureActiveDirectoryUser
             {
                 Address = "11218 John Galt Blvd.",
                 FranchiseNumber = "100"
             };
-            var salesforceUserJson = System.Text.Json.JsonSerializer.Serialize(salesforceUser);
-            var message = new Message(Encoding.UTF8.GetBytes(salesforceUserJson));
-            var cancellationToken = new CancellationToken();
-
-            subscriptionClientMock.Setup(mock => mock.CompleteAsync(null))
-                .Returns(Task.CompletedTask).Verifiable();
 
             // ACT
-            await unitUnderTest.ProcessMessage(subscriptionClientMock.Object, message, cancellationToken);
+            await unitUnderTest.ProcessUser(salesforceUser);
 
             // ASSERT
             tokenServiceMock.Verify();
@@ -158,10 +143,9 @@ namespace Azure_AD_Users_Publisher.Tests
             timeZoneServiceMock.Verify();
             // todo: add verify back once allowed to call and invoke has been re-enabled
             //salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<AzureActiveDirectoryUser>()));
-            subscriptionClientMock.Verify();
         }
 
-                        [TestMethod]
+        [TestMethod]
         public async Task ProcessMessage_SuccessAndDoNotSyncUser()
         {
             // ARRANGE
@@ -190,21 +174,14 @@ namespace Azure_AD_Users_Publisher.Tests
                 .ReturnsAsync(salesforceFranchises)
                 .Verifiable();
 
-            var subscriptionClientMock = new Mock<ISubscriptionClient>();
             var salesforceUser = new AzureActiveDirectoryUser
             {
                 Address = "11218 John Galt Blvd.",
                 FranchiseNumber = "100"
             };
-            var salesforceUserJson = System.Text.Json.JsonSerializer.Serialize(salesforceUser);
-            var message = new Message(Encoding.UTF8.GetBytes(salesforceUserJson));
-            var cancellationToken = new CancellationToken();
-
-            subscriptionClientMock.Setup(mock => mock.CompleteAsync(null))
-                .Returns(Task.CompletedTask).Verifiable();
 
             // ACT
-            await unitUnderTest.ProcessMessage(subscriptionClientMock.Object, message, cancellationToken);
+            await unitUnderTest.ProcessUser(salesforceUser);
 
             // ASSERT
             tokenServiceMock.Verify();
@@ -217,7 +194,6 @@ namespace Azure_AD_Users_Publisher.Tests
                     It.IsAny<Func<object, Exception, string>>()),
                 Times.Never);
             timeZoneServiceMock.Verify();
-            subscriptionClientMock.Verify();
         }
     }
 }
