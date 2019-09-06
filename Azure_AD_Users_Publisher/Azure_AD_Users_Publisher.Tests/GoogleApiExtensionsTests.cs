@@ -41,7 +41,7 @@ namespace Azure_AD_Users_Publisher.Tests
             var result = googleTimeZone.ToSalesforceTimeZone();
 
             // ASSERT
-            Assert.AreEqual("America/Indiana/Indianapolis", result);
+            Assert.AreEqual("America/New_York", result);
         }
 
         [TestMethod]
