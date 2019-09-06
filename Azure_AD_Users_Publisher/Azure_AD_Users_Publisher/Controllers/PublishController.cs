@@ -26,35 +26,35 @@ namespace Azure_AD_Users_Publisher.Controllers
             _timeZoneService = timeZoneService;
         }
 
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FranchiseResults), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Produces("application/json")]
-        [HttpGet("currentSalesforceFranchises")]
+        [HttpGet("currentProgramDataFranchises")]
         public async Task<IActionResult> Get()
         {
             var token = await _tokenService.RetrieveToken();
-            var salesforceFranchisesTask = _programDataService.RetrieveFranchises(ProgramDataSources.Salesforce, token);
-            var clearCareFranchisesTask = _programDataService.RetrieveFranchises(ProgramDataSources.ClearCare, token);
+            var salesforceFranchisesTask = _programDataService.RetrieveFranchises(ProgramDataSources.Salesforce, token, false);
+            var clearCareFranchisesTask = _programDataService.RetrieveFranchises(ProgramDataSources.ClearCare, token, false);
             await Task.WhenAll(salesforceFranchisesTask, clearCareFranchisesTask);
 
-            var salesforceFranchises = await salesforceFranchisesTask;
-            var clearCareFranchises = await clearCareFranchisesTask;
+            var franchiseResults = new FranchiseResults
+            {
+                SalesforceFranchises = await salesforceFranchisesTask,
+                ClearCareFranchises = await clearCareFranchisesTask
+            };
 
-            var salesforce = $"[{string.Join(',', salesforceFranchises)}]";
-            var clearCare = $"[{string.Join(',', clearCareFranchises)}]";
-            var stringOutput = @"{""salesforceFranchises"":" + salesforce + @",""clearCareFranchises"":" + clearCare + "}";
-
-            return Ok(stringOutput);
+            return Ok(franchiseResults);
         }
 
-        [ProducesResponseType(typeof(TimeZoneCountryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AzureActiveDirectoryUser), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Produces("application/json")]
-        [HttpGet("timeZone")]
-        public async Task<IActionResult> TimeZoneAndCountry([FromQuery] string address, [FromQuery] string city, [FromQuery] string state, [FromQuery] string postalCode)
+        [HttpGet("populateUserCountryAndSalesforceSupportedTimeZone")]
+        public async Task<IActionResult> TimeZoneAndCountry([FromQuery] string franchiseNumber, [FromQuery] string address, [FromQuery] string city, [FromQuery] string state, [FromQuery] string postalCode)
         {
             var user = new AzureActiveDirectoryUser
             {
+                FranchiseNumber = franchiseNumber,
                 Address = address, 
                 City = city, 
                 State = state, 
@@ -65,20 +65,16 @@ namespace Azure_AD_Users_Publisher.Controllers
             //var user = System.Text.Json.JsonSerializer.Deserialize<AzureActiveDirectoryUser>(userJson);
 
             var timeZone = await _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
-            var response = new TimeZoneCountryResponse
-            {
-                SalesforceSupporedTimeZone = timeZone,
-                User = user
-            };
-
-            return Ok(response);
+            user.TimeZone = timeZone;
+            
+            return Ok(user);
         }
 
         [ExcludeFromCodeCoverage]
-        public class TimeZoneCountryResponse
+        public class FranchiseResults
         {
-            public string SalesforceSupporedTimeZone { get; set; }
-            public AzureActiveDirectoryUser User { get; set; }
+            public int[] SalesforceFranchises { get; set; }
+            public int[] ClearCareFranchises { get; set; }
         }
     }
 }
