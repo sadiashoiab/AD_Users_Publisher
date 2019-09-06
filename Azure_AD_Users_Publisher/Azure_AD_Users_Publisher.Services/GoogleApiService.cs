@@ -83,15 +83,15 @@ namespace Azure_AD_Users_Publisher.Services
             return geoCodeResults.results.FirstOrDefault()?.geometry.location;
         }
 
-        public async Task<string> TimeZone(GoogleApiLocation location)
+        public async Task<GoogleApiTimeZone> TimeZone(GoogleApiLocation location)
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var query = $"location={location.lat.ToString(CultureInfo.InvariantCulture)},{location.lng.ToString(CultureInfo.InvariantCulture)}&timestamp={timestamp}";
             var url = await BuildApiUrl(GoogleApiEndpointEnum.TimeZone, query);
             var responseMessage = await SendAsync(url);
             var json = await responseMessage.Content.ReadAsStringAsync();
-            var timeZoneResult = System.Text.Json.JsonSerializer.Deserialize<GoogleApiTimeZoneResult>(json);
-            return timeZoneResult.timeZoneId;
+            var timeZoneResult = System.Text.Json.JsonSerializer.Deserialize<GoogleApiTimeZone>(json);
+            return timeZoneResult;
         }
     }
 }

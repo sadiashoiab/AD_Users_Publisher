@@ -3,7 +3,7 @@
 namespace Azure_AD_Users_Publisher.Services.Models
 {
     [ExcludeFromCodeCoverage]
-    public class GoogleApiTimeZoneResult
+    public class GoogleApiTimeZone
     {
         //{
         //    "dstOffset" : 3600,
@@ -12,6 +12,10 @@ namespace Azure_AD_Users_Publisher.Services.Models
         //    "timeZoneId" : "America/Toronto",
         //    "timeZoneName" : "Eastern Daylight Time"
         //}
+        public int dstOffset { get; set; }
+        public int rawOffset { get; set; }
+        public string status { get; set; }
         public string timeZoneId { get; set; }
+        public string timeZoneName { get; set; }
     }
 }

@@ -119,7 +119,6 @@ namespace Azure_AD_Users_Publisher.Services
         {
             try
             {
-
                 var bearerToken = await _tokenService.RetrieveToken();
                 var clearCareFranchises =  await _programDataService.RetrieveFranchises(ProgramDataSources.ClearCare, bearerToken);
                 return clearCareFranchises;

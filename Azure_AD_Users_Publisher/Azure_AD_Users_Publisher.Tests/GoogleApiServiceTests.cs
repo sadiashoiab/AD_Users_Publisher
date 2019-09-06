@@ -146,14 +146,13 @@ namespace Azure_AD_Users_Publisher.Tests
             // ARRANGE
             var keyVaultServiceMock = new Mock<IAzureKeyVaultService>();
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            var geoCodeResult =
-                "{\"dstOffset\":3600,\"rawOffset\":-18000,\"status\":\"OK\",\"timeZoneId\":\"America/New_York\",\"timeZoneName\":\"Eastern Daylight Time\"}";
-
+            var timeZoneResult = "{\"dstOffset\":3600,\"rawOffset\":-18000,\"status\":\"OK\",\"timeZoneId\":\"America/New_York\",\"timeZoneName\":\"Eastern Daylight Time\"}";
+            var expected = System.Text.Json.JsonSerializer.Deserialize<GoogleApiTimeZone>(timeZoneResult);
             var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) =>
                 {
                     var response = new HttpResponseMessage(HttpStatusCode.OK)
                     {
-                        Content = new StringContent(geoCodeResult, Encoding.UTF8)
+                        Content = new StringContent(timeZoneResult, Encoding.UTF8)
                     };
                     return Task.FromResult(response);
                 }
@@ -182,7 +181,10 @@ namespace Azure_AD_Users_Publisher.Tests
             // ASSERT
             keyVaultServiceMock.Verify();
             httpClientFactoryMock.Verify();
-            Assert.AreEqual("America/New_York", result);
+            Assert.AreEqual(expected.dstOffset, result.dstOffset);
+            Assert.AreEqual(expected.rawOffset, result.rawOffset);
+            Assert.AreEqual(expected.timeZoneName, result.timeZoneName);
+            Assert.AreEqual(expected.timeZoneId, result.timeZoneId);
         }
     }
 }
