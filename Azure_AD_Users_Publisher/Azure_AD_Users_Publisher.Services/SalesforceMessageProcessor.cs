@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
 using Azure_AD_Users_Shared.Models;
@@ -27,13 +26,10 @@ namespace Azure_AD_Users_Publisher.Services
             _salesforceUserPublishService = salesforceUserPublishService;
         }
 
-        public async Task ProcessMessage(ISubscriptionClient receiver,
-            Message message,
-            CancellationToken cancellationToken)
+        public async Task ProcessMessage(ISubscriptionClient receiver, Message message)
         {
             var messageBody = Encoding.UTF8.GetString(message.Body);
             var user = System.Text.Json.JsonSerializer.Deserialize<AzureActiveDirectoryUser>(messageBody);
-
             var syncUserToSalesforce = await ShouldUserBeSyncedToSalesforce(user);
             if (syncUserToSalesforce)
             {

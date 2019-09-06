@@ -6,6 +6,6 @@ namespace Azure_AD_Users_Publisher.Services
 {
     public interface IMessageProcessor
     {
-        Task ProcessMessage(ISubscriptionClient receiver, Message message, CancellationToken cancellationToken);
+        Task ProcessMessage(ISubscriptionClient receiver, Message message);
     }
 }

@@ -71,7 +71,10 @@ namespace Azure_AD_Users_Publisher.Services
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogDebug($"{_nameToken} is stopping.");
-            await _subscriptionClient.CloseAsync();
+            if (!_subscriptionClient.IsClosedOrClosing)
+            {
+                await _subscriptionClient.CloseAsync();
+            }
         }
 
         private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
@@ -89,12 +92,23 @@ namespace Azure_AD_Users_Publisher.Services
 
         private async Task ProcessMessagesAsync(Message message, CancellationToken cancellationToken)
         {
-            _logger.LogDebug($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{Encoding.UTF8.GetString(message.Body)}");
+            try
+            {
+                _logger.LogDebug($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{Encoding.UTF8.GetString(message.Body)}");
 
-            // note: right now we only have one way to process messages. however, we are expecting to have more soon. therefore, 
-            //       when we do we could register multiple IMessageProcessors and have the constructor take an enumeration
-            //       then filter use the appropriate processor for the appropriate message
-            await _messageProcessor.ProcessMessage(_subscriptionClient, message, cancellationToken);
+                // note: right now we only have one way to process messages. however, we are expecting to have more soon. therefore, 
+                //       when we do we could register multiple IMessageProcessors and have the constructor take an enumeration
+                //       then filter use the appropriate processor for the appropriate message
+                await _messageProcessor.ProcessMessage(_subscriptionClient, message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Exception when processing message: {Encoding.UTF8.GetString(message.Body)}. StackTrace: {ex.StackTrace}");
+                if (!_subscriptionClient.IsClosedOrClosing)
+                {
+                    await _subscriptionClient.AbandonAsync(message.SystemProperties.LockToken);
+                }
+            }
         }
     }
 }
