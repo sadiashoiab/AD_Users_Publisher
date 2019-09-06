@@ -85,9 +85,9 @@ namespace Azure_AD_Users_Extract.Services
             var results = await _franchiseUserService.GetFranchiseUsers(_franchiseUsersReoccurrenceGroupId, _franchiseUsersReoccurrenceSyncDurationInHours);
 
             // todo: remove after development testing completes
-            var filteredExtractUsers = FilterUsers(results);
+            //var filteredExtractUsers = FilterUsers(results);
 
-            foreach (var user in filteredExtractUsers)
+            foreach (var user in results)
             {
                 var userJson = System.Text.Json.JsonSerializer.Serialize(user);
                 var message = new Message(Encoding.UTF8.GetBytes(userJson));
@@ -104,9 +104,9 @@ namespace Azure_AD_Users_Extract.Services
         // todo: remove after development testing completes
         private List<AzureActiveDirectoryUser> FilterUsers(List<AzureActiveDirectoryUser> results)
         {
-            var franchiseUsers = results.Where(user => user.FranchiseNumber != null && user.FranchiseNumber.Contains("838")).ToList();
+            var franchiseUsers = results.Where(user => user.FranchiseNumber != null && user.FranchiseNumber.Contains("407")).ToList();
             var franchiseUsersJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
-            _logger.LogDebug($"Filtered {results.Count} Users down to {franchiseUsers.Count} FranchiseNumber 838 Users{Environment.NewLine}{Environment.NewLine}{franchiseUsersJson}");
+            _logger.LogDebug($"Filtered {results.Count} Users down to {franchiseUsers.Count} FranchiseNumber 407 Users{Environment.NewLine}{Environment.NewLine}{franchiseUsersJson}");
             return franchiseUsers;
         }
 

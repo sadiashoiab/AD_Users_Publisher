@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure_AD_Users_Shared.Models;
 using Azure_AD_Users_Shared.Services;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
@@ -49,7 +50,7 @@ namespace Azure_AD_Users_Publisher.Services
             });
 
             var processors = Environment.ProcessorCount;
-            _logger.LogDebug($"Number of logical processors: {processors}, using {processors} as the number of MaxConcurrentCalls for processing messages.");
+            _logger.LogDebug($"Number of logical processors: {processors}, using {processors + 1} as the number of MaxConcurrentCalls for processing messages.");
 
             // Configure the message handler options in terms of exception handling, number of concurrent messages to deliver, etc.
             var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
@@ -57,7 +58,7 @@ namespace Azure_AD_Users_Publisher.Services
                 // Maximum number of concurrent calls to the callback ProcessMessagesAsync(), set to 1 for simplicity.
                 // Set it according to how many messages the application wants to process in parallel.
                 //MaxConcurrentCalls = 1,
-                MaxConcurrentCalls = processors,
+                MaxConcurrentCalls = processors + 1,
 
                 // Indicates whether the message pump should automatically complete the messages after returning from user callback.
                 // False below indicates the complete operation is handled by the user callback as in ProcessMessagesAsync().
@@ -65,13 +66,21 @@ namespace Azure_AD_Users_Publisher.Services
             };
 
             // Register the function that processes messages.
-            _subscriptionClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
+            _subscriptionClient.RegisterMessageHandler(
+                async (message, handlerCancellationToken) =>
+                {
+                    await ProcessMessagesAsync(message, handlerCancellationToken);
+                },
+                messageHandlerOptions);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogDebug($"{_nameToken} is stopping.");
-            await _subscriptionClient.CloseAsync();
+            if (!_subscriptionClient.IsClosedOrClosing)
+            {
+                await _subscriptionClient.CloseAsync();
+            }
         }
 
         private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
@@ -89,12 +98,27 @@ namespace Azure_AD_Users_Publisher.Services
 
         private async Task ProcessMessagesAsync(Message message, CancellationToken cancellationToken)
         {
-            _logger.LogDebug($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{Encoding.UTF8.GetString(message.Body)}");
+            try
+            {
+                var messageBody = Encoding.UTF8.GetString(message.Body);
+                _logger.LogDebug($"Received message: SequenceNumber: {message.SystemProperties.SequenceNumber} Body: {messageBody}");
 
-            // note: right now we only have one way to process messages. however, we are expecting to have more soon. therefore, 
-            //       when we do we could register multiple IMessageProcessors and have the constructor take an enumeration
-            //       then filter use the appropriate processor for the appropriate message
-            await _messageProcessor.ProcessMessage(_subscriptionClient, message, cancellationToken);
+                var user = System.Text.Json.JsonSerializer.Deserialize<AzureActiveDirectoryUser>(messageBody);
+                await _messageProcessor.ProcessUser(user);
+
+                if (!cancellationToken.IsCancellationRequested && !_subscriptionClient.IsClosedOrClosing && message.SystemProperties.IsLockTokenSet)
+                {
+                    await _subscriptionClient.CompleteAsync(message.SystemProperties.LockToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Exception when processing message: {Encoding.UTF8.GetString(message.Body)}. StackTrace: {ex.StackTrace}");
+                if (!_subscriptionClient.IsClosedOrClosing && message.SystemProperties.IsLockTokenSet)
+                {
+                    await _subscriptionClient.AbandonAsync(message.SystemProperties.LockToken);
+                }
+            }
         }
     }
 }
