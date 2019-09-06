@@ -65,7 +65,12 @@ namespace Azure_AD_Users_Publisher.Services
             };
 
             // Register the function that processes messages.
-            _subscriptionClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
+            _subscriptionClient.RegisterMessageHandler(
+                async (message, handlerCancellationToken) =>
+                {
+                    await ProcessMessagesAsync(message, handlerCancellationToken);
+                },
+                messageHandlerOptions);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
