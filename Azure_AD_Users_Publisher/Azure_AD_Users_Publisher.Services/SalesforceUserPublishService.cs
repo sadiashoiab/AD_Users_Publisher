@@ -37,7 +37,6 @@ namespace Azure_AD_Users_Publisher.Services
         public async Task Publish(SalesforceUser user)
         {
             var client = await GetHttpClient();
-
             var requestMessage = new HttpRequestMessage(HttpMethod.Put, _publishUrl);
             requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
 
@@ -45,20 +44,27 @@ namespace Azure_AD_Users_Publisher.Services
             var content = new StringContent(json);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             requestMessage.Content = content;
+            
+            var correlationId = Guid.NewGuid();
+            _logger.LogDebug($"{correlationId}, Publishing User to Salesforce: {json}");
 
-            _logger.LogDebug($"Publishing User to Salesforce: {json}");
             var responseMessage = await client.SendAsync(requestMessage);
             if (!responseMessage.IsSuccessStatusCode)
             {
                 try
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                    _logger.LogError($"Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User: {json}");
+                    var message = $"{correlationId}, Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User: {json}";
+                    _logger.LogError(message);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Exception when Publishing User: {json} to Salesforce. StackTrace: {ex.StackTrace}");
+                    _logger.LogError(ex, $"{correlationId}, Exception when Publishing User: {json} to Salesforce. StackTrace: {ex.StackTrace}");
                 }
+            } 
+            else
+            {
+                _logger.LogDebug($"{correlationId}, Successfully Published to Salesforce User: {json}");
             }
         }
 
