@@ -30,6 +30,9 @@ namespace Azure_AD_Users_Publisher
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var appInsightServiceOptions = new ApplicationInsightsServiceOptions {EnableDebugLogger = true};
+            services.AddApplicationInsightsTelemetry(appInsightServiceOptions);
+
             services.AddMemoryCache();
 
             var graphApiUrlFromConfig = Configuration["GraphApiUrl"];
@@ -67,9 +70,6 @@ namespace Azure_AD_Users_Publisher
                     Description = "Azure_AD_Users_Publisher ASP.NET Core Web API"  
                 });  
             });
-
-            var appInsightServiceOptions = new ApplicationInsightsServiceOptions {EnableDebugLogger = true};
-            services.AddApplicationInsightsTelemetry(appInsightServiceOptions);
 
             services.AddSingleton<IHISCTokenService, HISCTokenService>();
             services.AddSingleton<ISalesforceTokenService, SalesforceTokenService>();

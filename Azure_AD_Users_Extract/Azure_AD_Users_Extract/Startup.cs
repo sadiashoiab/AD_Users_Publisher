@@ -31,6 +31,9 @@ namespace Azure_AD_Users_Extract
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var appInsightServiceOptions = new ApplicationInsightsServiceOptions {EnableDebugLogger = true};
+            services.AddApplicationInsightsTelemetry(appInsightServiceOptions);
+
             var graphApiUrlFromConfig = Configuration["GraphApiUrl"];
             services.AddHealthChecks()
                 .AddUrlGroup(new Uri(graphApiUrlFromConfig),
@@ -63,9 +66,6 @@ namespace Azure_AD_Users_Extract
                     Description = "Azure_AD_Users_Extract ASP.NET Core Web API"  
                 });  
             });
-
-            var appInsightServiceOptions = new ApplicationInsightsServiceOptions {EnableDebugLogger = true};
-            services.AddApplicationInsightsTelemetry(appInsightServiceOptions);
 
             services.AddSingleton<IAzureKeyVaultService, AzureKeyVaultService>();
             services.AddSingleton<ITokenService, TokenService>();
