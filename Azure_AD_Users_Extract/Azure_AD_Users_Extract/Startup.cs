@@ -3,12 +3,15 @@ using System.Diagnostics.CodeAnalysis;
 using Azure_AD_Users_Extract.Services;
 using Azure_AD_Users_Shared.ExceptionFilters;
 using Azure_AD_Users_Shared.Services;
+using HealthChecks.UI.Client;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json.Serialization;
 using Polly;
 using Swashbuckle.AspNetCore.Swagger;
@@ -28,6 +31,12 @@ namespace Azure_AD_Users_Extract
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHealthChecks()
+                .AddUrlGroup(new Uri("https://graph.microsoft.com/beta"),
+                    name: "GraphAPI URL",
+                    failureStatus: HealthStatus.Unhealthy)
+                .AddApplicationInsightsPublisher();
+
             services
                 .AddHttpClient("GraphApiHttpClient",
                     client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
@@ -78,6 +87,12 @@ namespace Azure_AD_Users_Extract
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseHealthChecks("/healthcheck", new HealthCheckOptions
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
 
             app.UseHttpsRedirection();
             app.UseStatusCodePages();
