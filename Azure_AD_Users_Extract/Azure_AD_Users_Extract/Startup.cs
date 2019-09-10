@@ -31,8 +31,9 @@ namespace Azure_AD_Users_Extract
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var graphApiUrlFromConfig = Configuration["GraphApiUrl"];
             services.AddHealthChecks()
-                .AddUrlGroup(new Uri("https://graph.microsoft.com/beta"),
+                .AddUrlGroup(new Uri(graphApiUrlFromConfig),
                     name: "GraphAPI URL",
                     failureStatus: HealthStatus.Unhealthy)
                 .AddApplicationInsightsPublisher();

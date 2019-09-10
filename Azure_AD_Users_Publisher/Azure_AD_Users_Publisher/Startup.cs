@@ -3,12 +3,15 @@ using System.Diagnostics.CodeAnalysis;
 using Azure_AD_Users_Publisher.Services;
 using Azure_AD_Users_Shared.ExceptionFilters;
 using Azure_AD_Users_Shared.Services;
+using HealthChecks.UI.Client;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Polly;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -28,6 +31,13 @@ namespace Azure_AD_Users_Publisher
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMemoryCache();
+
+            var graphApiUrlFromConfig = Configuration["GraphApiUrl"];
+            services.AddHealthChecks()
+                .AddUrlGroup(new Uri(graphApiUrlFromConfig),
+                    name: "GraphAPI URL",
+                    failureStatus: HealthStatus.Unhealthy)
+                .AddApplicationInsightsPublisher();
 
             services
                 .AddHttpClient("TokenApiHttpClient",
@@ -85,6 +95,12 @@ namespace Azure_AD_Users_Publisher
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseHealthChecks("/healthcheck", new HealthCheckOptions
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
 
             app.UseHttpsRedirection();
             app.UseStatusCodePages();
