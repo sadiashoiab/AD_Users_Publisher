@@ -40,9 +40,16 @@ namespace Azure_AD_Users_Extract.Controllers
             if (!string.IsNullOrWhiteSpace(sanitizedOfficeLocation))
             {
                 var users = await _franchiseUserService.GetFranchiseUsers(groupId, syncDurationInHours);
-                var filteredUsers = users.Where(user =>
-                    user.FranchiseNumber != null && user.FranchiseNumber.Equals(officeLocation)).ToList();
-                return Ok(filteredUsers);
+                if (!officeLocation.Equals("0"))
+                {
+                    var filteredUsers = users.Where(user =>
+                        user.FranchiseNumber != null && user.FranchiseNumber.Equals(officeLocation)).ToList();
+                    return Ok(filteredUsers);
+
+                }
+
+                return Ok(users);
+
             }
 
             return BadRequest();
