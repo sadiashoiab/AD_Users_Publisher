@@ -86,6 +86,49 @@ namespace Azure_AD_Users_Extract.Services
 
             var results = await _franchiseUserService.GetFranchiseUsers(_franchiseUsersReoccurrenceGroupId, _franchiseUsersReoccurrenceSyncDurationInHours);
 
+            // note: code to grab the salesforce deactivated users for research
+            //var thirtyDaysAgo = DateTimeOffset.UtcNow.AddDays(-30);
+            //var deactiveatedUsers = results.Where(user => user.DeactivationDateTimeOffset.HasValue && user.DeactivationDateTimeOffset.Value >= thirtyDaysAgo).ToList();
+
+            //var franchisesToMonitor = new int[]
+            //{
+            //    100,
+            //    101,
+            //    149,
+            //    169,
+            //    193,
+            //    197,
+            //    203,
+            //    211,
+            //    234,
+            //    235,
+            //    238,
+            //    244,
+            //    295,
+            //    308,
+            //    334,
+            //    363,
+            //    391,
+            //    407,
+            //    445,
+            //    455,
+            //    630,
+            //    838,
+            //    3009,
+            //    3026
+            //};
+
+            //var salesforceDeactivatedUsers = new List<AzureActiveDirectoryUser>();
+            //foreach (var franchise in franchisesToMonitor)
+            //{
+            //    var franchiseDeactivated = deactiveatedUsers
+            //        .Where(user => user.FranchiseNumber.Equals(franchise.ToString())).ToList();
+            //    salesforceDeactivatedUsers.AddRange(franchiseDeactivated);
+            //}
+
+            //var franchiseCount = salesforceDeactivatedUsers.Count;
+            //var franchiseJson = System.Text.Json.JsonSerializer.Serialize(salesforceDeactivatedUsers);
+
             // todo: remove after development testing completes
             //var filteredExtractUsers = FilterUsers(results);
 
