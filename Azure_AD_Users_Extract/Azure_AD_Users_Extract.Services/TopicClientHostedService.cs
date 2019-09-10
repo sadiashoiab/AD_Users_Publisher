@@ -60,6 +60,8 @@ namespace Azure_AD_Users_Extract.Services
             _franchiseUsersReoccurrenceSyncDurationInHours = int.Parse(await franchiseUsersReoccurrenceSyncDurationInHoursTask);
 
             _topicClient = new TopicClient(serviceBusConnectionString, _topicName);
+            _logger.LogDebug($"TopicClient will be sending to Topic: {_nameToken}.");
+            _logger.LogDebug($"ServiceBusConnectionStringSecretName is set to: {_serviceBusConnectionStringSecretName}.");
 
             cancellationToken.Register(async () =>
             {
