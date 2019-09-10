@@ -84,66 +84,76 @@ namespace Azure_AD_Users_Extract.Services
             var startTime = DateTime.UtcNow;
             _logger.LogDebug($"Starting retrieval and processing of franchise users at {DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}.");
 
-            var results = await _franchiseUserService.GetFranchiseUsers(_franchiseUsersReoccurrenceGroupId, _franchiseUsersReoccurrenceSyncDurationInHours);
-
-            // note: code to grab the salesforce deactivated users for research
-            //var thirtyDaysAgo = DateTimeOffset.UtcNow.AddDays(-30);
-            //var deactiveatedUsers = results.Where(user => user.DeactivationDateTimeOffset.HasValue && user.DeactivationDateTimeOffset.Value >= thirtyDaysAgo).ToList();
-
-            //var franchisesToMonitor = new int[]
-            //{
-            //    100,
-            //    101,
-            //    149,
-            //    169,
-            //    193,
-            //    197,
-            //    203,
-            //    211,
-            //    234,
-            //    235,
-            //    238,
-            //    244,
-            //    295,
-            //    308,
-            //    334,
-            //    363,
-            //    391,
-            //    407,
-            //    445,
-            //    455,
-            //    630,
-            //    838,
-            //    3009,
-            //    3026
-            //};
-
-            //var salesforceDeactivatedUsers = new List<AzureActiveDirectoryUser>();
-            //foreach (var franchise in franchisesToMonitor)
-            //{
-            //    var franchiseDeactivated = deactiveatedUsers
-            //        .Where(user => user.FranchiseNumber.Equals(franchise.ToString())).ToList();
-            //    salesforceDeactivatedUsers.AddRange(franchiseDeactivated);
-            //}
-
-            //var franchiseCount = salesforceDeactivatedUsers.Count;
-            //var franchiseJson = System.Text.Json.JsonSerializer.Serialize(salesforceDeactivatedUsers);
-
-            // todo: remove after development testing completes
-            //var filteredExtractUsers = FilterUsers(results);
-
-            foreach (var user in results)
+            try
             {
-                var userJson = System.Text.Json.JsonSerializer.Serialize(user);
-                var message = new Message(Encoding.UTF8.GetBytes(userJson));
-                await _topicClient.SendAsync(message);
-            }
+                var results = await _franchiseUserService.GetFranchiseUsers(_franchiseUsersReoccurrenceGroupId,
+                    _franchiseUsersReoccurrenceSyncDurationInHours);
 
-            var endTime = DateTime.UtcNow;
-            var elapsed = endTime - startTime;
-            _logger.LogDebug($"Finished retrieval and processing of franchise users at {endTime.ToString(CultureInfo.InvariantCulture)}.");
-            var userString =  results.Count > 1 ? "user" : "users";
-            _logger.LogDebug($"Sent {results.Count} {userString} to the topic: {_topicName} in {elapsed.TotalSeconds} seconds.");
+                // note: code to grab the salesforce deactivated users for research
+                //var thirtyDaysAgo = DateTimeOffset.UtcNow.AddDays(-30);
+                //var deactiveatedUsers = results.Where(user => user.DeactivationDateTimeOffset.HasValue && user.DeactivationDateTimeOffset.Value >= thirtyDaysAgo).ToList();
+
+                //var franchisesToMonitor = new int[]
+                //{
+                //    100,
+                //    101,
+                //    149,
+                //    169,
+                //    193,
+                //    197,
+                //    203,
+                //    211,
+                //    234,
+                //    235,
+                //    238,
+                //    244,
+                //    295,
+                //    308,
+                //    334,
+                //    363,
+                //    391,
+                //    407,
+                //    445,
+                //    455,
+                //    630,
+                //    838,
+                //    3009,
+                //    3026
+                //};
+
+                //var salesforceDeactivatedUsers = new List<AzureActiveDirectoryUser>();
+                //foreach (var franchise in franchisesToMonitor)
+                //{
+                //    var franchiseDeactivated = deactiveatedUsers
+                //        .Where(user => user.FranchiseNumber.Equals(franchise.ToString())).ToList();
+                //    salesforceDeactivatedUsers.AddRange(franchiseDeactivated);
+                //}
+
+                //var franchiseCount = salesforceDeactivatedUsers.Count;
+                //var franchiseJson = System.Text.Json.JsonSerializer.Serialize(salesforceDeactivatedUsers);
+
+                // todo: remove after development testing completes
+                //var filteredExtractUsers = FilterUsers(results);
+
+                foreach (var user in results)
+                {
+                    var userJson = System.Text.Json.JsonSerializer.Serialize(user);
+                    var message = new Message(Encoding.UTF8.GetBytes(userJson));
+                    await _topicClient.SendAsync(message);
+                }
+
+                var endTime = DateTime.UtcNow;
+                var elapsed = endTime - startTime;
+                _logger.LogDebug(
+                    $"Finished retrieval and processing of franchise users at {endTime.ToString(CultureInfo.InvariantCulture)}.");
+                var userString = results.Count > 1 ? "user" : "users";
+                _logger.LogDebug(
+                    $"Sent {results.Count} {userString} to the topic: {_topicName} in {elapsed.TotalSeconds} seconds.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Exception in Retrieve and Process with FranchiseUsersReoccurrenceGroupId: {_franchiseUsersReoccurrenceGroupId}, and FranchiseUsersReoccurrenceSyncDurationInHours: {_franchiseUsersReoccurrenceSyncDurationInHours}");
+            }
         }
 
         // todo: remove after development testing completes

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure_AD_Users_Shared.Models;
 using Microsoft.Extensions.Logging;
@@ -20,15 +21,24 @@ namespace Azure_AD_Users_Extract.Services
 
         public async Task<List<AzureActiveDirectoryUser>> GetFranchiseUsers(string groupId, int syncDurationInHours = 0)
         {
-            var token = await _tokenService.RetrieveToken(TokenEnum.Franchise);
-            var users = await _userService.GetUsers(groupId, token, syncDurationInHours);
-
-            if (users?.Count > 0)
+            try
             {
-                _logger.LogInformation($"{users.Count} Franchise users were retrieved");
+                var token = await _tokenService.RetrieveToken(TokenEnum.Franchise);
+                var users = await _userService.GetUsers(groupId, token, syncDurationInHours);
+
+                if (users?.Count > 0)
+                {
+                    _logger.LogInformation($"{users.Count} Franchise users were retrieved");
+                }
+
+                return users;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"error occurred while trying to get token and users for groupId: {groupId}, and syncDurationInHours: {syncDurationInHours}");
             }
 
-            return users;
+            return null;
         }
     }
 }
