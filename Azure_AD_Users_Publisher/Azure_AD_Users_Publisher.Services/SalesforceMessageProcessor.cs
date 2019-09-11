@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-//using System.Threading;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
 using Azure_AD_Users_Shared.Models;
@@ -10,9 +9,6 @@ namespace Azure_AD_Users_Publisher.Services
 {
     public class SalesforceMessageProcessor : IMessageProcessor
     {
-        //private int _usersSyncedToSalesforceCount;
-        //private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1,1);
-
         private readonly ILogger<SalesforceMessageProcessor> _logger;
         private readonly IHISCTokenService _tokenService;
         private readonly IProgramDataService _programDataService;
@@ -67,19 +63,9 @@ namespace Azure_AD_Users_Publisher.Services
                     TimeZone = await timeZoneTask
                 };
 
-                //await _semaphoreSlim.WaitAsync();
-                //try
-                //{
-                //    _usersSyncedToSalesforceCount++;
-                //}
-                //finally
-                //{
-                //    _semaphoreSlim.Release();
-                //}
-
                 await _salesforceUserPublishService.Publish(salesforceUser);
-                //_logger.LogInformation($"We've synced {_usersSyncedToSalesforceCount} to Salesforce as of {DateTimeOffset.UtcNow}");
                 //}
+                _logger.LogInformation($"Publish Count: {_salesforceUserPublishService.PublishCount}, Error Count: {_salesforceUserPublishService.ErrorCount}");
             }
         }
 
