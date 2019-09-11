@@ -18,6 +18,9 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly string _publishUrl;
         private readonly ISalesforceTokenService _tokenService;
 
+        public int PublishCount { get; set; }
+        public int ErrorCount { get; set; }
+
         public SalesforceUserPublishService(ILogger<SalesforceUserPublishService> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration, ISalesforceTokenService tokenService)
         {
             _logger = logger;
@@ -59,12 +62,16 @@ namespace Azure_AD_Users_Publisher.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"{correlationId}, Exception when Publishing User: {json} to Salesforce. StackTrace: {ex.StackTrace}");
+                    var responseContent = await responseMessage.Content.ReadAsStringAsync();
+                    _logger.LogError(ex, $"{correlationId}, Exception when Publishing User: {json} to Salesforce. Salesforce response: {responseContent}, StackTrace: {ex.StackTrace}");
                 }
+
+                ErrorCount++;
             } 
             else
             {
                 _logger.LogDebug($"{correlationId}, Successfully Published to Salesforce User: {json}");
+                PublishCount++;
             }
         }
 
