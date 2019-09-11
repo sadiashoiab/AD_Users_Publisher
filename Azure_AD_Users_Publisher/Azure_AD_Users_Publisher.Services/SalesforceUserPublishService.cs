@@ -63,7 +63,8 @@ namespace Azure_AD_Users_Publisher.Services
                 catch (Exception ex)
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                    _logger.LogError(ex, $"{correlationId}, Exception when Publishing User: {json} to Salesforce. Salesforce response: {responseContent}, StackTrace: {ex.StackTrace}");
+                    var message = $"{correlationId}, Exception when Publishing User: {json} to Salesforce. Salesforce response: {responseContent}, StackTrace: {ex.StackTrace}";
+                    _logger.LogError(ex, message);
                 }
 
                 ErrorCount++;
