@@ -35,11 +35,7 @@ namespace Azure_AD_Users_Publisher
 
             services.AddMemoryCache();
 
-            var graphApiUrlFromConfig = Configuration["GraphApiUrl"];
             services.AddHealthChecks()
-                .AddUrlGroup(new Uri(graphApiUrlFromConfig),
-                    name: "GraphAPI URL",
-                    failureStatus: HealthStatus.Unhealthy)
                 .AddApplicationInsightsPublisher();
 
             services
