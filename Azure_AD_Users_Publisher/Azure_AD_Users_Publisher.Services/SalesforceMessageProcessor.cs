@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
 using Azure_AD_Users_Shared.Models;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Azure_AD_Users_Publisher.Services
 {
@@ -29,14 +30,15 @@ namespace Azure_AD_Users_Publisher.Services
             var syncUserToSalesforce = await ShouldUserBeSyncedToSalesforce(user);
             if (syncUserToSalesforce)
             {
+                var json = System.Text.Json.JsonSerializer.Serialize(user);
                 if (user.DeactivationDateTimeOffset.HasValue)
                 {
-                    _logger.LogInformation($"User with ID: {user.ExternalId} will be Deactivated.");
+                    _logger.LogInformation($"User: {json} will be Deactivated.");
                     await _salesforceUserPublishService.DeactivateUser(user);
                 }
                 else
                 {
-                    _logger.LogInformation($"User with ID: {user.ExternalId} will be Published.");
+                    _logger.LogInformation($"User: {json} will be Published.");
 
                     var operatingSystemTask = GetUserOperatingSystem(user);
                     var timeZoneTask = _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
