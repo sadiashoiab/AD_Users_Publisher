@@ -37,20 +37,7 @@ namespace Azure_AD_Users_Extract.Services
             var usersList = await GetGraphUsers(url, duration, token);
             await GetGraphGroupUsers(usersList, duration, token);
 
-
-            //var missing = usersList.Where(user => 
-            //    user.userPrincipalName.ToLower().Contains("tim.vasconcellos") ||
-            //    user.userPrincipalName.ToLower().Contains("j.ripberger") ||
-            //    user.userPrincipalName.ToLower().Contains("sarah.frey") ||
-            //    user.userPrincipalName.ToLower().Contains("dara.") ||
-            //    user.userPrincipalName.ToLower().Contains("beth.cul") ||
-            //    user.userPrincipalName.ToLower().Contains("paula.furm") ||
-            //    user.userPrincipalName.ToLower().Contains("kimberly.grif") ||
-            //    user.userPrincipalName.ToLower().Contains("allison.ear")
-            //).ToList();
-            //var missingJson =  System.Text.Json.JsonSerializer.Serialize(missing);
             //var fullJson = System.Text.Json.JsonSerializer.Serialize(usersList);
-
 
             var azureActiveDirectoryUsers = MapGraphUsersToAzureActiveDirectoryUsers(usersList);
             return azureActiveDirectoryUsers;
