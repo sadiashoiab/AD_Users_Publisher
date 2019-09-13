@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure_AD_Users_Shared.Models;
 using Azure_AD_Users_Shared.Services;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
@@ -90,24 +92,9 @@ namespace Azure_AD_Users_Extract.Services
                 var franchiseGroupUsers = await franchiseGroupUsersTask;
                 var deactivatedUsers = await deactivatedUsersTask;
 
-                foreach (var user in franchiseGroupUsers)
-                {
-                    // note: we do not want to update franchise group users that have a deactivation date.  we have a separate api call where we are retrieving the
-                    //       deactivated users, therefore only send franchise group users if they do not have a deactivation date set
-                    if (!user.DeactivationDateTimeOffset.HasValue)
-                    {
-                        var userJson = System.Text.Json.JsonSerializer.Serialize(user);
-                        var message = new Message(Encoding.UTF8.GetBytes(userJson));
-                        await _topicClient.SendAsync(message);
-                    }
-                }
-
-                foreach (var user in deactivatedUsers)
-                {
-                    var userJson = System.Text.Json.JsonSerializer.Serialize(user);
-                    var message = new Message(Encoding.UTF8.GetBytes(userJson));
-                    await _topicClient.SendAsync(message);
-                }
+                var publishFranchiseGroupUsersTask = PublishFranchiseGroupUsers(franchiseGroupUsers);
+                var publishDeactivatedUsers = PublishDeactivatedUsers(deactivatedUsers);
+                await Task.WhenAll(publishFranchiseGroupUsersTask, publishDeactivatedUsers);
 
                 var endTime = DateTime.UtcNow;
                 var elapsed = endTime - startTime;
@@ -121,6 +108,34 @@ namespace Azure_AD_Users_Extract.Services
             {
                 _logger.LogError(ex, $"Exception in Retrieve and Process with FranchiseUsersReoccurrenceGroupId: {_franchiseUsersReoccurrenceGroupId}, and FranchiseUsersReoccurrenceSyncDurationInHours: {_franchiseUsersReoccurrenceSyncDurationInHours}");
             }
+        }
+
+        private async Task PublishDeactivatedUsers(List<AzureActiveDirectoryUser> deactivatedUsers)
+        {
+            foreach (var user in deactivatedUsers)
+            {
+                await TopicSendAsync(user);
+            }
+        }
+
+        private async Task PublishFranchiseGroupUsers(List<AzureActiveDirectoryUser> franchiseGroupUsers)
+        {
+            foreach (var user in franchiseGroupUsers)
+            {
+                // note: we do not want to update franchise group users that have a deactivation date.  we have a separate api call where we are retrieving the
+                //       deactivated users, therefore only send franchise group users if they do not have a deactivation date set
+                if (!user.DeactivationDateTimeOffset.HasValue)
+                {
+                    await TopicSendAsync(user);
+                }
+            }
+        }
+
+        private async Task TopicSendAsync(AzureActiveDirectoryUser user)
+        {
+            var userJson = System.Text.Json.JsonSerializer.Serialize(user);
+            var message = new Message(Encoding.UTF8.GetBytes(userJson));
+            await _topicClient.SendAsync(message);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
