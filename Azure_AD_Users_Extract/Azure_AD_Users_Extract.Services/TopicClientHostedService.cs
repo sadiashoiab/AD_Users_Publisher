@@ -86,56 +86,27 @@ namespace Azure_AD_Users_Extract.Services
 
             try
             {
-                var results = await _franchiseUserService.GetFranchiseUsers(_franchiseUsersReoccurrenceGroupId,
-                    _franchiseUsersReoccurrenceSyncDurationInHours);
+                var results =
+                    await _franchiseUserService.GetFranchiseUsers(_franchiseUsersReoccurrenceGroupId,
+                        _franchiseUsersReoccurrenceSyncDurationInHours);
 
-                // note: code to grab the salesforce deactivated users for research
-                //var thirtyDaysAgo = DateTimeOffset.UtcNow.AddDays(-30);
-                //var deactiveatedUsers = results.Where(user => user.DeactivationDateTimeOffset.HasValue && user.DeactivationDateTimeOffset.Value >= thirtyDaysAgo).ToList();
-
-                //var franchisesToMonitor = new int[]
-                //{
-                //    100,
-                //    101,
-                //    149,
-                //    169,
-                //    193,
-                //    197,
-                //    203,
-                //    211,
-                //    234,
-                //    235,
-                //    238,
-                //    244,
-                //    295,
-                //    308,
-                //    334,
-                //    363,
-                //    391,
-                //    407,
-                //    445,
-                //    455,
-                //    630,
-                //    838,
-                //    3009,
-                //    3026
-                //};
-
-                //var salesforceDeactivatedUsers = new List<AzureActiveDirectoryUser>();
-                //foreach (var franchise in franchisesToMonitor)
-                //{
-                //    var franchiseDeactivated = deactiveatedUsers
-                //        .Where(user => user.FranchiseNumber.Equals(franchise.ToString())).ToList();
-                //    salesforceDeactivatedUsers.AddRange(franchiseDeactivated);
-                //}
-
-                //var franchiseCount = salesforceDeactivatedUsers.Count;
-                //var franchiseJson = System.Text.Json.JsonSerializer.Serialize(salesforceDeactivatedUsers);
-
-                // todo: remove after development testing completes
-                //var filteredExtractUsers = FilterUsers(results);
+                var deactivatedUsers =
+                    await _franchiseUserService.GetFranchiseDeactivatedUsers(
+                        _franchiseUsersReoccurrenceSyncDurationInHours);
 
                 foreach (var user in results)
+                {
+                    // note: we do not want to update users that have a deactivation date.  we have a separated api call where we are retrieving the
+                    //       deactivated users, therefore only send group users if they do not have a deactivation date set
+                    if (!user.DeactivationDateTimeOffset.HasValue)
+                    {
+                        var userJson = System.Text.Json.JsonSerializer.Serialize(user);
+                        var message = new Message(Encoding.UTF8.GetBytes(userJson));
+                        await _topicClient.SendAsync(message);
+                    }
+                }
+
+                foreach (var user in deactivatedUsers)
                 {
                     var userJson = System.Text.Json.JsonSerializer.Serialize(user);
                     var message = new Message(Encoding.UTF8.GetBytes(userJson));
