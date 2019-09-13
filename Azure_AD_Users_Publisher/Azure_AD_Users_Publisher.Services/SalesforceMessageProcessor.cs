@@ -34,12 +34,7 @@ namespace Azure_AD_Users_Publisher.Services
                 {
                     _logger.LogInformation($"User will be Deactivated: {json}");
 
-                    var salesforceUser = new SalesforceUser
-                    {
-                        ExternalId = user.ExternalId
-                    };
-
-                    await _salesforceUserPublishService.Deactivate(salesforceUser);
+                    await _salesforceUserPublishService.Deactivate(user.ExternalId);
                 }
                 else
                 {

@@ -12,6 +12,6 @@ namespace Azure_AD_Users_Publisher.Services
         int DeactivationCount { get; set; }
 
         Task Publish(SalesforceUser user);
-        Task Deactivate(SalesforceUser user);
+        Task Deactivate(string externalId);
     }
 }
