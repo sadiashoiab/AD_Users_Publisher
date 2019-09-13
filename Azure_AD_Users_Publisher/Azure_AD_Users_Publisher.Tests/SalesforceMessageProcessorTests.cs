@@ -69,7 +69,7 @@ namespace Azure_AD_Users_Publisher.Tests
             loggerMock.Verify(mock => mock.Log(
                     LogLevel.Information,
                     It.IsAny<EventId>(),
-                    It.Is<FormattedLogValues>(v => v.ToString().Contains("will be Published.")),
+                    It.Is<FormattedLogValues>(v => v.ToString().Contains("will be Published")),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<object, Exception, string>>()),
                 Times.Once);
@@ -133,7 +133,7 @@ namespace Azure_AD_Users_Publisher.Tests
             loggerMock.Verify(mock => mock.Log(
                     LogLevel.Information,
                     It.IsAny<EventId>(),
-                    It.Is<FormattedLogValues>(v => v.ToString().Contains("will be Published.")),
+                    It.Is<FormattedLogValues>(v => v.ToString().Contains("will be Published")),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<object, Exception, string>>()),
                 Times.Once);

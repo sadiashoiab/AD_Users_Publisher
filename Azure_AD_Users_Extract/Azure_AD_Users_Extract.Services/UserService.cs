@@ -36,9 +36,7 @@ namespace Azure_AD_Users_Extract.Services
             var duration = syncDurationInHours * -1;
             var usersList = await GetGraphUsers(url, duration, token);
             await GetGraphGroupUsers(usersList, duration, token);
-
-            //var fullJson = System.Text.Json.JsonSerializer.Serialize(usersList);
-
+            
             var azureActiveDirectoryUsers = MapGraphUsersToAzureActiveDirectoryUsers(usersList);
             return azureActiveDirectoryUsers;
         }
@@ -56,7 +54,6 @@ namespace Azure_AD_Users_Extract.Services
 
             var deactivatedUsers = usersList
                 .Where(user => user.onPremisesExtensionAttributes?.extensionAttribute8 != null).ToList();
-            var deactivatedUsersJson = System.Text.Json.JsonSerializer.Serialize(deactivatedUsers);
 
             var azureActiveDirectoryUsers = MapGraphUsersToAzureActiveDirectoryUsers(deactivatedUsers);
             return azureActiveDirectoryUsers;

@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
-using Azure_AD_Users_Shared.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -77,15 +76,15 @@ namespace Azure_AD_Users_Publisher.Services
             }
         }
 
-        public async Task DeactivateUser(AzureActiveDirectoryUser user)
+        public async Task Deactivate(string externalId)
         {
             var client = await GetHttpClient();
 
-            var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"{_publishUrl}{user.ExternalId}");
+            var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"{_publishUrl}{externalId}");
             requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
             
             var correlationId = Guid.NewGuid();
-            var json = System.Text.Json.JsonSerializer.Serialize(user);
+            _logger.LogDebug($"{correlationId}, Deactivating Salesforce User ExernalId: {externalId}");
 
             var responseMessage = await client.SendAsync(requestMessage);
             if (!responseMessage.IsSuccessStatusCode)
@@ -93,13 +92,13 @@ namespace Azure_AD_Users_Publisher.Services
                 try
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                    var message = $"{correlationId}, Non Success Status Code when Deactivating Salesforce User, Response Content: {responseContent}, for User: {json}";
+                    var message = $"{correlationId}, Non Success Status Code when Deactivating Salesforce User, Response Content: {responseContent}, for User ExernalId: {externalId}";
                     _logger.LogError(message);
                 }
                 catch (Exception ex)
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                    var message = $"{correlationId}, Exception when Deactivating Salesforce User, Response Content: {responseContent}, for User: {json}, StackTrace: {ex.StackTrace}";
+                    var message = $"{correlationId}, Exception when Deactivating Salesforce User, Response Content: {responseContent}, for User ExernalId: {externalId}, StackTrace: {ex.StackTrace}";
                     _logger.LogError(ex, message);
                 }
 
@@ -107,7 +106,7 @@ namespace Azure_AD_Users_Publisher.Services
             }
             else
             {
-                _logger.LogDebug($"{correlationId}, Successfully Deactivated Salesforce User: {json}");
+                _logger.LogDebug($"{correlationId}, Successfully Deactivated Salesforce User ExernalId: {externalId}");
                 DeactivationCount++;
             }
         }

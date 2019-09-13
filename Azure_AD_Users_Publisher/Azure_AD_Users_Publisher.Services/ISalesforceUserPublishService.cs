@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
-using Azure_AD_Users_Shared.Models;
 
 namespace Azure_AD_Users_Publisher.Services
 {
@@ -13,6 +12,6 @@ namespace Azure_AD_Users_Publisher.Services
         int DeactivationCount { get; set; }
 
         Task Publish(SalesforceUser user);
-        Task DeactivateUser(AzureActiveDirectoryUser user);
+        Task Deactivate(string externalId);
     }
 }
