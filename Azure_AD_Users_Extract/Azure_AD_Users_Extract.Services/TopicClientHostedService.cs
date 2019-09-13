@@ -83,15 +83,14 @@ namespace Azure_AD_Users_Extract.Services
 
             try
             {
-                var results =
-                    await _franchiseUserService.GetFranchiseUsers(_franchiseUsersReoccurrenceGroupId,
-                        _franchiseUsersReoccurrenceSyncDurationInHours);
+                var franchiseGroupUsersTask = _franchiseUserService.GetFranchiseUsers(_franchiseUsersReoccurrenceGroupId, _franchiseUsersReoccurrenceSyncDurationInHours);
+                var deactivatedUsersTask = _franchiseUserService.GetFranchiseDeactivatedUsers(_franchiseUsersReoccurrenceSyncDurationInHours);
+                await Task.WhenAll(franchiseGroupUsersTask, deactivatedUsersTask);
 
-                var deactivatedUsers =
-                    await _franchiseUserService.GetFranchiseDeactivatedUsers(
-                        _franchiseUsersReoccurrenceSyncDurationInHours);
+                var franchiseGroupUsers = await franchiseGroupUsersTask;
+                var deactivatedUsers = await deactivatedUsersTask;
 
-                foreach (var user in results)
+                foreach (var user in franchiseGroupUsers)
                 {
                     // note: we do not want to update franchise group users that have a deactivation date.  we have a separate api call where we are retrieving the
                     //       deactivated users, therefore only send franchise group users if they do not have a deactivation date set
@@ -114,9 +113,9 @@ namespace Azure_AD_Users_Extract.Services
                 var elapsed = endTime - startTime;
                 _logger.LogDebug(
                     $"Finished retrieval and processing of franchise users at {endTime.ToString(CultureInfo.InvariantCulture)}.");
-                var userString = results.Count > 1 ? "user" : "users";
+                var userString = franchiseGroupUsers.Count > 1 ? "user" : "users";
                 _logger.LogDebug(
-                    $"Sent {results.Count} {userString} to the topic: {_topicName} in {elapsed.TotalSeconds} seconds.");
+                    $"Sent {franchiseGroupUsers.Count} {userString} to the topic: {_topicName} in {elapsed.TotalSeconds} seconds.");
             }
             catch (Exception ex)
             {
