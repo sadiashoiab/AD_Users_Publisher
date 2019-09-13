@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
-using Azure_AD_Users_Shared.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -77,15 +76,16 @@ namespace Azure_AD_Users_Publisher.Services
             }
         }
 
-        public async Task DeactivateUser(AzureActiveDirectoryUser user)
+        public async Task Deactivate(SalesforceUser user)
         {
             var client = await GetHttpClient();
 
             var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"{_publishUrl}{user.ExternalId}");
             requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
             
-            var correlationId = Guid.NewGuid();
             var json = System.Text.Json.JsonSerializer.Serialize(user);
+            var correlationId = Guid.NewGuid();
+            _logger.LogDebug($"{correlationId}, Deactivating Salesforce User: {json}");
 
             var responseMessage = await client.SendAsync(requestMessage);
             if (!responseMessage.IsSuccessStatusCode)
