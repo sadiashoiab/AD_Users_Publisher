@@ -100,9 +100,11 @@ namespace Azure_AD_Users_Extract.Services
                 var elapsed = endTime - startTime;
                 _logger.LogDebug(
                     $"Finished retrieval and processing of franchise users at {endTime.ToString(CultureInfo.InvariantCulture)}.");
-                var userString = franchiseGroupUsers.Count > 1 ? "user" : "users";
+
+                var counts = franchiseGroupUsers.Count + deactivatedUsers.Count;
+                var userString = counts > 1 ? "user" : "users";
                 _logger.LogDebug(
-                    $"Sent {franchiseGroupUsers.Count} {userString} to the topic: {_topicName} in {elapsed.TotalSeconds} seconds.");
+                    $"Sent {counts} {userString} to the topic: {_topicName} in {elapsed.TotalSeconds} seconds.");
             }
             catch (Exception ex)
             {
