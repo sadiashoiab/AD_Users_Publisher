@@ -29,43 +29,43 @@ namespace Azure_AD_Users_Publisher.Services
             var syncUserToSalesforce = await ShouldUserBeSyncedToSalesforce(user);
             if (syncUserToSalesforce)
             {
-                // todo: remove once we have approval we can start hitting the service automatically
-                //if (user.DeactivationDateTimeOffset.HasValue)
-                //{
-                //    _logger.LogInformation($"User with ID: {user.ExternalId} will be Deactivated.");
-                //    await _salesforceUserPublishService.DeactivateUser(user);
-                //}
-                //else
-                //{
-                _logger.LogInformation($"User with ID: {user.ExternalId} will be Published.");
-
-                var operatingSystemTask = GetUserOperatingSystem(user);
-                var timeZoneTask = _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
-
-                await Task.WhenAll(operatingSystemTask, timeZoneTask);
-
-                var salesforceUser = new SalesforceUser
+                if (user.DeactivationDateTimeOffset.HasValue)
                 {
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.Email,
-                    FranchiseNumber = user.FranchiseNumber,
-                    ExternalId = user.ExternalId,
-                    FederationId = user.FederationId,
-                    MobilePhone = user.MobilePhone,
-                    Address = user.Address,
-                    City = user.City,
-                    State = user.State,
-                    PostalCode = user.PostalCode,
-                    CountryCode = user.CountryCode,
-                    IsOwner = user.IsOwner,
-                    OperatingSystem = await operatingSystemTask,
-                    TimeZone = await timeZoneTask
-                };
+                    _logger.LogInformation($"User with ID: {user.ExternalId} will be Deactivated.");
+                    await _salesforceUserPublishService.DeactivateUser(user);
+                }
+                else
+                {
+                    _logger.LogInformation($"User with ID: {user.ExternalId} will be Published.");
 
-                await _salesforceUserPublishService.Publish(salesforceUser);
-                //}
-                _logger.LogInformation($"Publish Count: {_salesforceUserPublishService.PublishCount}, Error Count: {_salesforceUserPublishService.ErrorCount}");
+                    var operatingSystemTask = GetUserOperatingSystem(user);
+                    var timeZoneTask = _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
+
+                    await Task.WhenAll(operatingSystemTask, timeZoneTask);
+
+                    var salesforceUser = new SalesforceUser
+                    {
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Email = user.Email,
+                        FranchiseNumber = user.FranchiseNumber,
+                        ExternalId = user.ExternalId,
+                        FederationId = user.FederationId,
+                        MobilePhone = user.MobilePhone,
+                        Address = user.Address,
+                        City = user.City,
+                        State = user.State,
+                        PostalCode = user.PostalCode,
+                        CountryCode = user.CountryCode,
+                        IsOwner = user.IsOwner,
+                        OperatingSystem = await operatingSystemTask,
+                        TimeZone = await timeZoneTask
+                    };
+
+                    await _salesforceUserPublishService.Publish(salesforceUser);
+                }
+
+                _logger.LogInformation($"Publish Count: {_salesforceUserPublishService.PublishCount}, Deactivation Count: {_salesforceUserPublishService.DeactivationCount}, Error Count: {_salesforceUserPublishService.ErrorCount}");
             }
         }
 

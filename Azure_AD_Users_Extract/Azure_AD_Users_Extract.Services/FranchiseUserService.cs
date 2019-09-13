@@ -40,5 +40,27 @@ namespace Azure_AD_Users_Extract.Services
 
             return null;
         }
+
+        public async Task<List<AzureActiveDirectoryUser>> GetFranchiseDeactivatedUsers(int syncDurationInHours = 0)
+        {
+            try
+            {
+                var token = await _tokenService.RetrieveToken(TokenEnum.Franchise);
+                var users = await _userService.GetDeactivatedUsers(token, syncDurationInHours);
+
+                if (users?.Count > 0)
+                {
+                    _logger.LogInformation($"{users.Count} Deactivated Franchise users were retrieved");
+                }
+
+                return users;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"error occurred while trying to get token and deactivated users with syncDurationInHours: {syncDurationInHours}");
+            }
+
+            return null;
+        }
     }
 }

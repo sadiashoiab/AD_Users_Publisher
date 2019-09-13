@@ -19,6 +19,7 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly ISalesforceTokenService _tokenService;
 
         public int PublishCount { get; set; }
+        public int DeactivationCount { get; set; }
         public int ErrorCount { get; set; }
 
         public SalesforceUserPublishService(ILogger<SalesforceUserPublishService> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration, ISalesforceTokenService tokenService)
@@ -82,22 +83,32 @@ namespace Azure_AD_Users_Publisher.Services
 
             var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"{_publishUrl}{user.ExternalId}");
             requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
+            
+            var correlationId = Guid.NewGuid();
+            var json = System.Text.Json.JsonSerializer.Serialize(user);
 
             var responseMessage = await client.SendAsync(requestMessage);
             if (!responseMessage.IsSuccessStatusCode)
             {
-                var json = System.Text.Json.JsonSerializer.Serialize(user);
-                _logger.LogError($"Unexpected Status Code: {responseMessage.StatusCode} returned when Deactivating User to Salesforce. User ID: {user.ExternalId}, User: {json}");
-
                 try
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                    _logger.LogError($"Deactivating User to Salesforce Response Content: {responseContent}, for User: {json}");
+                    var message = $"{correlationId}, Non Success Status Code when Deactivating Salesforce User, Response Content: {responseContent}, for User: {json}";
+                    _logger.LogError(message);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Exception when Deactivating User to Salesforce. StackTrace: {ex.StackTrace}");
+                    var responseContent = await responseMessage.Content.ReadAsStringAsync();
+                    var message = $"{correlationId}, Exception when Deactivating Salesforce User, Response Content: {responseContent}, for User: {json}, StackTrace: {ex.StackTrace}";
+                    _logger.LogError(ex, message);
                 }
+
+                ErrorCount++;
+            }
+            else
+            {
+                _logger.LogDebug($"{correlationId}, Successfully Deactivated Salesforce User: {json}");
+                DeactivationCount++;
             }
         }
     }

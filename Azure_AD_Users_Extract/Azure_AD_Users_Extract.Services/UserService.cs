@@ -56,6 +56,25 @@ namespace Azure_AD_Users_Extract.Services
             return azureActiveDirectoryUsers;
         }
 
+        public async Task<List<AzureActiveDirectoryUser>> GetDeactivatedUsers(string token, int syncDurationInHours = 0)
+        {
+            if (string.IsNullOrWhiteSpace(token) || syncDurationInHours < 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            var url = $"{_graphApiUrl}/users?{_memberPropertiesToSelect}";
+            var duration = syncDurationInHours * -1;
+            var usersList = await GetGraphUsers(url, duration, token);
+
+            var deactivatedUsers = usersList
+                .Where(user => user.onPremisesExtensionAttributes?.extensionAttribute8 != null).ToList();
+            var deactivatedUsersJson = System.Text.Json.JsonSerializer.Serialize(deactivatedUsers);
+
+            var azureActiveDirectoryUsers = MapGraphUsersToAzureActiveDirectoryUsers(deactivatedUsers);
+            return azureActiveDirectoryUsers;
+        }
+
         private List<AzureActiveDirectoryUser> MapGraphUsersToAzureActiveDirectoryUsers(List<GraphUser> usersList)
         {
             return usersList.Select(graphUser => new AzureActiveDirectoryUser
