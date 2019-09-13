@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services;
+using Azure_AD_Users_Publisher.Services.Models;
 using Azure_AD_Users_Shared.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Internal;
@@ -73,8 +74,7 @@ namespace Azure_AD_Users_Publisher.Tests
                     It.IsAny<Func<object, Exception, string>>()),
                 Times.Once);
             timeZoneServiceMock.Verify();
-            // todo: add verify back once allowed to call and invoke has been re-enabled
-            //salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<AzureActiveDirectoryUser>()));
+            salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<SalesforceUser>()));
         }
 
         [TestMethod]
@@ -138,8 +138,7 @@ namespace Azure_AD_Users_Publisher.Tests
                     It.IsAny<Func<object, Exception, string>>()),
                 Times.Once);
             timeZoneServiceMock.Verify();
-            // todo: add verify back once allowed to call and invoke has been re-enabled
-            //salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<AzureActiveDirectoryUser>()));
+            salesforceUserPublishServiceMock.Verify(mock => mock.Publish(It.IsAny<SalesforceUser>()));
         }
 
         [TestMethod]

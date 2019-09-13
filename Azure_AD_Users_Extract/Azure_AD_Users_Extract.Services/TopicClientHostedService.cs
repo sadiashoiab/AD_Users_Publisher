@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure_AD_Users_Shared.Models;
 using Azure_AD_Users_Shared.Services;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
@@ -96,8 +93,8 @@ namespace Azure_AD_Users_Extract.Services
 
                 foreach (var user in results)
                 {
-                    // note: we do not want to update users that have a deactivation date.  we have a separated api call where we are retrieving the
-                    //       deactivated users, therefore only send group users if they do not have a deactivation date set
+                    // note: we do not want to update franchise group users that have a deactivation date.  we have a separate api call where we are retrieving the
+                    //       deactivated users, therefore only send franchise group users if they do not have a deactivation date set
                     if (!user.DeactivationDateTimeOffset.HasValue)
                     {
                         var userJson = System.Text.Json.JsonSerializer.Serialize(user);
@@ -126,15 +123,6 @@ namespace Azure_AD_Users_Extract.Services
                 _logger.LogError(ex, $"Exception in Retrieve and Process with FranchiseUsersReoccurrenceGroupId: {_franchiseUsersReoccurrenceGroupId}, and FranchiseUsersReoccurrenceSyncDurationInHours: {_franchiseUsersReoccurrenceSyncDurationInHours}");
             }
         }
-
-        // todo: remove after development testing completes
-        //private List<AzureActiveDirectoryUser> FilterUsers(List<AzureActiveDirectoryUser> results)
-        //{
-        //    var franchiseUsers = results.Where(user => user.FranchiseNumber != null && user.FranchiseNumber.Contains("3009")).ToList();
-        //    var franchiseUsersJson = System.Text.Json.JsonSerializer.Serialize(franchiseUsers);
-        //    _logger.LogDebug($"Filtered {results.Count} Users down to {franchiseUsers.Count} FranchiseNumber 407 Users{Environment.NewLine}{Environment.NewLine}{franchiseUsersJson}");
-        //    return franchiseUsers;
-        //}
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
