@@ -23,7 +23,6 @@ namespace Azure_AD_Users_Publisher.Services
         public async Task SendAlert(string message)
         {
             var client = _httpClientFactory.CreateClient("EmailAlertHttpClient");
-
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, _logicEmailUrl);
             requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
 
@@ -36,11 +35,6 @@ namespace Azure_AD_Users_Publisher.Services
             if (!responseMessage.IsSuccessStatusCode)
             {
                 throw new UnexpectedStatusCodeException(responseMessage);
-            }
-
-            if (responseMessage.Content == null)
-            {
-                throw new UnexpectedDataException(nameof(responseMessage.Content));
             }
         }
     }
