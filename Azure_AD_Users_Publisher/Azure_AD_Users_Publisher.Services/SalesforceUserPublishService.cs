@@ -66,14 +66,14 @@ namespace Azure_AD_Users_Publisher.Services
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
                     var message = $"{correlationId}, Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User: {json}";
                     _logger.LogError(message);
-                    await _azureLogicEmailService.SendAlert($"Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User ExternalId: {user.ExternalId}");
+                    await _azureLogicEmailService.SendAlert($"Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User '{user.FirstName} {user.LastName}' with ExternalId: {user.ExternalId}");
                 }
                 catch (Exception ex)
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
                     var message = $"{correlationId}, Exception when Publishing User to Salesforce, Response Content: {responseContent}, for User: {json}, StackTrace: {ex.StackTrace}";
                     _logger.LogError(ex, message);
-                    await _azureLogicEmailService.SendAlert($"Exception when Publishing User to Salesforce, Response Content: {responseContent}, for User ExternalId: {user.ExternalId}, StackTrace: {ex.StackTrace}");
+                    await _azureLogicEmailService.SendAlert($"Exception when Publishing User to Salesforce, Response Content: {responseContent}, for User '{user.FirstName} {user.LastName}' with ExternalId: {user.ExternalId}, StackTrace: {ex.StackTrace}");
                 }
 
                 ErrorCount++;
