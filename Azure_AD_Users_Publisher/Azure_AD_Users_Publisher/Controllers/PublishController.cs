@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services;
@@ -61,9 +60,6 @@ namespace Azure_AD_Users_Publisher.Controllers
                 State = state, 
                 PostalCode = postalCode
             };
-
-            //var userJson = "{\"FirstName\":\"Nikki\",\"LastName\":\"Sage\",\"Email\":\"nikki.sage@homeinstead.com\",\"FranchiseNumber\":\"3009\",\"OperatingSystem\":\"ClearCare\",\"ExternalId\":\"dc7287da-806a-4e8f-aea0-d2b1722c6b1a\",\"FederationId\":\"nikki.sage@homeinstead.com\",\"MobilePhone\":null,\"Address\":\"2009 Long Lake Rd, Suite 303\",\"City\":\"Sudbury\",\"State\":\"Ontario\",\"PostalCode\":\"P3E 6C3\",\"CountryCode\":null,\"TimeZone\":\"America/Toronto\",\"IsOwner\":false}";
-            //var user = System.Text.Json.JsonSerializer.Deserialize<AzureActiveDirectoryUser>(userJson);
 
             var timeZone = await _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
             user.TimeZone = timeZone;

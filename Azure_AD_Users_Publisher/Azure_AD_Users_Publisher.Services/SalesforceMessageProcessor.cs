@@ -60,6 +60,7 @@ namespace Azure_AD_Users_Publisher.Services
                         PostalCode = user.PostalCode,
                         CountryCode = user.CountryCode,
                         IsOwner = user.IsOwner,
+                        Title = user.Title,
                         OperatingSystem = await operatingSystemTask,
                         TimeZone = await timeZoneTask
                     };

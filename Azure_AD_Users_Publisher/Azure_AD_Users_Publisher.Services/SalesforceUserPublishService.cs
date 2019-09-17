@@ -84,7 +84,7 @@ namespace Azure_AD_Users_Publisher.Services
             requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
             
             var correlationId = Guid.NewGuid();
-            _logger.LogDebug($"{correlationId}, Deactivating Salesforce User ExernalId: {externalId}");
+            _logger.LogDebug($"{correlationId}, Deactivating Salesforce User ExternalId: {externalId}");
 
             var responseMessage = await client.SendAsync(requestMessage);
             if (!responseMessage.IsSuccessStatusCode)
@@ -92,13 +92,13 @@ namespace Azure_AD_Users_Publisher.Services
                 try
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                    var message = $"{correlationId}, Non Success Status Code when Deactivating Salesforce User, Response Content: {responseContent}, for User ExernalId: {externalId}";
+                    var message = $"{correlationId}, Non Success Status Code when Deactivating Salesforce User, Response Content: {responseContent}, for User ExternalId: {externalId}";
                     _logger.LogError(message);
                 }
                 catch (Exception ex)
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                    var message = $"{correlationId}, Exception when Deactivating Salesforce User, Response Content: {responseContent}, for User ExernalId: {externalId}, StackTrace: {ex.StackTrace}";
+                    var message = $"{correlationId}, Exception when Deactivating Salesforce User, Response Content: {responseContent}, for User ExternalId: {externalId}, StackTrace: {ex.StackTrace}";
                     _logger.LogError(ex, message);
                 }
 
