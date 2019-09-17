@@ -18,6 +18,7 @@ namespace Azure_AD_Users_Shared.Models
         public string City { get; set; }
         public string State { get; set; }
         public string PostalCode { get; set; }
+        public string Title { get; set; }
         public string CountryCode { get; set; }
         public string TimeZone { get; set; }
         public bool IsOwner { get; set; }

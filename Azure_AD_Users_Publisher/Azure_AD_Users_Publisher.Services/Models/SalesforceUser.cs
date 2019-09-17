@@ -20,5 +20,6 @@ namespace Azure_AD_Users_Publisher.Services.Models
         public string CountryCode { get; set; }
         public string TimeZone { get; set; }
         public bool IsOwner { get; set; }
+        public string Title { get; set; }
     }
 }
