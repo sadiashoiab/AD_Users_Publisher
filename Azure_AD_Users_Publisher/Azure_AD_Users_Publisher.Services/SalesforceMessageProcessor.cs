@@ -42,7 +42,6 @@ namespace Azure_AD_Users_Publisher.Services
 
                     var operatingSystemTask = GetUserOperatingSystem(user);
                     var timeZoneTask = _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
-
                     await Task.WhenAll(operatingSystemTask, timeZoneTask);
 
                     var salesforceUser = new SalesforceUser
