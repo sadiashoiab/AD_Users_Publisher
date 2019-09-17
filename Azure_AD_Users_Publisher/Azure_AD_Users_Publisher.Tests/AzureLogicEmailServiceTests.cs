@@ -29,7 +29,6 @@ namespace Azure_AD_Users_Publisher.Tests
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var configuration = (IConfiguration) _context.Properties["configuration"];
             var unitUnderTest = new AzureLogicEmailService(configuration, httpClientFactoryMock.Object);
-
             var clientHandlerStub = new DelegatingHandlerStub();
             var client = new HttpClient(clientHandlerStub);
 
