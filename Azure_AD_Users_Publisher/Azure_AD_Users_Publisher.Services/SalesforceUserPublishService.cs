@@ -16,17 +16,24 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly string _publishUrl;
         private readonly ISalesforceTokenService _tokenService;
+        private readonly IAzureLogicEmailService _azureLogicEmailService;
 
         public int PublishCount { get; set; }
         public int DeactivationCount { get; set; }
         public int ErrorCount { get; set; }
 
-        public SalesforceUserPublishService(ILogger<SalesforceUserPublishService> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration, ISalesforceTokenService tokenService)
+        public SalesforceUserPublishService(
+            ILogger<SalesforceUserPublishService> logger, 
+            IHttpClientFactory httpClientFactory, 
+            IConfiguration configuration, 
+            ISalesforceTokenService tokenService,
+            IAzureLogicEmailService azureLogicEmailService)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
             _publishUrl = configuration["SalesforcePublishUrl"];
             _tokenService = tokenService;
+            _azureLogicEmailService = azureLogicEmailService;
         }
 
         private async Task<HttpClient> GetHttpClient()
@@ -59,12 +66,14 @@ namespace Azure_AD_Users_Publisher.Services
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
                     var message = $"{correlationId}, Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User: {json}";
                     _logger.LogError(message);
+                    await _azureLogicEmailService.SendMessage(message);
                 }
                 catch (Exception ex)
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
                     var message = $"{correlationId}, Exception when Publishing User to Salesforce, Response Content: {responseContent}, for User: {json}, StackTrace: {ex.StackTrace}";
                     _logger.LogError(ex, message);
+                    await _azureLogicEmailService.SendMessage(message);
                 }
 
                 ErrorCount++;
@@ -94,12 +103,14 @@ namespace Azure_AD_Users_Publisher.Services
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
                     var message = $"{correlationId}, Non Success Status Code when Deactivating Salesforce User, Response Content: {responseContent}, for User ExternalId: {externalId}";
                     _logger.LogError(message);
+                    await _azureLogicEmailService.SendMessage(message);
                 }
                 catch (Exception ex)
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
                     var message = $"{correlationId}, Exception when Deactivating Salesforce User, Response Content: {responseContent}, for User ExternalId: {externalId}, StackTrace: {ex.StackTrace}";
                     _logger.LogError(ex, message);
+                    await _azureLogicEmailService.SendMessage(message);
                 }
 
                 ErrorCount++;
