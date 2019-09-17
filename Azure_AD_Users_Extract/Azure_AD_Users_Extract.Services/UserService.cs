@@ -72,6 +72,7 @@ namespace Azure_AD_Users_Extract.Services
                     MobilePhone = graphUser.mobilePhone,
                     Address = graphUser.streetAddress,
                     City = graphUser.city,
+                    Title = graphUser.jobTitle,
                     State = graphUser.state,
                     PostalCode = graphUser.postalCode,
                     CountryCode = graphUser.country,
