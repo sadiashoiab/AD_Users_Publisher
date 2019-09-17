@@ -66,14 +66,14 @@ namespace Azure_AD_Users_Publisher.Services
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
                     var message = $"{correlationId}, Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User: {json}";
                     _logger.LogError(message);
-                    await _azureLogicEmailService.SendMessage(message);
+                    await _azureLogicEmailService.SendAlert($"Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User ExternalId: {user.ExternalId}");
                 }
                 catch (Exception ex)
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
                     var message = $"{correlationId}, Exception when Publishing User to Salesforce, Response Content: {responseContent}, for User: {json}, StackTrace: {ex.StackTrace}";
                     _logger.LogError(ex, message);
-                    await _azureLogicEmailService.SendMessage(message);
+                    await _azureLogicEmailService.SendAlert($"Exception when Publishing User to Salesforce, Response Content: {responseContent}, for User ExternalId: {user.ExternalId}, StackTrace: {ex.StackTrace}");
                 }
 
                 ErrorCount++;
@@ -88,7 +88,6 @@ namespace Azure_AD_Users_Publisher.Services
         public async Task Deactivate(string externalId)
         {
             var client = await GetHttpClient();
-
             var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"{_publishUrl}{externalId}");
             requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
             
@@ -103,14 +102,14 @@ namespace Azure_AD_Users_Publisher.Services
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
                     var message = $"{correlationId}, Non Success Status Code when Deactivating Salesforce User, Response Content: {responseContent}, for User ExternalId: {externalId}";
                     _logger.LogError(message);
-                    await _azureLogicEmailService.SendMessage(message);
+                    await _azureLogicEmailService.SendAlert(message);
                 }
                 catch (Exception ex)
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
                     var message = $"{correlationId}, Exception when Deactivating Salesforce User, Response Content: {responseContent}, for User ExternalId: {externalId}, StackTrace: {ex.StackTrace}";
                     _logger.LogError(ex, message);
-                    await _azureLogicEmailService.SendMessage(message);
+                    await _azureLogicEmailService.SendAlert(message);
                 }
 
                 ErrorCount++;
