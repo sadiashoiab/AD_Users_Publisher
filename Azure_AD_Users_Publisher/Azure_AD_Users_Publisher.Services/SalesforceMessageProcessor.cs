@@ -26,19 +26,18 @@ namespace Azure_AD_Users_Publisher.Services
 
         public async Task ProcessUser(AzureActiveDirectoryUser user)
         {
-            var syncUserToSalesforce = await ShouldUserBeSyncedToSalesforce(user);
+            var syncUserToSalesforce = await CheckUserFranchiseAgainstFranchiseSource(user, ProgramDataSources.Salesforce, true, false);
             if (syncUserToSalesforce)
             {
                 var json = System.Text.Json.JsonSerializer.Serialize(user);
                 if (user.DeactivationDateTimeOffset.HasValue)
                 {
                     _logger.LogInformation($"User will be Deactivated: {json}");
-
                     await _salesforceUserPublishService.Deactivate(user.ExternalId);
                 }
                 else
                 {
-                    var operatingSystemTask = GetUserOperatingSystem(user);
+                    var operatingSystemTask = CheckUserFranchiseAgainstFranchiseSource(user, ProgramDataSources.ClearCare, "ClearCare", "N/A");
                     var timeZoneTask = _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
                     await Task.WhenAll(operatingSystemTask, timeZoneTask);
 
@@ -70,63 +69,32 @@ namespace Azure_AD_Users_Publisher.Services
             }
         }
 
-        private async Task<string> GetUserOperatingSystem(AzureActiveDirectoryUser user)
+        private async Task<T> CheckUserFranchiseAgainstFranchiseSource<T>(AzureActiveDirectoryUser user, ProgramDataSources source, T success, T fail)
         {
             var parsed = int.TryParse(user.FranchiseNumber, out var userFranchiseNumber);
             if (parsed)
             {
-                var clearCareFranchises = await RetrieveClearCareFranchiseData();
-                if (clearCareFranchises.Any(franchiseNumber => franchiseNumber == userFranchiseNumber))
+                var franchises = await RetrieveFranchiseData(source);
+                if (franchises.Any(franchiseNumber => franchiseNumber == userFranchiseNumber))
                 {
-                    return "ClearCare";
+                    return success;
                 }
             }
 
-            return "N/A";
+            return fail;
         }
 
-        private async Task<bool> ShouldUserBeSyncedToSalesforce(AzureActiveDirectoryUser user)
-        {
-            var parsed = int.TryParse(user.FranchiseNumber, out var userFranchiseNumber);
-            if (parsed)
-            {
-                var salesforceFranchises = await RetrieveSalesforceFranchiseData();
-                if (salesforceFranchises.Any(franchiseNumber => franchiseNumber == userFranchiseNumber))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private async Task<int[]> RetrieveSalesforceFranchiseData()
+        private async Task<int[]> RetrieveFranchiseData(ProgramDataSources source)
         {
             try
             {
                 var bearerToken = await _tokenService.RetrieveToken();
-                var salesforceFranchises = await _programDataService.RetrieveFranchises(ProgramDataSources.Salesforce, bearerToken);
-                return salesforceFranchises;
+                var franchises =  await _programDataService.RetrieveFranchises(source, bearerToken);
+                return franchises;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An Exception occurred when trying to retrieve Salesforce Franchises. StackTrace: {ex.StackTrace}");
-            }
-
-            return new int[] { };
-        }
-
-        private async Task<int[]> RetrieveClearCareFranchiseData()
-        {
-            try
-            {
-                var bearerToken = await _tokenService.RetrieveToken();
-                var clearCareFranchises =  await _programDataService.RetrieveFranchises(ProgramDataSources.ClearCare, bearerToken);
-                return clearCareFranchises;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An Exception occurred when trying to retrieve ClearCare Franchise. StackTrace: {ex.StackTrace}");
+                _logger.LogError(ex, $"An Exception occurred when trying to retrieve {source.GetDescription()} Franchise. StackTrace: {ex.StackTrace}");
             }
 
             return new int[] { };
