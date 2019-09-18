@@ -32,7 +32,7 @@ namespace Azure_AD_Users_Extract.Services
                 throw new ArgumentOutOfRangeException();
             }
 
-            // todo: check to see if the graph api has been updated so that we can filter and only pull back users that are not deactivated
+            // todo: check to see if the graph api has been updated so that we can filter and only pull back users that are not "deactivated"
             // note: as of 2019-09-18 there is no way to query the graph api to only bring back users that do not have
             //       a onPremisesExtensionAttributes.extensionAttribute8 (deactivation date) set so we have to pull
             //       all users and then filter them in code.  When pulling a small syncDuration this is not a big deal
