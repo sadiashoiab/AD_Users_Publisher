@@ -120,19 +120,14 @@ namespace Azure_AD_Users_Extract.Services
             }
         }
 
-        private async Task SendUsersToServiceBusTopic(IEnumerable<AzureActiveDirectoryUser> deactivatedUsers)
+        private async Task SendUsersToServiceBusTopic(IEnumerable<AzureActiveDirectoryUser> users)
         {
-            foreach (var user in deactivatedUsers)
+            foreach (var user in users)
             {
-                await TopicSendAsync(user);
+                var userJson = System.Text.Json.JsonSerializer.Serialize(user);
+                var message = new Message(Encoding.UTF8.GetBytes(userJson));
+                await _topicClient.SendAsync(message);
             }
-        }
-
-        private async Task TopicSendAsync(AzureActiveDirectoryUser user)
-        {
-            var userJson = System.Text.Json.JsonSerializer.Serialize(user);
-            var message = new Message(Encoding.UTF8.GetBytes(userJson));
-            await _topicClient.SendAsync(message);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
