@@ -86,23 +86,30 @@ namespace Azure_AD_Users_Extract.Services
 
             try
             {
-                var franchiseGroupUsersTask = _franchiseUserService.GetFranchiseUsers(_franchiseUsersReoccurrenceGroupId, _franchiseUsersReoccurrenceSyncDurationInHours);
+                // note: doing these at the "same time" to better utilize resources and time
+                var franchiseUsersTask = _franchiseUserService.GetFranchiseUsers(_franchiseUsersReoccurrenceGroupId, _franchiseUsersReoccurrenceSyncDurationInHours);
                 var deactivatedUsersTask = _franchiseUserService.GetFranchiseDeactivatedUsers(_franchiseUsersReoccurrenceSyncDurationInHours);
-                await Task.WhenAll(franchiseGroupUsersTask, deactivatedUsersTask);
+                await Task.WhenAll(franchiseUsersTask, deactivatedUsersTask);
 
-                var franchiseGroupUsers = await franchiseGroupUsersTask;
+                // unwrap the task results to get the respective users
+                var franchiseUsers = await franchiseUsersTask;
                 var deactivatedUsers = await deactivatedUsersTask;
 
-                var publishFranchiseGroupUsersTask = PublishFranchiseGroupUsers(franchiseGroupUsers);
-                var publishDeactivatedUsers = PublishDeactivatedUsers(deactivatedUsers);
-                await Task.WhenAll(publishFranchiseGroupUsersTask, publishDeactivatedUsers);
+                // note: we do not want to update franchise group users that have a deactivation date.  we have a separate api call where we are retrieving the
+                //       deactivated users, therefore only send franchise group users if they do not have a deactivation date set
+                var franchiseUsersThatDoNotHaveADeactivationDateSet = franchiseUsers.Where(user => !user.DeactivationDateTimeOffset.HasValue);
+                
+                // note: doing these at the "same time" to better utilize resources and time
+                var publishFranchiseUsersTask = SendUsersToServiceBusTopic(franchiseUsersThatDoNotHaveADeactivationDateSet);
+                var publishDeactivatedUsers = SendUsersToServiceBusTopic(deactivatedUsers);
+                await Task.WhenAll(publishFranchiseUsersTask, publishDeactivatedUsers);
 
                 var endTime = DateTime.UtcNow;
                 var elapsed = endTime - startTime;
                 _logger.LogDebug(
-                    $"Finished retrieval and processing of franchise users at {endTime.ToString(CultureInfo.InvariantCulture)}.");
+                    $"Finished retrieval and processing of users at {endTime.ToString(CultureInfo.InvariantCulture)}.");
 
-                var counts = franchiseGroupUsers.Count + deactivatedUsers.Count;
+                var counts = franchiseUsers.Count + deactivatedUsers.Count;
                 var userString = counts > 1 ? "user" : "users";
                 _logger.LogDebug(
                     $"Sent {counts} {userString} to the topic: {_topicName} in {elapsed.TotalSeconds} seconds.");
@@ -113,24 +120,11 @@ namespace Azure_AD_Users_Extract.Services
             }
         }
 
-        private async Task PublishDeactivatedUsers(List<AzureActiveDirectoryUser> deactivatedUsers)
+        private async Task SendUsersToServiceBusTopic(IEnumerable<AzureActiveDirectoryUser> deactivatedUsers)
         {
             foreach (var user in deactivatedUsers)
             {
                 await TopicSendAsync(user);
-            }
-        }
-
-        private async Task PublishFranchiseGroupUsers(List<AzureActiveDirectoryUser> franchiseGroupUsers)
-        {
-            foreach (var user in franchiseGroupUsers)
-            {
-                // note: we do not want to update franchise group users that have a deactivation date.  we have a separate api call where we are retrieving the
-                //       deactivated users, therefore only send franchise group users if they do not have a deactivation date set
-                if (!user.DeactivationDateTimeOffset.HasValue)
-                {
-                    await TopicSendAsync(user);
-                }
             }
         }
 
