@@ -95,8 +95,8 @@ namespace Azure_AD_Users_Extract.Services
                 var franchiseUsers = await franchiseUsersTask;
                 var deactivatedUsers = await deactivatedUsersTask;
 
-                // note: we do not want to update franchise group users that have a deactivation date.  we have a separate api call where we are retrieving the
-                //       deactivated users, therefore only send franchise group users if they do not have a deactivation date set
+                // note: we do not want to update franchise users that have a deactivation date.  we have a separate api call where we are retrieving the
+                //       deactivated users, therefore only send franchise users if they do not have a deactivation date set
                 var franchiseUsersThatDoNotHaveADeactivationDateSet = franchiseUsers.Where(user => !user.DeactivationDateTimeOffset.HasValue);
                 
                 // note: doing these at the "same time" to better utilize resources and time
