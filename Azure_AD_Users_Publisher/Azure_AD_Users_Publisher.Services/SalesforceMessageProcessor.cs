@@ -38,8 +38,6 @@ namespace Azure_AD_Users_Publisher.Services
                 }
                 else
                 {
-                    _logger.LogInformation($"User will be Published: {json}");
-
                     var operatingSystemTask = GetUserOperatingSystem(user);
                     var timeZoneTask = _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
                     await Task.WhenAll(operatingSystemTask, timeZoneTask);
@@ -64,6 +62,7 @@ namespace Azure_AD_Users_Publisher.Services
                         TimeZone = await timeZoneTask
                     };
 
+                    _logger.LogInformation($"User will be Published: {json}");
                     await _salesforceUserPublishService.Publish(salesforceUser);
                 }
 
