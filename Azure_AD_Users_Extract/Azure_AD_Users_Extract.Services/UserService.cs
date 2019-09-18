@@ -32,6 +32,12 @@ namespace Azure_AD_Users_Extract.Services
                 throw new ArgumentOutOfRangeException();
             }
 
+            // todo: check to see if the graph api has been updated so that we can filter and only pull back users that are not "deactivated"
+            // note: as of 2019-09-18 there is no way to query the graph api to only bring back users that do not have
+            //       a onPremisesExtensionAttributes.extensionAttribute8 (deactivation date) set so we have to pull
+            //       all users and then filter them in code.  When pulling a small syncDuration this is not a big deal
+            //       however when pulling "all users" when the syncDuration is 0 it takes many calls and many seconds
+            //       to retrieve all the users, the number of calls and time taken will only increase as users are added
             var url = $"{_graphApiUrl}/groups/{groupId}/members?{_memberPropertiesToSelect}";
             var duration = syncDurationInHours * -1;
             var usersList = await GetGraphUsers(url, duration, token);
