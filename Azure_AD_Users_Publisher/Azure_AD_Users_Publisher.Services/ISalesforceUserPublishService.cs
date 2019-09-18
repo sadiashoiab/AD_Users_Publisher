@@ -5,11 +5,11 @@ namespace Azure_AD_Users_Publisher.Services
 {
     public interface ISalesforceUserPublishService
     {
-        int ErrorCount { get; set; }
+        int ErrorCount { get; }
 
-        int PublishCount { get; set; }
+        int PublishCount { get; }
 
-        int DeactivationCount { get; set; }
+        int DeactivationCount { get; }
 
         Task Publish(SalesforceUser user);
         Task Deactivate(string externalId);
