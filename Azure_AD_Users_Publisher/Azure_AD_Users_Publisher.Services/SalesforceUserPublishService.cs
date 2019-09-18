@@ -11,9 +11,6 @@ namespace Azure_AD_Users_Publisher.Services
 {
     public class SalesforceUserPublishService : ISalesforceUserPublishService
     {
-        private static readonly SemaphoreSlim _errorSemaphoreSlim = new SemaphoreSlim(1,1);
-        private static readonly SemaphoreSlim _publishSemaphoreSlim = new SemaphoreSlim(1,1);
-        private static readonly SemaphoreSlim _deactivationSemaphoreSlim = new SemaphoreSlim(1,1);
         private readonly CacheControlHeaderValue _noCacheControlHeaderValue = new CacheControlHeaderValue {NoCache = true};
 
         private readonly ILogger<SalesforceUserPublishService> _logger;
@@ -22,9 +19,13 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly ISalesforceTokenService _tokenService;
         private readonly IAzureLogicEmailService _azureLogicEmailService;
 
-        public int PublishCount { get; set; }
-        public int DeactivationCount { get; set; }
-        public int ErrorCount { get; set; }
+        private int _errorCount;
+        private int _deactivationCount;
+        private int _publishCount;
+
+        public int PublishCount => _publishCount;
+        public int DeactivationCount => _deactivationCount;
+        public int ErrorCount => _errorCount;
 
         public SalesforceUserPublishService(
             ILogger<SalesforceUserPublishService> logger, 
@@ -80,29 +81,13 @@ namespace Azure_AD_Users_Publisher.Services
                     await _azureLogicEmailService.SendAlert($"Exception when Publishing User to Salesforce, Response Content: {responseContent}, for User '{user.FirstName} {user.LastName}' with ExternalId: {user.ExternalId}, StackTrace: {ex.StackTrace}");
                 }
 
-                await _errorSemaphoreSlim.WaitAsync();
-                try
-                {
-                    ErrorCount++;
-                }
-                finally
-                {
-                    _errorSemaphoreSlim.Release();
-                }
+                Interlocked.Increment(ref _errorCount);
             } 
             else
             {
                 _logger.LogDebug($"{correlationId}, Successfully Published to Salesforce User: {json}");
                 
-                await _publishSemaphoreSlim.WaitAsync();
-                try
-                {
-                    PublishCount++;
-                }
-                finally
-                {
-                    _publishSemaphoreSlim.Release();
-                }
+                Interlocked.Increment(ref _publishCount);
             }
         }
 
@@ -133,29 +118,13 @@ namespace Azure_AD_Users_Publisher.Services
                     await _azureLogicEmailService.SendAlert(message);
                 }
 
-                await _errorSemaphoreSlim.WaitAsync();
-                try
-                {
-                    ErrorCount++;
-                }
-                finally
-                {
-                    _errorSemaphoreSlim.Release();
-                }
+                Interlocked.Increment(ref _errorCount);
             }
             else
             {
                 _logger.LogDebug($"{correlationId}, Successfully Deactivated Salesforce User ExernalId: {externalId}");
                 
-                await _deactivationSemaphoreSlim.WaitAsync();
-                try
-                {
-                    DeactivationCount++;
-                }
-                finally
-                {
-                    _deactivationSemaphoreSlim.Release();
-                }
+                Interlocked.Increment(ref _deactivationCount);
             }
         }
     }
