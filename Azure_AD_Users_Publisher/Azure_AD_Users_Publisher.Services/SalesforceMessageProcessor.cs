@@ -26,7 +26,7 @@ namespace Azure_AD_Users_Publisher.Services
 
         public async Task ProcessUser(AzureActiveDirectoryUser user)
         {
-            var syncUserToSalesforce = await ShouldUserBeSyncedToSalesforce(user);
+            var syncUserToSalesforce = await CheckUserFranchiseAgainstFranchiseSource(user, ProgramDataSources.Salesforce, true, false);
             if (syncUserToSalesforce)
             {
                 var json = System.Text.Json.JsonSerializer.Serialize(user);
@@ -38,7 +38,7 @@ namespace Azure_AD_Users_Publisher.Services
                 }
                 else
                 {
-                    var operatingSystemTask = GetUserOperatingSystem(user);
+                    var operatingSystemTask = CheckUserFranchiseAgainstFranchiseSource(user, ProgramDataSources.ClearCare, "ClearCare", "N/A");
                     var timeZoneTask = _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
                     await Task.WhenAll(operatingSystemTask, timeZoneTask);
 
@@ -70,19 +70,7 @@ namespace Azure_AD_Users_Publisher.Services
             }
         }
 
-        private async Task<string> GetUserOperatingSystem(AzureActiveDirectoryUser user)
-        {
-            var result = await CheckUserAgainstFranchiseSource(user, ProgramDataSources.ClearCare, "ClearCare", "N/A");
-            return result;
-        }
-
-        private async Task<bool> ShouldUserBeSyncedToSalesforce(AzureActiveDirectoryUser user)
-        {
-            var result = await CheckUserAgainstFranchiseSource(user, ProgramDataSources.Salesforce, true, false);
-            return result;
-        }
-
-        private async Task<T> CheckUserAgainstFranchiseSource<T>(AzureActiveDirectoryUser user, ProgramDataSources source, T success, T fail)
+        private async Task<T> CheckUserFranchiseAgainstFranchiseSource<T>(AzureActiveDirectoryUser user, ProgramDataSources source, T success, T fail)
         {
             var parsed = int.TryParse(user.FranchiseNumber, out var userFranchiseNumber);
             if (parsed)
