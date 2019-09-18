@@ -72,61 +72,42 @@ namespace Azure_AD_Users_Publisher.Services
 
         private async Task<string> GetUserOperatingSystem(AzureActiveDirectoryUser user)
         {
-            var parsed = int.TryParse(user.FranchiseNumber, out var userFranchiseNumber);
-            if (parsed)
-            {
-                var clearCareFranchises = await RetrieveClearCareFranchiseData();
-                if (clearCareFranchises.Any(franchiseNumber => franchiseNumber == userFranchiseNumber))
-                {
-                    return "ClearCare";
-                }
-            }
-
-            return "N/A";
+            var result = await CheckUserAgainstFranchiseSource(user, ProgramDataSources.ClearCare, "ClearCare", "N/A");
+            return result;
         }
 
         private async Task<bool> ShouldUserBeSyncedToSalesforce(AzureActiveDirectoryUser user)
         {
+            var result = await CheckUserAgainstFranchiseSource(user, ProgramDataSources.Salesforce, true, false);
+            return result;
+        }
+
+        private async Task<T> CheckUserAgainstFranchiseSource<T>(AzureActiveDirectoryUser user, ProgramDataSources source, T success, T fail)
+        {
             var parsed = int.TryParse(user.FranchiseNumber, out var userFranchiseNumber);
             if (parsed)
             {
-                var salesforceFranchises = await RetrieveSalesforceFranchiseData();
-                if (salesforceFranchises.Any(franchiseNumber => franchiseNumber == userFranchiseNumber))
+                var franchises = await RetrieveFranchiseData(source);
+                if (franchises.Any(franchiseNumber => franchiseNumber == userFranchiseNumber))
                 {
-                    return true;
+                    return success;
                 }
             }
 
-            return false;
+            return fail;
         }
 
-        private async Task<int[]> RetrieveSalesforceFranchiseData()
+        private async Task<int[]> RetrieveFranchiseData(ProgramDataSources source)
         {
             try
             {
                 var bearerToken = await _tokenService.RetrieveToken();
-                var salesforceFranchises = await _programDataService.RetrieveFranchises(ProgramDataSources.Salesforce, bearerToken);
-                return salesforceFranchises;
+                var franchises =  await _programDataService.RetrieveFranchises(source, bearerToken);
+                return franchises;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An Exception occurred when trying to retrieve Salesforce Franchises. StackTrace: {ex.StackTrace}");
-            }
-
-            return new int[] { };
-        }
-
-        private async Task<int[]> RetrieveClearCareFranchiseData()
-        {
-            try
-            {
-                var bearerToken = await _tokenService.RetrieveToken();
-                var clearCareFranchises =  await _programDataService.RetrieveFranchises(ProgramDataSources.ClearCare, bearerToken);
-                return clearCareFranchises;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An Exception occurred when trying to retrieve ClearCare Franchise. StackTrace: {ex.StackTrace}");
+                _logger.LogError(ex, $"An Exception occurred when trying to retrieve {source.GetDescription()} Franchise. StackTrace: {ex.StackTrace}");
             }
 
             return new int[] { };
