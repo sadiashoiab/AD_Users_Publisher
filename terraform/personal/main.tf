@@ -254,8 +254,8 @@ resource azurerm_app_service publisher-as {
     default_provider = "AzureActiveDirectory"
     issuer           = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/"
 	active_directory  {
-        client_id         = "${azuread_application.publisher_app.application_id}"
-		allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
+      client_id         = "${azuread_application.publisher_app.application_id}"
+	  allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
     }
   }
   
@@ -290,11 +290,24 @@ resource azurerm_key_vault azure-ad-users-kv {
   
   access_policy {
     tenant_id = "${data.azurerm_client_config.current.tenant_id}"
+    object_id = "${data.azurerm_client_config.current.service_principal_object_id}"
+	key_permissions = []
+    secret_permissions = [
+      "Get",
+	  "List",
+	  "Set",
+	  "Create",
+    ]
+	certificate_permissions = []
+  }
+  
+  access_policy {
+    tenant_id = "${data.azurerm_client_config.current.tenant_id}"
     object_id = "${azurerm_app_service.extract-as.identity[0].principal_id}"
     key_permissions = []
     secret_permissions = [
-    	"Get",
-    	"List",
+      "Get",
+      "List",
     ]
     certificate_permissions = []
   }
@@ -304,8 +317,8 @@ resource azurerm_key_vault azure-ad-users-kv {
     object_id = "${azurerm_app_service.publisher-as.identity[0].principal_id}"
     key_permissions = []
     secret_permissions = [
-    	"Get",
-    	"List",
+      "Get",
+      "List",
     ]
     certificate_permissions = []
   }

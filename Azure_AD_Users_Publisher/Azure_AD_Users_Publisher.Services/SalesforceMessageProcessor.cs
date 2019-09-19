@@ -33,7 +33,8 @@ namespace Azure_AD_Users_Publisher.Services
                 if (user.DeactivationDateTimeOffset.HasValue)
                 {
                     _logger.LogInformation($"User will be Deactivated: {json}");
-                    await _salesforceUserPublishService.Deactivate(user.ExternalId);
+                    // todo: disabling for testing
+                    //await _salesforceUserPublishService.Deactivate(user.ExternalId);
                 }
                 else
                 {
@@ -62,7 +63,8 @@ namespace Azure_AD_Users_Publisher.Services
                     };
 
                     _logger.LogInformation($"User will be Published: {json}");
-                    await _salesforceUserPublishService.Publish(salesforceUser);
+                    // todo: disabling for testing
+                    //await _salesforceUserPublishService.Publish(salesforceUser);
                 }
 
                 _logger.LogInformation($"Publish Count: {_salesforceUserPublishService.PublishCount}, Deactivation Count: {_salesforceUserPublishService.DeactivationCount}, Error Count: {_salesforceUserPublishService.ErrorCount}");
