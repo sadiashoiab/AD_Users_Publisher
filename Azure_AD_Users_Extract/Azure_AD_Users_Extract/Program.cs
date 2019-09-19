@@ -31,7 +31,7 @@ namespace Azure_AD_Users_Extract
                 {
                     // todo: look to see if we can pull this key from Azure Key Vault
                     builder.AddApplicationInsights(hostingContext.Configuration.GetSection("ApplicationInsights")["InstrumentationKey"].ToString());
-                    builder.AddFilter<ApplicationInsightsLoggerProvider>("", LogLevel.Trace);
+                    builder.AddFilter<ApplicationInsightsLoggerProvider>("", LogLevel.Debug);
                     builder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Debug);
                     builder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     builder.AddDebug();

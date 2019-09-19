@@ -58,31 +58,41 @@ namespace Azure_AD_Users_Extract.Services
             var serviceBusConnectionString = await serviceBusConnectionStringTask;
             _franchiseUsersReoccurrenceGroupId = await franchiseUsersReoccurrenceGroupIdTask;
             _franchiseUsersReoccurrenceSyncDurationInHours = int.Parse(await franchiseUsersReoccurrenceSyncDurationInHoursTask);
+            _logger.LogDebug($"FranchiseUsersReoccurrenceSyncDurationInHours set to: {_franchiseUsersReoccurrenceSyncDurationInHours}.");
 
-            _topicClient = new TopicClient(serviceBusConnectionString, _topicName);
-            _logger.LogDebug($"TopicClient will be sending to Topic: {_nameToken}.");
-            _logger.LogDebug($"ServiceBusConnectionStringSecretName is set to: {_serviceBusConnectionStringSecretName}.");
-
-            cancellationToken.Register(async () =>
+            try
             {
-                await _topicClient.CloseAsync();
-                _logger.LogDebug($"{_nameToken} has called CloseAsync because of cancel.");
-            });
+                _topicClient = new TopicClient(serviceBusConnectionString, _topicName);
+                _logger.LogDebug($"TopicClient will be sending to Topic: {_nameToken}.");
+                _logger.LogDebug(
+                    $"ServiceBusConnectionStringSecretName is set to: {_serviceBusConnectionStringSecretName}");
 
-            if (_reoccurrenceInMinutes > 0)
+                cancellationToken.Register(async () =>
+                {
+                    await _topicClient.CloseAsync();
+                    _logger.LogDebug($"{_nameToken} has called CloseAsync because of cancel.");
+                });
+
+                if (_reoccurrenceInMinutes > 0)
+                {
+                    _logger.LogInformation($"ReoccurrenceInMinutes is set to: {_reoccurrenceInMinutes}, Creating timer to Retrieve and Process Extract Users");
+                    // note: create the timer, but wait 10 seconds before we start executing work from it.
+                    _reoccurrenceTimer = new Timer(RetrieveAndProcessExtractUsers,
+                        null,
+                        TimeSpan.FromSeconds(10),
+                        TimeSpan.FromMinutes(_reoccurrenceInMinutes));
+                }
+            }
+            catch (Exception ex)
             {
-                // note: create the timer, but wait 10 seconds before we start executing work from it.
-                _reoccurrenceTimer = new Timer(RetrieveAndProcessExtractUsers,
-                    null, 
-                    TimeSpan.FromSeconds(10),
-                    TimeSpan.FromMinutes(_reoccurrenceInMinutes));
+                _logger.LogCritical(ex, "An exception occurred when trying to initialize the TopicClient");
             }
         }
 
         private async void RetrieveAndProcessExtractUsers(object state)
         {
             var startTime = DateTime.UtcNow;
-            _logger.LogDebug($"Starting retrieval and processing of franchise users at {DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}.");
+            _logger.LogInformation($"Starting retrieval and processing of franchise users at {DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}.");
 
             try
             {
@@ -106,12 +116,12 @@ namespace Azure_AD_Users_Extract.Services
 
                 var endTime = DateTime.UtcNow;
                 var elapsed = endTime - startTime;
-                _logger.LogDebug(
+                _logger.LogInformation(
                     $"Finished retrieval and processing of users at {endTime.ToString(CultureInfo.InvariantCulture)}.");
 
                 var counts = franchiseUsers.Count + deactivatedUsers.Count;
                 var userString = counts > 1 ? "user" : "users";
-                _logger.LogDebug(
+                _logger.LogInformation(
                     $"Sent {counts} {userString} to the topic: {_topicName} in {elapsed.TotalSeconds} seconds.");
             }
             catch (Exception ex)
