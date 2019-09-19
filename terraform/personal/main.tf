@@ -48,6 +48,18 @@ variable "unique_postfix" {
 
 data "azurerm_client_config" "current" {}
 
+## the following block is a workaround pulled from https://github.com/terraform-providers/terraform-provider-azurerm/issues/3502
+data "external" "this_az_account" {
+  program = [
+    "az",
+    "ad",
+    "signed-in-user",
+    "show",
+    "--query",
+    "{displayName: displayName,objectId: objectId,objectType: objectType,odata_metadata: \"odata.metadata\"}"
+  ]
+}
+
 # create the resource groups
 resource azurerm_resource_group azure-ad-users-rg {
   name     = var.app_root
@@ -290,13 +302,13 @@ resource azurerm_key_vault azure-ad-users-kv {
   
   access_policy {
     tenant_id = "${data.azurerm_client_config.current.tenant_id}"
-    object_id = "${data.azurerm_client_config.current.service_principal_object_id}"
+    object_id = "${data.external.this_az_account.result.objectId}"
 	key_permissions = []
     secret_permissions = [
       "Get",
 	  "List",
 	  "Set",
-	  "Create",
+	  "Delete",
     ]
 	certificate_permissions = []
   }
@@ -344,7 +356,7 @@ resource azurerm_key_vault_secret "FranchiseUsersReoccurrenceGroupId" {
 
 resource azurerm_key_vault_secret "FranchiseUsersReoccurrenceSyncDurationInHours" {
   name         = "FranchiseUsersReoccurrenceSyncDurationInHours"
-  value        = "replace_me_once_created"
+  value        = "4"
   key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
 }
 
@@ -435,7 +447,19 @@ resource azurerm_application_insights publisher-ai {
   application_type    = "web"
 }
 
-# example of how to print out values after run
+#example of how to print out values after run
 #output "extract_instrumentation_key" {
 #  value = "${azurerm_application_insights.extract-ai.instrumentation_key}"
+#}
+
+#output "current_tenant_id" {
+#  value = "${data.azurerm_client_config.current.tenant_id}"
+#}
+#
+#output "current_service_principal_object_id" {
+#  value = "${data.azurerm_client_config.current.service_principal_object_id}"
+#}
+#
+#output "current_user_object_id" {
+#  value = "${data.external.this_az_account.result.objectId}"
 #}
