@@ -430,8 +430,8 @@ resource azurerm_key_vault_secret "SalesforceTokenUsername" {
 
 resource azurerm_key_vault_secret "ServiceBusConnectionString" {
   name         = "ServiceBusConnectionString"
-  value        = "default_primary_connection_string"
-  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.default_primary_connection_string}"
+  value        = "${azurerm_servicebus_namespace.integrations-sb.default_primary_connection_string}"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
 }
 
 # create the application insight for extract
