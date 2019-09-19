@@ -117,6 +117,8 @@ resource azurerm_servicebus_topic franchiseusers-sbt {
   resource_group_name   = "${azurerm_resource_group.integrations-rg.name}"
   namespace_name        = "${azurerm_servicebus_namespace.integrations-sb.name}"
   max_size_in_megabytes = 1024
+  auto_delete_on_idle   = "PT336H" # 14 days in hours
+  default_message_ttl   = "PT240H" # 10 days in hours
 }
 
 # create the subscription on the topic
@@ -428,7 +430,7 @@ resource azurerm_key_vault_secret "SalesforceTokenUsername" {
 
 resource azurerm_key_vault_secret "ServiceBusConnectionString" {
   name         = "ServiceBusConnectionString"
-  value        = "replace_me_once_created"
+  value        = "${azurerm_servicebus_namespace.integrations-sb.default_primary_connection_string}"
   key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
 }
 
@@ -447,10 +449,14 @@ resource azurerm_application_insights publisher-ai {
   application_type    = "web"
 }
 
-#example of how to print out values after run
-#output "extract_instrumentation_key" {
-#  value = "${azurerm_application_insights.extract-ai.instrumentation_key}"
-#}
+#print out values after run
+output "extract_instrumentation_key" {
+  value = "${azurerm_application_insights.extract-ai.instrumentation_key}"
+}
+
+output "publisher_instrumentation_key" {
+  value = "${azurerm_application_insights.publisher-ai.instrumentation_key}"
+}
 
 #output "current_tenant_id" {
 #  value = "${data.azurerm_client_config.current.tenant_id}"
