@@ -25,9 +25,15 @@ variable "app_root_lower" {
 	default = "azure-ad-users"
 }
 
-variable "app_environment" {
+variable "app_environment_identifier" {
 	type = string
-	default = "dev"
+	default = "jami"
+}
+
+variable "aspnet_environment" {
+	type = string
+#	default = "Development"
+	default = "Staging"
 }
 
 variable "default_location" {
@@ -51,7 +57,6 @@ resource azurerm_resource_group azure-ad-users-rg {
     "Target"              = "Home Office"
     "App Name"            =  var.app_root
     "Assigned Department" = "IT Services"
-    "Environment"         = "Development"
     "Assigned Company"    = "Home Office"
   }
 }
@@ -60,7 +65,6 @@ resource azurerm_resource_group salesforce-rg {
   name     = "Salesforce"
   location = var.default_location
   tags = {
-    "Environment"         = "Development"
     "Assigned Department" = "IT Services"
     "Target"              = "Franchise Network"
     "App Name"            = "Salesforce"
@@ -76,14 +80,13 @@ resource azurerm_resource_group integrations-rg {
     "Target"              = "Home Office"
     "App Name"            = "Integrations"
     "Assigned Department" = "IT Services"
-    "environment"         = "Development"
     "Assigned Company"    = "Home Office"
   }
 }
 
 # create the service bus
 resource azurerm_servicebus_namespace integrations-sb {
-  name                = "${var.app_prefix}-integrations-${var.app_environment}${var.unique_postfix}" #this has to be unique across all subscriptions
+  name                = "${var.app_prefix}-integrations-${var.app_environment_identifier}${var.unique_postfix}" #this has to be unique across all subscriptions
   location            = var.default_location
   resource_group_name = "${azurerm_resource_group.integrations-rg.name}"
   sku                 = "Standard"
@@ -92,7 +95,6 @@ resource azurerm_servicebus_namespace integrations-sb {
     "Target"              = "Home Office"
     "App Name"            = "Integrations"
     "Assigned Department" = "IT Services"
-    "environment"         = "Development"
     "Assigned Company"    = "Home Office"
   }
 }
@@ -117,7 +119,7 @@ resource "azurerm_servicebus_subscription" "salesforcefranchiseusers-sbts" {
 
 # create a linux app service plan for extract
 resource azurerm_app_service_plan linux-extract-asp {
-  name                = "${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-extract-plan"
+  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract-plan"
   location            = var.default_location
   resource_group_name = "${azurerm_resource_group.azure-ad-users-rg.name}"
 
@@ -135,7 +137,7 @@ resource azurerm_app_service_plan linux-extract-asp {
 
 # create a linux app service plan for publisher
 resource azurerm_app_service_plan linux-publisher-asp {
-  name                = "${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-publisher-plan"
+  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher-plan"
   location            = var.default_location
   resource_group_name = "${azurerm_resource_group.salesforce-rg.name}"
 
@@ -152,10 +154,10 @@ resource azurerm_app_service_plan linux-publisher-asp {
 }
 
 resource azuread_application publisher_app {
-  name                       = "${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-publisher-app-registration"
-  homepage                   = "https://${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/"
-  identifier_uris            = ["https://${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net"]
-  reply_urls                 = ["https://${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
+  name                       = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher-app"
+  homepage                   = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/"
+  identifier_uris            = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net"]
+  reply_urls                 = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = true
 
@@ -172,10 +174,10 @@ resource azuread_application publisher_app {
 }
 
 resource azuread_application extract_app {
-  name                       = "${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-extract-app-registration"
-  homepage                   = "https://${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net/"
-  identifier_uris            = ["https://${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net"]
-  reply_urls                 = ["https://${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
+  name                       = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract-app"
+  homepage                   = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net/"
+  identifier_uris            = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net"]
+  reply_urls                 = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = true
   
@@ -193,7 +195,7 @@ resource azuread_application extract_app {
 
 # create an app service for the extract service
 resource azurerm_app_service extract-as {
-  name                = "${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-extract${var.unique_postfix}" #this has to be unique across all subscriptions, used for the hostname
+  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}" #this has to be unique across all subscriptions, used for the hostname
   location            = var.default_location
   resource_group_name = "${azurerm_resource_group.azure-ad-users-rg.name}"
   app_service_plan_id = "${azurerm_app_service_plan.linux-extract-asp.id}"
@@ -211,7 +213,7 @@ resource azurerm_app_service extract-as {
     issuer           = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/"
 	active_directory  {
         client_id         = "${azuread_application.extract_app.application_id}"
-		allowed_audiences = ["https://${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
+		allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
     }
   }
   
@@ -226,16 +228,16 @@ resource azurerm_app_service extract-as {
   
   app_settings = {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
-	ASPNETCORE_ENVIRONMENT              = "Development"
+	ASPNETCORE_ENVIRONMENT              = "${var.aspnet_environment}"
 	APPLICATION_AI_KEY                  = "${azurerm_application_insights.extract-ai.instrumentation_key}"
-	APPLICATION_KEYVAULTURL             = "https://${var.app_prefix}-${var.app_environment}-${var.app_root_lower}.vault.azure.net/secrets/" #the j should be removed/added when "local"
+	APPLICATION_KEYVAULTURL             = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}.vault.azure.net/secrets/" #the j should be removed/added when "local"
 	WEBSITE_HTTPLOGGING_RETENTION_DAYS  = 7
   }
 }
 
 # create an app service for the publisher service
 resource azurerm_app_service publisher-as {
-  name                = "${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-publisher${var.unique_postfix}" #this has to be unique across all subscriptions, used for the hostname
+  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}" #this has to be unique across all subscriptions, used for the hostname
   location            = var.default_location
   resource_group_name = "${azurerm_resource_group.salesforce-rg.name}"
   app_service_plan_id = "${azurerm_app_service_plan.linux-publisher-asp.id}"
@@ -253,7 +255,7 @@ resource azurerm_app_service publisher-as {
     issuer           = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/"
 	active_directory  {
         client_id         = "${azuread_application.publisher_app.application_id}"
-		allowed_audiences = ["https://${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
+		allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
     }
   }
   
@@ -268,16 +270,16 @@ resource azurerm_app_service publisher-as {
   
   app_settings = {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
-	ASPNETCORE_ENVIRONMENT              = "Development"
+	ASPNETCORE_ENVIRONMENT              = "${var.aspnet_environment}"
 	APPLICATION_AI_KEY                  = "${azurerm_application_insights.publisher-ai.instrumentation_key}"
-	APPLICATION_KEYVAULTURL             = "https://${var.app_prefix}-${var.app_environment}-${var.app_root_lower}.vault.azure.net/secrets/" #the j should be removed/added when "local"
+	APPLICATION_KEYVAULTURL             = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}.vault.azure.net/secrets/" #the j should be removed/added when "local"
 	WEBSITE_HTTPLOGGING_RETENTION_DAYS  = 7
   }
 }
 
 # create the key vault
 resource azurerm_key_vault azure-ad-users-kv {
-  name                            = "${var.app_prefix}-${var.app_environment}-${var.app_root_lower}" #this has to be unique across all subscriptions, the j should be removed/added when "local"
+  name                            = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}" #this has to be unique across all subscriptions, the j should be removed/added when "local"
   location                        = var.default_location
   resource_group_name             = "${azurerm_resource_group.azure-ad-users-rg.name}"
   sku_name                        = "standard"
@@ -309,33 +311,118 @@ resource azurerm_key_vault azure-ad-users-kv {
   }
 }
 
+resource azurerm_key_vault_secret "BearerTokenClientId" {
+  name         = "BearerTokenClientId"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "BearerTokenClientSecret" {
+  name         = "BearerTokenClientSecret"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "FranchiseUsersReoccurrenceGroupId" {
+  name         = "FranchiseUsersReoccurrenceGroupId"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "FranchiseUsersReoccurrenceSyncDurationInHours" {
+  name         = "FranchiseUsersReoccurrenceSyncDurationInHours"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "GoogleApiKey" {
+  name         = "GoogleApiKey"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "HOAppKey" {
+  name         = "HOAppKey"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "HOClientId" {
+  name         = "HOClientId"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "HOTenant" {
+  name         = "HOTenant"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "NAAppKey" {
+  name         = "NAAppKey"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "NAClientId" {
+  name         = "NAClientId"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "NATenant" {
+  name         = "NATenant"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "SalesforceTokenClientId" {
+  name         = "SalesforceTokenClientId"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "SalesforceTokenClientSecret" {
+  name         = "SalesforceTokenClientSecret"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "SalesforceTokenPassword" {
+  name         = "SalesforceTokenPassword"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "SalesforceTokenUsername" {
+  name         = "SalesforceTokenUsername"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
+resource azurerm_key_vault_secret "ServiceBusConnectionString" {
+  name         = "ServiceBusConnectionString"
+  value        = "replace_me_once_created"
+  key_vault_id = "${azurerm_key_vault.azure-ad-users-kv.id}"
+}
+
 # create the application insight for extract
 resource azurerm_application_insights extract-ai {
-  name                = "${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-extract-ai"
+  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract-ai"
   location            = var.default_location
   resource_group_name = "${azurerm_resource_group.azure-ad-users-rg.name}"
   application_type    = "web"
 }
 
 resource azurerm_application_insights publisher-ai {
-  name                = "${var.app_prefix}-${var.app_environment}-${var.app_root_lower}-publisher-ai"
+  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher-ai"
   location            = var.default_location
   resource_group_name = "${azurerm_resource_group.salesforce-rg.name}"
   application_type    = "web"
 }
 
-output "extract_instrumentation_key" {
-  value = "${azurerm_application_insights.extract-ai.instrumentation_key}"
-}
-
-output "publisher_instrumentation_key" {
-  value = "${azurerm_application_insights.publisher-ai.instrumentation_key}"
-}
-
-#output "extract_principal_id" {
-#  value = "${azurerm_app_service.extract-as.identity[0].principal_id}"
-#}
-#
-#output "data_tenant_id" {
-#  value = "${data.azurerm_client_config.current.tenant_id}"
+# example of how to print out values after run
+#output "extract_instrumentation_key" {
+#  value = "${azurerm_application_insights.extract-ai.instrumentation_key}"
 #}
