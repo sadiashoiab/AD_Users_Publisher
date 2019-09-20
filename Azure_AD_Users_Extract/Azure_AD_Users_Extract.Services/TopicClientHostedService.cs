@@ -107,7 +107,7 @@ namespace Azure_AD_Users_Extract.Services
 
                 // note: we do not want to update franchise users that have a deactivation date.  we have a separate api call where we are retrieving the
                 //       deactivated users, therefore only send franchise users if they do not have a deactivation date set
-                var franchiseUsersThatDoNotHaveADeactivationDateSet = franchiseUsers.Where(user => !user.DeactivationDateTimeOffset.HasValue);
+                var franchiseUsersThatDoNotHaveADeactivationDateSet = franchiseUsers.Where(user => !user.DeactivationDateTimeOffset.HasValue).ToList();
                 
                 // note: doing these at the "same time" to better utilize resources and time
                 var publishFranchiseUsersTask = SendUsersToServiceBusTopic(franchiseUsersThatDoNotHaveADeactivationDateSet);
@@ -119,7 +119,7 @@ namespace Azure_AD_Users_Extract.Services
                 _logger.LogInformation(
                     $"Finished retrieval and processing of users at {endTime.ToString(CultureInfo.InvariantCulture)}.");
 
-                var counts = franchiseUsers.Count + deactivatedUsers.Count;
+                var counts = franchiseUsersThatDoNotHaveADeactivationDateSet.Count + deactivatedUsers.Count;
                 var userString = counts > 1 ? "user" : "users";
                 _logger.LogInformation(
                     $"Sent {counts} {userString} to the topic: {_topicName} in {elapsed.TotalSeconds} seconds.");

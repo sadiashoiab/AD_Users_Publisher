@@ -18,6 +18,7 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly ILogger<SubscriptionClientHostedService> _logger;
         private readonly IAzureKeyVaultService _azureKeyVaultService;
         private readonly IMessageProcessor _messageProcessor;
+        private readonly IAzureLogicEmailService _azureLogicEmailService;
         private readonly string _topicName;
         private readonly string _subscriptionName;
         private readonly string _serviceBusConnectionStringSecretName;
@@ -27,11 +28,13 @@ namespace Azure_AD_Users_Publisher.Services
         public SubscriptionClientHostedService(ILogger<SubscriptionClientHostedService> logger,
             IAzureKeyVaultService azureKeyVaultService,
             IConfiguration configuration,
-            IMessageProcessor messageProcessor)
+            IMessageProcessor messageProcessor,
+            IAzureLogicEmailService azureLogicEmailService)
         {
             _logger = logger;
             _azureKeyVaultService = azureKeyVaultService;
             _messageProcessor = messageProcessor;
+            _azureLogicEmailService = azureLogicEmailService;
             _topicName = configuration["ExtractTopicName"];
             _subscriptionName = configuration["ExtractSubscriptionName"];
             _serviceBusConnectionStringSecretName = configuration["ServiceBusConnectionStringSecretName"];
@@ -113,10 +116,12 @@ namespace Azure_AD_Users_Publisher.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Exception when processing message: {Encoding.UTF8.GetString(message.Body)}. StackTrace: {ex.StackTrace}");
+                var msg = $"Exception when processing message: {Encoding.UTF8.GetString(message.Body)}, sending message to DeadLetter. StackTrace: {ex.StackTrace}";
+                _logger.LogError(ex, msg);
+                await _azureLogicEmailService.SendAlert(msg);
                 if (!_subscriptionClient.IsClosedOrClosing && message.SystemProperties.IsLockTokenSet)
                 {
-                    await _subscriptionClient.AbandonAsync(message.SystemProperties.LockToken);
+                    await _subscriptionClient.DeadLetterAsync(message.SystemProperties.LockToken, msg);
                 }
             }
         }

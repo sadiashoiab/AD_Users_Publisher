@@ -35,7 +35,7 @@ namespace Azure_AD_Users_Extract.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"error occurred while trying to get token and users for groupId: {groupId}, and syncDurationInHours: {syncDurationInHours}");
+                _logger.LogError(ex, $"Error occurred while trying to get token and users for groupId: {groupId}, and syncDurationInHours: {syncDurationInHours}");
             }
 
             return null;
