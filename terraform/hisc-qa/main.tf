@@ -200,10 +200,10 @@ resource azuread_application publisher_app {
   }
 }
 
-#resource "azuread_service_principal" "publisher_sp" {
-#  application_id                = "${azuread_application.publisher_app.application_id}"
-#  app_role_assignment_required  = false
-#}
+resource "azuread_service_principal" "publisher_sp" {
+  application_id                = "${azuread_application.publisher_app.application_id}"
+  app_role_assignment_required  = false
+}
 
 resource azuread_application extract_app {
   name                       = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract-app"
@@ -223,6 +223,11 @@ resource azuread_application extract_app {
       type = "Scope"
     }
   }
+}
+
+resource "azuread_service_principal" "extract_sp" {
+  application_id                = "${azuread_application.extract_app.application_id}"
+  app_role_assignment_required  = false
 }
 
 # create an app service for the extract service
