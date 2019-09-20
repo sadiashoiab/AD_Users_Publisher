@@ -130,8 +130,8 @@ resource azurerm_servicebus_topic franchiseusers-sbt {
   resource_group_name   = "Integrations"
   namespace_name        = "${azurerm_servicebus_namespace.integrations-sb.name}"
   max_size_in_megabytes = 1024
-  auto_delete_on_idle   = "PT336H" # 14 days in hours
-  default_message_ttl   = "PT240H" # 10 days in hours
+  auto_delete_on_idle   = "P14D" # 14 days in hours
+  default_message_ttl   = "P10D" # 10 days in hours
 }
 
 # create the subscription on the topic
