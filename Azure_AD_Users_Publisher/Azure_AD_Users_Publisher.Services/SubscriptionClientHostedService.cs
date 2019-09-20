@@ -44,6 +44,11 @@ namespace Azure_AD_Users_Publisher.Services
         {
             _logger.LogDebug($"{_nameToken} is starting in the background.");
             var serviceBusConnectionString = await _azureKeyVaultService.GetSecret(_serviceBusConnectionStringSecretName);
+
+            _logger.LogInformation(string.IsNullOrWhiteSpace(serviceBusConnectionString) ? "ServiceBusConnectionString was not retrieved from the Key Vault." : "ServiceBusConnectionString was retrieved from the Key Vault.");
+            _logger.LogInformation(string.IsNullOrWhiteSpace(_topicName) ? "TopicName was not retrieved from configuration." : $"TopicName: {_topicName} was retrieved from configuration.");
+            _logger.LogInformation(string.IsNullOrWhiteSpace(_subscriptionName) ? "SubscriptionName was not retrieved from configuration." : $"SubscriptionName: {_subscriptionName} was retrieved from configuration.");
+
             _subscriptionClient = new SubscriptionClient(serviceBusConnectionString, _topicName, _subscriptionName);
 
             cancellationToken.Register(async () =>
