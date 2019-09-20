@@ -44,6 +44,16 @@ variable "default_location" {
 	default = "Central US"
 }
 
+variable "retention_in_days" {
+	type = number
+	default = 7
+}
+
+variable "retention_in_mb" {
+	type = number
+	default = 35
+}
+
 variable "unique_postfix" {
 	type = string
 	default = ""
@@ -237,8 +247,8 @@ resource azurerm_app_service extract-as {
   logs {
     http_logs {
 	  file_system  {
-	    retention_in_days        = 7
-		retention_in_mb          = 35
+	    retention_in_days        = var.retention_in_days
+		retention_in_mb          = var.retention_in_mb
 	  }
 	}
   }
@@ -247,8 +257,8 @@ resource azurerm_app_service extract-as {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
 	ASPNETCORE_ENVIRONMENT              = "${var.aspnet_environment}"
 	APPLICATION_AI_KEY                  = "${azurerm_application_insights.extract-ai.instrumentation_key}"
-	APPLICATION_KEYVAULTURL             = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}.vault.azure.net/secrets/" #the j should be removed/added when "local"
-	WEBSITE_HTTPLOGGING_RETENTION_DAYS  = 7
+	APPLICATION_KEYVAULTURL             = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}.vault.azure.net/secrets/"
+	WEBSITE_HTTPLOGGING_RETENTION_DAYS  = var.retention_in_days
   }
 }
 
@@ -279,8 +289,8 @@ resource azurerm_app_service publisher-as {
   logs {
     http_logs {
 	  file_system  {
-	    retention_in_days        = 7
-		retention_in_mb          = 35
+	    retention_in_days        = var.retention_in_days
+		retention_in_mb          = var.retention_in_mb
 	  }
 	}
   }
@@ -289,14 +299,14 @@ resource azurerm_app_service publisher-as {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
 	ASPNETCORE_ENVIRONMENT              = "${var.aspnet_environment}"
 	APPLICATION_AI_KEY                  = "${azurerm_application_insights.publisher-ai.instrumentation_key}"
-	APPLICATION_KEYVAULTURL             = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}.vault.azure.net/secrets/" #the j should be removed/added when "local"
-	WEBSITE_HTTPLOGGING_RETENTION_DAYS  = 7
+	APPLICATION_KEYVAULTURL             = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}.vault.azure.net/secrets/"
+	WEBSITE_HTTPLOGGING_RETENTION_DAYS  = var.retention_in_days
   }
 }
 
 # create the key vault
 resource azurerm_key_vault azure-ad-users-kv {
-  name                            = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}" #this has to be unique across all subscriptions, the j should be removed/added when "local"
+  name                            = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}" #this has to be unique across all subscriptions
   location                        = var.default_location
   resource_group_name             = "${azurerm_resource_group.azure-ad-users-rg.name}"
   sku_name                        = "standard"
