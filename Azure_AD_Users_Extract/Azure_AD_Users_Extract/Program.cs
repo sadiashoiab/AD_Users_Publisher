@@ -25,6 +25,7 @@ namespace Azure_AD_Users_Extract
                     // note: set ASPNETCORE_ENVIRONMENT environment variable to pull in environment specific configurations.
                     //       depending on what OS you are deploying to, this CAN be case sensitive
                     config.AddJsonFile($"appsettings.{environment.EnvironmentName}.json", true, true);
+
                     // todo: add in environment variables, and pull the application insights key from it
                 })
                 .ConfigureLogging((hostingContext, builder) =>
