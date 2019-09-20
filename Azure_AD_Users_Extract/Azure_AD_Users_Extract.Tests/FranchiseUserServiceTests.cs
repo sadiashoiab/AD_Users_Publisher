@@ -97,7 +97,7 @@ namespace Azure_AD_Users_Extract.Tests
             loggerMock.Verify(mock => mock.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
-                    It.Is<FormattedLogValues>(v => v.ToString().StartsWith("error occurred while trying to get token and users for groupId:")),
+                    It.Is<FormattedLogValues>(v => v.ToString().StartsWith("Error occurred while trying to get token and users for groupId:")),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<object, Exception, string>>()),
                 Times.Once);
