@@ -244,6 +244,10 @@ resource azurerm_app_service extract-as {
     }
   }
   
+  site_config {
+    always_on = true
+  }
+  
   logs {
     http_logs {
 	  file_system  {
@@ -284,6 +288,10 @@ resource azurerm_app_service publisher-as {
       client_id         = "${azuread_application.publisher_app.application_id}"
 	  allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
     }
+  }
+  
+  site_config {
+    always_on = true
   }
   
   logs {
