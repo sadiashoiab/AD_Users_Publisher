@@ -31,12 +31,7 @@ variable "app_root_lower" {
 
 variable "app_environment_identifier" {
 	type = string
-	default = "dev"
-}
-
-variable "aspnet_environment" {
-	type = string
-	default = "Development"
+	default = "prod"
 }
 
 variable "default_location" {
@@ -52,11 +47,6 @@ variable "retention_in_days" {
 variable "retention_in_mb" {
 	type = number
 	default = 35
-}
-
-variable "unique_postfix" {
-	type = string
-	default = ""
 }
 
 data "azurerm_client_config" "current" {}
@@ -111,7 +101,7 @@ resource azurerm_resource_group integrations-rg {
 
 # create the service bus
 resource azurerm_servicebus_namespace integrations-sb {
-  name                = "${var.app_prefix}-integrations-${var.app_environment_identifier}${var.unique_postfix}" #this has to be unique across all subscriptions
+  name                = "${var.app_prefix}-integrations-${var.app_environment_identifier}" #this has to be unique across all subscriptions
   location            = var.default_location
   resource_group_name = "${azurerm_resource_group.integrations-rg.name}"
   sku                 = "Standard"
@@ -182,9 +172,9 @@ resource azurerm_app_service_plan linux-publisher-asp {
 
 resource azuread_application publisher_app {
   name                       = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher-app"
-  homepage                   = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/"
-  identifier_uris            = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net"]
-  reply_urls                 = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
+  homepage                   = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher.azurewebsites.net/"
+  identifier_uris            = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher.azurewebsites.net"]
+  reply_urls                 = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher.azurewebsites.net/.auth/login/aad/callback"]
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = true
 
@@ -202,9 +192,9 @@ resource azuread_application publisher_app {
 
 resource azuread_application extract_app {
   name                       = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract-app"
-  homepage                   = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net/"
-  identifier_uris            = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net"]
-  reply_urls                 = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
+  homepage                   = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract.azurewebsites.net/"
+  identifier_uris            = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract.azurewebsites.net"]
+  reply_urls                 = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract.azurewebsites.net/.auth/login/aad/callback"]
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = true
   
@@ -222,7 +212,7 @@ resource azuread_application extract_app {
 
 # create an app service for the extract service
 resource azurerm_app_service extract-as {
-  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}" #this has to be unique across all subscriptions, used for the hostname
+  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract" #this has to be unique across all subscriptions, used for the hostname
   location            = var.default_location
   resource_group_name = "${azurerm_resource_group.azure-ad-users-rg.name}"
   app_service_plan_id = "${azurerm_app_service_plan.linux-extract-asp.id}"
@@ -240,7 +230,7 @@ resource azurerm_app_service extract-as {
     issuer           = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/"
 	active_directory  {
         client_id         = "${azuread_application.extract_app.application_id}"
-		allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
+		allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract.azurewebsites.net/.auth/login/aad/callback"]
     }
   }
   
@@ -255,7 +245,6 @@ resource azurerm_app_service extract-as {
   
   app_settings = {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
-	ASPNETCORE_ENVIRONMENT              = "${var.aspnet_environment}"
 	APPLICATION_AI_KEY                  = "${azurerm_application_insights.extract-ai.instrumentation_key}"
 	APPLICATION_KEYVAULTURL             = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}.vault.azure.net/secrets/"
 	WEBSITE_HTTPLOGGING_RETENTION_DAYS  = var.retention_in_days
@@ -264,7 +253,7 @@ resource azurerm_app_service extract-as {
 
 # create an app service for the publisher service
 resource azurerm_app_service publisher-as {
-  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}" #this has to be unique across all subscriptions, used for the hostname
+  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher" #this has to be unique across all subscriptions, used for the hostname
   location            = var.default_location
   resource_group_name = "${azurerm_resource_group.salesforce-rg.name}"
   app_service_plan_id = "${azurerm_app_service_plan.linux-publisher-asp.id}"
@@ -282,7 +271,7 @@ resource azurerm_app_service publisher-as {
     issuer           = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/"
 	active_directory  {
       client_id         = "${azuread_application.publisher_app.application_id}"
-	  allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
+	  allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher.azurewebsites.net/.auth/login/aad/callback"]
     }
   }
   
@@ -297,7 +286,6 @@ resource azurerm_app_service publisher-as {
   
   app_settings = {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
-	ASPNETCORE_ENVIRONMENT              = "${var.aspnet_environment}"
 	APPLICATION_AI_KEY                  = "${azurerm_application_insights.publisher-ai.instrumentation_key}"
 	APPLICATION_KEYVAULTURL             = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}.vault.azure.net/secrets/"
 	WEBSITE_HTTPLOGGING_RETENTION_DAYS  = var.retention_in_days
