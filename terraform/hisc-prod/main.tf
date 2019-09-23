@@ -34,6 +34,11 @@ variable "app_environment_identifier" {
 	default = "prod"
 }
 
+variable "aspnet_environment" {
+	type = string
+	default = "Staging"
+}
+
 variable "default_location" {
 	type = string
 	default = "Central US"
@@ -47,6 +52,11 @@ variable "retention_in_days" {
 variable "retention_in_mb" {
 	type = number
 	default = 35
+}
+
+variable "unique_postfix" {
+	type = string
+	default = ""
 }
 
 data "azurerm_client_config" "current" {}
@@ -63,47 +73,47 @@ data "external" "this_az_account" {
   ]
 }
 
-# create the resource groups
-resource azurerm_resource_group azure-ad-users-rg {
-  name     = var.app_root
-  location = var.default_location
-  tags = {
-    "Project"             = "Integrated Lead Management"
-    "Target"              = "Home Office"
-    "App Name"            =  var.app_root
-    "Assigned Department" = "IT Services"
-    "Assigned Company"    = "Home Office"
-  }
-}
-
-resource azurerm_resource_group salesforce-rg {
-  name     = "SalesForce"
-  location = var.default_location
-  tags = {
-    "Assigned Department" = "IT Services"
-    "Target"              = "Franchise Network"
-    "App Name"            = "Salesforce"
-    "Assigned Company"    = "Home Office"
-  }
-}
-
-resource azurerm_resource_group integrations-rg {
-  name     = "Integrations"
-  location = var.default_location
-  tags = {
-    "Project"             = "Genesis"
-    "Target"              = "Home Office"
-    "App Name"            = "Integrations"
-    "Assigned Department" = "IT Services"
-    "Assigned Company"    = "Home Office"
-  }
-}
+# create the resource groups, these already exist in HISC-DEV
+#resource azurerm_resource_group azure-ad-users-rg {
+#  name     = var.app_root
+#  location = var.default_location
+#  tags = {
+#    "Project"             = "Integrated Lead Management"
+#    "Target"              = "Home Office"
+#    "App Name"            =  var.app_root
+#    "Assigned Department" = "IT Services"
+#    "Assigned Company"    = "Home Office"
+#  }
+#}
+#
+#resource azurerm_resource_group salesforce-rg {
+#  name     = "SalesForce"
+#  location = var.default_location
+#  tags = {
+#    "Assigned Department" = "IT Services"
+#    "Target"              = "Franchise Network"
+#    "App Name"            = "Salesforce"
+#    "Assigned Company"    = "Home Office"
+#  }
+#}
+#
+#resource azurerm_resource_group integrations-rg {
+#  name     = "Integrations"
+#  location = var.default_location
+#  tags = {
+#    "Project"             = "Genesis"
+#    "Target"              = "Home Office"
+#    "App Name"            = "Integrations"
+#    "Assigned Department" = "IT Services"
+#    "Assigned Company"    = "Home Office"
+#  }
+#}
 
 # create the service bus
 resource azurerm_servicebus_namespace integrations-sb {
-  name                = "${var.app_prefix}-integrations-${var.app_environment_identifier}" #this has to be unique across all subscriptions
+  name                = "${var.app_prefix}-integrations-${var.app_environment_identifier}${var.unique_postfix}" #this has to be unique across all subscriptions
   location            = var.default_location
-  resource_group_name = "${azurerm_resource_group.integrations-rg.name}"
+  resource_group_name = "Integrations"
   sku                 = "Standard"
   tags = {
     "Project"             = "Genesis"
@@ -117,7 +127,7 @@ resource azurerm_servicebus_namespace integrations-sb {
 # create the topic on the service bus
 resource azurerm_servicebus_topic franchiseusers-sbt {
   name                  = "franchiseusers"
-  resource_group_name   = "${azurerm_resource_group.integrations-rg.name}"
+  resource_group_name   = "Integrations"
   namespace_name        = "${azurerm_servicebus_namespace.integrations-sb.name}"
   max_size_in_megabytes = 1024
   auto_delete_on_idle   = "P14D" # 14 days
@@ -127,7 +137,7 @@ resource azurerm_servicebus_topic franchiseusers-sbt {
 # create the subscription on the topic
 resource "azurerm_servicebus_subscription" "salesforcefranchiseusers-sbts" {
   name                                 = "salesforcefranchiseuserssubscription"
-  resource_group_name                  = "${azurerm_resource_group.integrations-rg.name}"
+  resource_group_name                  = "Integrations"
   namespace_name                       = "${azurerm_servicebus_namespace.integrations-sb.name}"
   topic_name                           = "${azurerm_servicebus_topic.franchiseusers-sbt.name}"
   max_delivery_count                   = 10
@@ -138,7 +148,7 @@ resource "azurerm_servicebus_subscription" "salesforcefranchiseusers-sbts" {
 resource azurerm_app_service_plan linux-extract-asp {
   name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract-plan"
   location            = var.default_location
-  resource_group_name = "${azurerm_resource_group.azure-ad-users-rg.name}"
+  resource_group_name = "Azure_AD_Users"
 
   # Define Linux as Host OS
   kind = "Linux"
@@ -156,7 +166,7 @@ resource azurerm_app_service_plan linux-extract-asp {
 resource azurerm_app_service_plan linux-publisher-asp {
   name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher-plan"
   location            = var.default_location
-  resource_group_name = "${azurerm_resource_group.salesforce-rg.name}"
+  resource_group_name = "SalesForce"
 
   # Define Linux as Host OS
   kind = "Linux"
@@ -172,9 +182,9 @@ resource azurerm_app_service_plan linux-publisher-asp {
 
 resource azuread_application publisher_app {
   name                       = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher-app"
-  homepage                   = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher.azurewebsites.net/"
-  identifier_uris            = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher.azurewebsites.net"]
-  reply_urls                 = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher.azurewebsites.net/.auth/login/aad/callback"]
+  homepage                   = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/"
+  identifier_uris            = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net"]
+  reply_urls                 = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = true
 
@@ -190,11 +200,16 @@ resource azuread_application publisher_app {
   }
 }
 
+resource "azuread_service_principal" "publisher_sp" {
+  application_id                = "${azuread_application.publisher_app.application_id}"
+  app_role_assignment_required  = false
+}
+
 resource azuread_application extract_app {
   name                       = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract-app"
-  homepage                   = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract.azurewebsites.net/"
-  identifier_uris            = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract.azurewebsites.net"]
-  reply_urls                 = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract.azurewebsites.net/.auth/login/aad/callback"]
+  homepage                   = "https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net/"
+  identifier_uris            = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net"]
+  reply_urls                 = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = true
   
@@ -210,11 +225,16 @@ resource azuread_application extract_app {
   }
 }
 
+resource "azuread_service_principal" "extract_sp" {
+  application_id                = "${azuread_application.extract_app.application_id}"
+  app_role_assignment_required  = false
+}
+
 # create an app service for the extract service
 resource azurerm_app_service extract-as {
-  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract" #this has to be unique across all subscriptions, used for the hostname
+  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}" #this has to be unique across all subscriptions, used for the hostname
   location            = var.default_location
-  resource_group_name = "${azurerm_resource_group.azure-ad-users-rg.name}"
+  resource_group_name = "Azure_AD_Users"
   app_service_plan_id = "${azurerm_app_service_plan.linux-extract-asp.id}"
 
   identity {
@@ -230,7 +250,7 @@ resource azurerm_app_service extract-as {
     issuer           = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/"
 	active_directory  {
         client_id         = "${azuread_application.extract_app.application_id}"
-		allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract.azurewebsites.net/.auth/login/aad/callback"]
+		allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
     }
   }
   
@@ -257,9 +277,9 @@ resource azurerm_app_service extract-as {
 
 # create an app service for the publisher service
 resource azurerm_app_service publisher-as {
-  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher" #this has to be unique across all subscriptions, used for the hostname
+  name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}" #this has to be unique across all subscriptions, used for the hostname
   location            = var.default_location
-  resource_group_name = "${azurerm_resource_group.salesforce-rg.name}"
+  resource_group_name = "SalesForce"
   app_service_plan_id = "${azurerm_app_service_plan.linux-publisher-asp.id}"
 
   identity {
@@ -275,7 +295,7 @@ resource azurerm_app_service publisher-as {
     issuer           = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/"
 	active_directory  {
       client_id         = "${azuread_application.publisher_app.application_id}"
-	  allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher.azurewebsites.net/.auth/login/aad/callback"]
+	  allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher${var.unique_postfix}.azurewebsites.net/.auth/login/aad/callback"]
     }
   }
   
@@ -304,7 +324,7 @@ resource azurerm_app_service publisher-as {
 resource azurerm_key_vault azure-ad-users-kv {
   name                            = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}" #this has to be unique across all subscriptions
   location                        = var.default_location
-  resource_group_name             = "${azurerm_resource_group.azure-ad-users-rg.name}"
+  resource_group_name             = "Azure_AD_Users"
   sku_name                        = "standard"
   tenant_id                       = "${data.azurerm_client_config.current.tenant_id}"
   enabled_for_deployment          = false
@@ -313,7 +333,7 @@ resource azurerm_key_vault azure-ad-users-kv {
   
   access_policy {
     tenant_id = "${data.azurerm_client_config.current.tenant_id}"
-    object_id = "${data.external.this_az_account.result.objectId}"
+    object_id = "${data.external.this_az_account.result.objectId}" #"431d2385-8c08-4237-9614-185b61dacf79"
 	key_permissions = []
     secret_permissions = [
       "Get",
@@ -447,14 +467,14 @@ resource azurerm_key_vault_secret "ServiceBusConnectionString" {
 resource azurerm_application_insights extract-ai {
   name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-extract-ai"
   location            = var.default_location
-  resource_group_name = "${azurerm_resource_group.azure-ad-users-rg.name}"
+  resource_group_name = "Azure_AD_Users"
   application_type    = "web"
 }
 
 resource azurerm_application_insights publisher-ai {
   name                = "${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher-ai"
   location            = var.default_location
-  resource_group_name = "${azurerm_resource_group.salesforce-rg.name}"
+  resource_group_name = "SalesForce"
   application_type    = "web"
 }
 
