@@ -335,7 +335,7 @@ resource azurerm_key_vault azure-ad-users-kv {
   
   access_policy {
     tenant_id = "${data.azurerm_client_config.current.tenant_id}"
-    object_id = "${data.external.this_az_account.result.objectId}"
+    object_id = "${data.external.this_az_account.result.objectId}" #"431d2385-8c08-4237-9614-185b61dacf79"
 	key_permissions = []
     secret_permissions = [
       "Get",
