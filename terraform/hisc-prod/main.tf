@@ -120,8 +120,8 @@ resource azurerm_servicebus_topic franchiseusers-sbt {
   resource_group_name   = "${azurerm_resource_group.integrations-rg.name}"
   namespace_name        = "${azurerm_servicebus_namespace.integrations-sb.name}"
   max_size_in_megabytes = 1024
-  auto_delete_on_idle   = "PT336H" # 14 days in hours
-  default_message_ttl   = "PT240H" # 10 days in hours
+  auto_delete_on_idle   = "P14D" # 14 days
+  default_message_ttl   = "P10D" # 10 days
 }
 
 # create the subscription on the topic
@@ -234,6 +234,10 @@ resource azurerm_app_service extract-as {
     }
   }
   
+  site_config {
+    always_on = true
+  }
+  
   logs {
     http_logs {
 	  file_system  {
@@ -273,6 +277,10 @@ resource azurerm_app_service publisher-as {
       client_id         = "${azuread_application.publisher_app.application_id}"
 	  allowed_audiences = ["https://${var.app_prefix}-${var.app_environment_identifier}-${var.app_root_lower}-publisher.azurewebsites.net/.auth/login/aad/callback"]
     }
+  }
+  
+  site_config {
+    always_on = true
   }
   
   logs {
