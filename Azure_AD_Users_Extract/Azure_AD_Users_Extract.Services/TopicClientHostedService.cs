@@ -126,7 +126,7 @@ namespace Azure_AD_Users_Extract.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Exception in Retrieve and Process with FranchiseUsersReoccurrenceGroupId: {_franchiseUsersReoccurrenceGroupId}, and FranchiseUsersReoccurrenceSyncDurationInHours: {_franchiseUsersReoccurrenceSyncDurationInHours}");
+                _logger.LogError(ex, $"Exception in Retrieve and Process with FranchiseUsersReoccurrenceGroupId: {_franchiseUsersReoccurrenceGroupId}, and FranchiseUsersReoccurrenceSyncDurationInHours: {_franchiseUsersReoccurrenceSyncDurationInHours}, StackTrace: {ex.StackTrace}, InnerException: {ex.InnerException}");
             }
         }
 
