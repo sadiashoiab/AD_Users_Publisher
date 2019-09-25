@@ -5,7 +5,7 @@ namespace Azure_AD_Users_Shared.Exceptions
 {
     public class UnexpectedStatusCodeException : ApplicationException
     {
-        public UnexpectedStatusCodeException(HttpResponseMessage response) : base($"Unexpected Status Code: {response.StatusCode}, for Method: {response.RequestMessage?.Method}, with Uri: {response.RequestMessage?.RequestUri}")
+        public UnexpectedStatusCodeException(HttpResponseMessage response) : base($"Unexpected Status Code: {response.StatusCode}, for Method: {response.RequestMessage?.Method}, with Uri: {response.RequestMessage?.RequestUri}, with ReasonPhrase: {response.ReasonPhrase}")
         {
         }
     }
