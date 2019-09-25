@@ -25,13 +25,11 @@ namespace Azure_AD_Users_Publisher
                     // note: set ASPNETCORE_ENVIRONMENT environment variable to pull in environment specific configurations.
                     //       depending on what OS you are deploying to, this CAN be case sensitive
                     config.AddJsonFile($"appsettings.{environment.EnvironmentName}.json", true, true);
-
-                    // todo: add in environment variables, and pull the application insights key from it
+                    config.AddEnvironmentVariables("APPLICATION_");
                 })
                 .ConfigureLogging((hostingContext, builder) =>
                 {
-                    // todo: look to see if we can pull this key from Azure Key Vault
-                    builder.AddApplicationInsights(hostingContext.Configuration.GetSection("ApplicationInsights")["InstrumentationKey"].ToString());
+                    builder.AddApplicationInsights(hostingContext.Configuration.GetSection("AI_KEY").Value);
                     builder.AddFilter<ApplicationInsightsLoggerProvider>("", LogLevel.Debug);
                     builder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Debug);
                     builder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
