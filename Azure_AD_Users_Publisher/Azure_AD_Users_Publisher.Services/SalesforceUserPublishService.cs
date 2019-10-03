@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
+using Azure_AD_Users_Shared.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -66,29 +67,17 @@ namespace Azure_AD_Users_Publisher.Services
             var responseMessage = await client.SendAsync(requestMessage);
             if (!responseMessage.IsSuccessStatusCode)
             {
-                try
-                {
-                    var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                    var message = $"{correlationId}, Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User: {json}";
-                    _logger.LogError(message);
-                    await _azureLogicEmailService.SendAlert(message);
-                }
-                catch (Exception ex)
-                {
-                    var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                    var message = $"{correlationId}, Exception when Publishing User to Salesforce, Response Content: {responseContent}, for User: {json}, StackTrace: {ex.StackTrace}";
-                    _logger.LogError(ex, message);
-                    await _azureLogicEmailService.SendAlert(message);
-                }
-
                 Interlocked.Increment(ref _errorCount);
-            } 
-            else
-            {
-                _logger.LogDebug($"{correlationId}, Successfully Published to Salesforce User: {json}");
-                
-                Interlocked.Increment(ref _publishCount);
+
+                var responseContent = await responseMessage.Content.ReadAsStringAsync();
+                var message = $"{correlationId}, Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User: {json}";
+                _logger.LogError(message);
+                await _azureLogicEmailService.SendAlert(message);
+                throw new UnexpectedStatusCodeException(responseMessage);
             }
+
+            Interlocked.Increment(ref _publishCount);
+            _logger.LogDebug($"{correlationId}, Successfully Published to Salesforce User: {json}");
         }
 
         public async Task Deactivate(string externalId)
@@ -103,29 +92,17 @@ namespace Azure_AD_Users_Publisher.Services
             var responseMessage = await client.SendAsync(requestMessage);
             if (!responseMessage.IsSuccessStatusCode)
             {
-                try
-                {
-                    var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                    var message = $"{correlationId}, Non Success Status Code when Deactivating Salesforce User, Response Content: {responseContent}, for User ExternalId: {externalId}";
-                    _logger.LogError(message);
-                    await _azureLogicEmailService.SendAlert(message);
-                }
-                catch (Exception ex)
-                {
-                    var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                    var message = $"{correlationId}, Exception when Deactivating Salesforce User, Response Content: {responseContent}, for User ExternalId: {externalId}, StackTrace: {ex.StackTrace}";
-                    _logger.LogError(ex, message);
-                    await _azureLogicEmailService.SendAlert(message);
-                }
-
                 Interlocked.Increment(ref _errorCount);
+
+                var responseContent = await responseMessage.Content.ReadAsStringAsync();
+                var message = $"{correlationId}, Non Success Status Code when Deactivating Salesforce User, Response Content: {responseContent}, for User ExternalId: {externalId}";
+                _logger.LogError(message);
+                await _azureLogicEmailService.SendAlert(message);
+                throw new UnexpectedStatusCodeException(responseMessage);
             }
-            else
-            {
-                _logger.LogDebug($"{correlationId}, Successfully Deactivated Salesforce User ExernalId: {externalId}");
-                
-                Interlocked.Increment(ref _deactivationCount);
-            }
+
+            Interlocked.Increment(ref _deactivationCount);
+            _logger.LogDebug($"{correlationId}, Successfully Deactivated Salesforce User ExernalId: {externalId}");
         }
     }
 }
