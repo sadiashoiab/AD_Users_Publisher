@@ -102,7 +102,7 @@ namespace Azure_AD_Users_Publisher.Services
             }
 
             Interlocked.Increment(ref _deactivationCount);
-            _logger.LogDebug($"{correlationId}, Successfully Deactivated Salesforce User ExernalId: {externalId}");
+            _logger.LogDebug($"{correlationId}, Successfully Deactivated Salesforce User ExternalId: {externalId}");
         }
     }
 }
