@@ -32,4 +32,4 @@ Development will be performed on local machines by developers. Each commit to th
 Developers can use the [instructions for Development Environment Setup](Documentation/Steps_to_Create_ Azure_Resources.md) to get their local environment running.
 
 ## Test Process
-Testing will be performed by automated Unit Tests that are in the Visual Studio Solution.  There are also integration tests that can be executed through Postman. Here is the  [Testing Documentation](Documentation/Steps_to_Create_ Azure_Resources.md) that will describe each type of test.Here is the [Testing Documentation](Documentation/Development_Environment_Setup.md) 
+Testing will be performed by automated Unit Tests that are in the Visual Studio Solution.  There are also integration tests that can be executed through Postman. Here is the  [Testing Documentation](Documentation/Steps_to_Create_ Azure_Resources.md) that will describe each type of test.Here is the [Testing Documentation](Documentation/Steps_to_Create_ Azure_Resources.md) 
