@@ -25,7 +25,7 @@
 	2. Execute the terraform scripts in relevant subscription directory from the github repo
 		1. In git bash, navigate to the terraform directory
 		2. Navigate to the [Subscription] directory
-		3. It is HIGHLY recommended that you review the terraform script before running so that you have an understanding.
+		3. It is **HIGHLY** recommended that you review the terraform script before running so that you have an understanding.
 			1. run "terraform init" to initialize terraform
 			2. run "terraform plan" to review. If you are happy with what will occur, continue.
 			3. run "terraform apply", and then type "yes" when prompted to create the Azure resources
