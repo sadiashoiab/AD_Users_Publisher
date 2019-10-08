@@ -2,7 +2,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services;
 using Azure_AD_Users_Shared.Stubs;
+using Castle.Core.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -28,7 +30,8 @@ namespace Azure_AD_Users_Publisher.Tests
             // ARRANGE
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var configuration = (IConfiguration) _context.Properties["configuration"];
-            var unitUnderTest = new AzureLogicEmailService(configuration, httpClientFactoryMock.Object);
+            var loggerMock = new Mock<ILogger<AzureLogicEmailService>>();
+            var unitUnderTest = new AzureLogicEmailService(configuration, httpClientFactoryMock.Object, loggerMock.Object);
             var clientHandlerStub = new DelegatingHandlerStub();
             var client = new HttpClient(clientHandlerStub);
 
