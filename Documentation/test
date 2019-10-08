@@ -1,1 +1,96 @@
+  
+      #User Management
+## StepstoCreateAzureResources
+1. ClonetheAD_Users_Publishergithubrepository:
+    1.Opengitbash
+    2.Navigatetotherootdirectory:
+        1."cd/c/"
+        2.Createareposdirectory
+        3."mkdirrepos"
+        4.Changeyourdirectorytothenewlycreatedreposdirectory
+        5."cdrepos"
+        6.Clonetherepositoryfromgithub
+        7."gitclonehttps://github.com/HISC/AD_Users_Publisher.git"
+2. SubmitatickettothePitCrewtoelevateyourpermissionstohave"Contributor"totheappropriateAzureSubscription.
+    1.WewillberunningagainsttheHISC-DEV,HISC-QA,andHISC-PRODAzureSubscriptions
+3. ForeachAzureSubscription,oncepermissionshavebeenelevated
+    1.UsingtheAzureCLI:
+        1."azlogin"intoyourAzureaccount
+        2."azaccountlist--outputtable"toseewhichAzureSubscriptionistheDefault
+            1.TheDefaultsubscriptioniswheretheAzureresourceswillbecreatedwhenrunningterraform
+        3.IfyouneedtochangetheDefaultAzureSubscription:
+            1."azaccountset--subscription[SubscriptionGUID]"
+            2."azaccountlist--outputtable"toverifythattheDefaultissettothedesiredSubscription
+    2.Executetheterraformscriptsinrelevantsubscriptiondirectoryfromthegithubrepo
+        1.Ingitbash,navigatetotheterraformdirectory
+        2.Navigatetothe[Subscription]directory
+        3.ItisHIGHLYrecommendedthatyoureviewtheterraformscriptbeforerunningsothatyouhaveanunderstanding.
+            1.run"terraforminit"toinitializeterraform
+            2.run"terraformplan"toreview.Ifyouarehappywithwhatwilloccur,continue.
+            3.run"terraformapply",andthentype"yes"whenpromptedtocreatetheAzureresources
+4. Aftertheresourceshavebeencreated
+    1.Takenoteoftheoutputs
+        1."gitpull"thelatestfromtheremoterepo
+        2."gitcheckoutdevelop"toswitchtothedevelopbranchinthelocalrepo
+        3.OpentheExtractandPublisherappsettings.[Environment].jsonfiles
+            1.Changethe"InstrumentationKey"totheappropriateoutputedterraformvalueforExtractandPublisher
+        4."gitadd"thechangestothelocalrepo
+        5."gitcommit"thechangestothelocalrepo
+        6."gitpush"thechangestotheremoterepo
+        7.Ongithub,createaPullRequesttomergethedevelopbranchtothemasterbranch
+        8.Oncethebuildcheckscompletesuccessfully,MergethePullRequest
+        9.Afterdoingtheabove,automatedbuildswillstart.Oncetheyarecompleted,anewDevreleasewillbepushedout.
+    2.LogintoAzureviaabrowser
+    3.Navigatetothehisc-[Environment]-azure-ad-users-extractAppService
+        1.*note:*Asof2019-09-23,terraformdoesnothaveawaytosetthefollowingvaluesandthereforeweneedtodothisstepmanually
+        2.Selectthe"Configuration"menuitemunder"Settings"
+        3.Selectthe"Generalsettings"tab
+        4.ChangetheStackto".NETCore"
+        5.SettheMajorandMinorversionto".NETCore2.2"
+        6.Click"Save"
+    4.Navigatetothehisc-[Environment]-azure-ad-users-publisherAppService
+        1.*note:*Asof2019-09-23,terraformdoesnothaveawaytosetthefollowingvaluesandthereforeweneedtodothisstepmanually
+        2.Selectthe"Configuration"menuitemunder"Settings"
+        3.Selectthe"Generalsettings"tab
+        4.ChangetheStackto".NETCore"
+        5.SettheMajorandMinorversionto".NETCore2.2"
+        6.Click"Save"
+    5.Navigatetothehisc-[Environment]-azure-ad-usersKeyvault
+        1.Selectthe"Secrets"menuitemunder"Settings"
+        2.ForeachSecret,ifitneedstobeupdated
+            1.OpentheSecret
+            2.OpentheCurrentVersion
+            3.Set"Enabled?"to"No"
+            4.Click"Save"
+            5.ClicktheSecretnametowardthetopofthepage
+            6.Click"NewVersion"
+            7.Setthe"Value"
+            8.Click"Create"
+## Howtofindaspecificterraformazuread_applicationrequired_resource_access
+While creating the terraform for the Azure_AD_Publisher project, I needed to have the terraform add the Azure Active Directory Graph API Permissions. Specifically I needed to grant the application the User.Read permission. What follows are the steps I took to track down the resource_app_id and resource_access.id values as terraform, as of 2019-09-24, does not grant resource access via named identifiers.
+From the azure cli run "az ad app list --all"
+This generates a WHOLE BUNCH of json.
+I then copy/pasted all of the json into a notepad++ document.
+I then search for the previously created App Registration that contained the User.Read permission.
+Once found, it has a section like:
+```
+    "requiredResourceAccess": [
+      {
+        "additionalProperties": null,
+        "resourceAccess": [
+          {
+            "additionalProperties": null,
+            "id": "311a71cc-e848-46a1-bdf8-97ff7156d8e6",
+            "type": "Scope"
+          }
+        ],
+        "resourceAppId": "00000002-0000-0000-c000-000000000000"
+      }
+    ],
+```
+This gave me the resourceAppid and the resourceAccess id I needed to use in the terraform.
+    
+    
+  
+  
 
