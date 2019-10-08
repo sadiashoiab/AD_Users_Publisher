@@ -63,7 +63,7 @@ While creating the terraform for the Azure_AD_Publisher project, I needed to hav
 
 From the azure cli run "az ad app list --all"
 
-This generates a WHOLE BUNCH of json.
+This generates a **WHOLE BUNCH** of json.
 
 I then copy/pasted all of the json into a notepad++ document.
 
@@ -90,7 +90,7 @@ This gave me the resourceAppid and the resourceAccess id I needed to use in the 
 
 ## Azure Key Vaults for Users Management 
 
-### Environment Key Vaults
+### Environment Key Vaults Generated After Running Terraform
 
 |Environment | Resource Name          | URI                                             |
 |------------|:-----------------------|:------------------------------------------------|
@@ -99,6 +99,8 @@ This gave me the resourceAppid and the resourceAccess id I needed to use in the 
 |Production  |hisc-prod-azure-ad-users|https://hisc-prod-azure-ad-users.vault.azure.net/|
 
 ### Required Secrets
+
+The following secrets are generated when running terraform, however the majority of them are initialized with a value that needs to be replaced.
 
 | Secret Name                                   | Secret Description                                          |
 |-----------------------------------------------|:------------------------------------------------------------|
@@ -121,6 +123,8 @@ This gave me the resourceAppid and the resourceAccess id I needed to use in the 
 
 ### Salesforce Publish Endpoints
 
+The following are the endpoints that we've used when testing.  The Development and QA environments use the Development endpoint as Salesforce did not have a QA environment.  When testing locally with Salesforce UserTest0[1-5] were used.
+
 | Environment | URI |
 |-------------|:----|
 | Development | https://homeinsteadinc--dev.my.salesforce.com/services/apexrest/UserManager/V1/ |
@@ -132,6 +136,8 @@ This gave me the resourceAppid and the resourceAccess id I needed to use in the 
 | Production  | https://homeinsteadinc.my.salesforce.com/services/apexrest/UserManager/V1/ |
 
 ### Salesforce Token Endpoints
+
+The following are the endpoints that we've used when testing to retrieve a bearer token.  The Development and QA environments use the Development endpoint as Salesforce did not have a QA environment.  When testing locally with Salesforce UserTest0[1-5] were used.
 
 | Environment | URI |
 |-------------|:----|
