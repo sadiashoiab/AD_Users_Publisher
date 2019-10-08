@@ -7,16 +7,16 @@ Owned by Home Instead Web Marketing department. Lead contact is Sadia Shoiab.
 
 ## Architecture
 
-### Landscape diagrams (Web Enquiry to Sales Force)
+### Landscape diagrams (AD_MIM_CRM Users Data Sync)
 Displays how system integrate with internal and external systems.
 
 ![landsscape](Documentation/Read_Me_Images/AD_MIM_CRM.PNG)  
 
-### Landscape diagrams (Web Enquiry to Sales Force with connected API)
+### Landscape diagrams (Salesforce Users Create/Update Data Sync)
 Display how system integrate with internal and external systems.
 
 ![landsscape2](Documentation/Read_Me_Images/ADToSF_Create_Update.PNG)
      
-### Sequence Diagram (WebEnquiry to Sales Force)
+### Landscape3 (Salesforce Users Deactivation Data Sync)
 
-![sequence](Documentation/Read_Me_Images/ADToSF_Activate_Deactivate.PNG) 
+![landsscape3](Documentation/Read_Me_Images/ADToSF_Activate_Deactivate.PNG) 
