@@ -30,33 +30,22 @@
 			2. run "terraform plan" to review. If you are happy with what will occur, continue.
 			3. run "terraform apply", and then type "yes" when prompted to create the Azure resources
 4. After the resources have been created
-	1. Take note of the outputs
-		1. "git pull" the latest from the remote repo
-		2. "git checkout develop" to switch to the develop branch in the local repo
-		3. Open the Extract and Publisher appsettings.[Environment].json files
-			1. Change the "InstrumentationKey" to the appropriate outputed terraform value for Extract and Publisher
-		4. "git add" the changes to the local repo
-		5. "git commit" the changes to the local repo
-		6. "git push" the changes to the remote repo
-		7. On github, create a Pull Request to merge the develop branch to the master branch
-		8. Once the build checks complete successfully, Merge the Pull Request
-		9. After doing the above, automated builds will start.  Once they are completed, a new Dev release will be pushed out.
-	2. Login to Azure via a browser
-	3. Navigate to the hisc-[Environment]-azure-ad-users-extract App Service
+	1. Login to Azure via a browser
+	2. Navigate to the hisc-[Environment]-azure-ad-users-extract App Service
 		1. *note:* As of 2019-09-23, terraform does not have a way to set the following values and therefore we need to do this step manually
 		2. Select the "Configuration" menu item under "Settings"
 		3. Select the "General settings" tab
 		4. Change the Stack to ".NET Core"
 		5. Set the Major and Minor version to ".NET Core 2.2"
 		6. Click "Save"
-	4. Navigate to the hisc-[Environment]-azure-ad-users-publisher App Service
+	3. Navigate to the hisc-[Environment]-azure-ad-users-publisher App Service
 		1. *note:* As of 2019-09-23, terraform does not have a way to set the following values and therefore we need to do this step manually
 		2. Select the "Configuration" menu item under "Settings"
 		3. Select the "General settings" tab
 		4. Change the Stack to ".NET Core"
 		5. Set the Major and Minor version to ".NET Core 2.2"
 		6. Click "Save"
-	5. Navigate to the hisc-[Environment]-azure-ad-users Key vault
+	4. Navigate to the hisc-[Environment]-azure-ad-users Key vault
 		1. Select the "Secrets" menu item under "Settings"
 		2. For each Secret, if it needs to be updated
 			1. Open the Secret
