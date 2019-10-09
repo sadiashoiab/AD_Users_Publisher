@@ -193,6 +193,7 @@ namespace Azure_AD_Users_Publisher.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(System.IO.IOException))]
         public async Task ProcessMessage_ExceptionRetrievingSalesforceFranchiseData()
         {
             // ARRANGE
@@ -220,21 +221,10 @@ namespace Azure_AD_Users_Publisher.Tests
 
             // ACT
             await unitUnderTest.ProcessUser(salesforceUser);
-
-            // ASSERT
-            tokenServiceMock.Verify();
-            programDataServiceMock.Verify();
-            loggerMock.Verify(mock => mock.Log(
-                    LogLevel.Information,
-                    It.IsAny<EventId>(),
-                    It.Is<FormattedLogValues>(v => v.ToString().Contains("will be published to Salesforce.")),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<object, Exception, string>>()),
-                Times.Never);
-            timeZoneServiceMock.Verify();
         }
 
         [TestMethod]
+        [ExpectedException(typeof(System.IO.IOException))]
         public async Task ProcessMessage_ExceptionRetrievingClearCareFranchiseData()
         {
             // ARRANGE
@@ -272,18 +262,6 @@ namespace Azure_AD_Users_Publisher.Tests
 
             // ACT
             await unitUnderTest.ProcessUser(salesforceUser);
-
-            // ASSERT
-            tokenServiceMock.Verify();
-            programDataServiceMock.Verify();
-            loggerMock.Verify(mock => mock.Log(
-                    LogLevel.Information,
-                    It.IsAny<EventId>(),
-                    It.Is<FormattedLogValues>(v => v.ToString().Contains("will be published to Salesforce.")),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<object, Exception, string>>()),
-                Times.Never);
-            timeZoneServiceMock.Verify();
         }
     }
 }
