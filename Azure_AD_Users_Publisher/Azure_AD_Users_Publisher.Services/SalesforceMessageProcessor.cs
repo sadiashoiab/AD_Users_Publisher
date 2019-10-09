@@ -95,9 +95,8 @@ namespace Azure_AD_Users_Publisher.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An Exception occurred when trying to retrieve {source.GetDescription()} Franchise. StackTrace: {ex.StackTrace}");
+                throw;
             }
-
-            return new int[] { };
         }
     }
 }
