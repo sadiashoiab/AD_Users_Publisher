@@ -69,7 +69,6 @@ namespace Azure_AD_Users_Publisher.Services
                 var responseContent = await responseMessage.Content.ReadAsStringAsync();
                 var message = $"{correlationId}, Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User: {json}";
                 _logger.LogError(message);
-                //await _azureLogicEmailService.SendAlert(message);
                 throw new UnexpectedStatusCodeException(responseMessage);
             }
 
