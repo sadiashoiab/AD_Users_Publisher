@@ -18,7 +18,6 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly string _publishUrl;
         private readonly ISalesforceTokenService _tokenService;
-        private readonly IAzureLogicEmailService _azureLogicEmailService;
 
         private int _errorCount;
         private int _deactivationCount;
@@ -32,14 +31,12 @@ namespace Azure_AD_Users_Publisher.Services
             ILogger<SalesforceUserPublishService> logger, 
             IHttpClientFactory httpClientFactory, 
             IConfiguration configuration, 
-            ISalesforceTokenService tokenService,
-            IAzureLogicEmailService azureLogicEmailService)
+            ISalesforceTokenService tokenService)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
             _publishUrl = configuration["SalesforcePublishUrl"];
             _tokenService = tokenService;
-            _azureLogicEmailService = azureLogicEmailService;
         }
 
         private async Task<HttpClient> GetHttpClient()
@@ -72,7 +69,7 @@ namespace Azure_AD_Users_Publisher.Services
                 var responseContent = await responseMessage.Content.ReadAsStringAsync();
                 var message = $"{correlationId}, Non Success Status Code when Publishing User to Salesforce Response Content: {responseContent}, for User: {json}";
                 _logger.LogError(message);
-                await _azureLogicEmailService.SendAlert(message);
+                //await _azureLogicEmailService.SendAlert(message);
                 throw new UnexpectedStatusCodeException(responseMessage);
             }
 
@@ -97,7 +94,6 @@ namespace Azure_AD_Users_Publisher.Services
                 var responseContent = await responseMessage.Content.ReadAsStringAsync();
                 var message = $"{correlationId}, Non Success Status Code when Deactivating Salesforce User, Response Content: {responseContent}, for User ExternalId: {externalId}";
                 _logger.LogError(message);
-                await _azureLogicEmailService.SendAlert(message);
                 throw new UnexpectedStatusCodeException(responseMessage);
             }
 

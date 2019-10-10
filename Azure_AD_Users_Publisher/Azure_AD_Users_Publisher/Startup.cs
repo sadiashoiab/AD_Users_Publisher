@@ -80,7 +80,6 @@ namespace Azure_AD_Users_Publisher
             services.AddSingleton<IGoogleApiService, GoogleApiService>();
             services.AddSingleton<ISalesforceUserPublishService, SalesforceUserPublishService>();
             services.AddSingleton<ITimeZoneService, TimeZoneService>();
-            services.AddSingleton<IAzureLogicEmailService, AzureLogicEmailService>();
 
             services.AddHostedService<SubscriptionClientHostedService>();
         }

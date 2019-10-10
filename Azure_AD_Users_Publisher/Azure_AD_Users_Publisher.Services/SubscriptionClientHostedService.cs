@@ -18,7 +18,6 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly ILogger<SubscriptionClientHostedService> _logger;
         private readonly IAzureKeyVaultService _azureKeyVaultService;
         private readonly IMessageProcessor _messageProcessor;
-        private readonly IAzureLogicEmailService _azureLogicEmailService;
         private readonly string _topicName;
         private readonly string _subscriptionName;
         private readonly string _serviceBusConnectionStringSecretName;
@@ -28,13 +27,11 @@ namespace Azure_AD_Users_Publisher.Services
         public SubscriptionClientHostedService(ILogger<SubscriptionClientHostedService> logger,
             IAzureKeyVaultService azureKeyVaultService,
             IConfiguration configuration,
-            IMessageProcessor messageProcessor,
-            IAzureLogicEmailService azureLogicEmailService)
+            IMessageProcessor messageProcessor)
         {
             _logger = logger;
             _azureKeyVaultService = azureKeyVaultService;
             _messageProcessor = messageProcessor;
-            _azureLogicEmailService = azureLogicEmailService;
             _topicName = configuration["ExtractTopicName"];
             _subscriptionName = configuration["ExtractSubscriptionName"];
             _serviceBusConnectionStringSecretName = configuration["ServiceBusConnectionStringSecretName"];
@@ -128,7 +125,6 @@ namespace Azure_AD_Users_Publisher.Services
                 }
 
                 _logger.LogError(ex, msg);
-                await _azureLogicEmailService.SendAlert(msg);
             }
         }
     }
