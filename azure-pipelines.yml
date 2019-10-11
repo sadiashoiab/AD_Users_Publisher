@@ -10,9 +10,9 @@ trigger:
   paths:
     include:
     - 'Azure_AD_Users_Shared'
-    - '$(TriggerPathToInclude)'
+    - 'Azure_AD_Users_Extract'
     exclude:
-    - '$(TriggerPathToExclude)'
+    - 'Azure_AD_Users_Publisher'
 
 pr:
   branches:
@@ -21,9 +21,9 @@ pr:
   paths:
     include:
     - 'Azure_AD_Users_Shared'
-    - '$(TriggerPathToInclude)'
+    - 'Azure_AD_Users_Extract'
     exclude:
-    - '$(TriggerPathToExclude)'
+    - 'Azure_AD_Users_Publisher'
 
 pool:
   vmImage: 'ubuntu-latest'
