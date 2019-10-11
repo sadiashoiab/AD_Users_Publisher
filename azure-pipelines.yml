@@ -14,28 +14,28 @@ variables:
 
 steps:
 - task: DotNetCoreCLI@2
-  displayName: 'restore the publisher solution dependencies'
+  displayName: 'restore the solution dependencies'
   inputs:
     command: 'restore'
     projects: '$(SolutionPath)'
     feedsToUse: 'select'
 
 - task: DotNetCoreCLI@2
-  displayName: 'build the publisher solution'
+  displayName: 'build the solution'
   inputs:
     command: 'build'
     projects: '$(SolutionPath)'
     arguments: '--configuration $(BuildConfiguration) --no-restore'
 
 - task: DotNetCoreCLI@2
-  displayName: 'run the publisher solution tests'
+  displayName: 'run the solution tests'
   inputs:
     command: 'test'
     projects: '$(SolutionPath)'
     arguments: '--configuration $(BuildConfiguration) --no-restore'
 
 - task: DotNetCoreCLI@2
-  displayName: 'publish the publisher solution'
+  displayName: 'publish the solution'
   inputs:
     command: 'publish'
     publishWebProjects: false
@@ -43,7 +43,7 @@ steps:
     arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory) --no-restore'
 
 - task: PublishBuildArtifacts@1
-  displayName: 'create the publisher artifact drop'
+  displayName: 'create the artifact drop'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
