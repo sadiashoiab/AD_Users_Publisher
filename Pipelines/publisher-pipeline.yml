@@ -1,0 +1,69 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - 'Azure_AD_Users_Shared'
+    - 'Azure_AD_Users_Publisher'
+    exclude:
+    - 'Azure_AD_Users_Extract'
+
+pr:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - 'Azure_AD_Users_Shared'
+    - 'Azure_AD_Users_Publisher'
+    exclude:
+    - 'Azure_AD_Users_Extract'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'restore the solution dependencies'
+  inputs:
+    command: 'restore'
+    projects: '$(SolutionPath)'
+    feedsToUse: 'select'
+
+- task: DotNetCoreCLI@2
+  displayName: 'build the solution'
+  inputs:
+    command: 'build'
+    projects: '$(SolutionPath)'
+    arguments: '--configuration $(BuildConfiguration) --no-restore'
+
+- task: DotNetCoreCLI@2
+  displayName: 'run the solution tests'
+  inputs:
+    command: 'test'
+    projects: '$(SolutionPath)'
+    arguments: '--configuration $(BuildConfiguration) --no-restore'
+
+- task: DotNetCoreCLI@2
+  displayName: 'publish the solution'
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: '$(PublishProjectPath)'
+    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory) --no-restore'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'create the artifact drop'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
