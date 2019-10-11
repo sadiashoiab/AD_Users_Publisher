@@ -9,10 +9,10 @@ trigger:
     - master
   paths:
     include:
-    - Azure_AD_Users_Shared/*
-    - $(TriggerPathToInclude)
+    - 'Azure_AD_Users_Shared'
+    - '$(TriggerPathToInclude)'
     exclude:
-    - $(TriggerPathToExclude)
+    - '$(TriggerPathToExclude)'
 
 pr:
   branches:
@@ -20,10 +20,10 @@ pr:
     - master
   paths:
     include:
-    - Azure_AD_Users_Shared/*
-    - $(TriggerPathToInclude)
+    - 'Azure_AD_Users_Shared'
+    - '$(TriggerPathToInclude)'
     exclude:
-    - $(TriggerPathToExclude)
+    - '$(TriggerPathToExclude)'
 
 pool:
   vmImage: 'ubuntu-latest'
