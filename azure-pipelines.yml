@@ -4,7 +4,26 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- master
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - 'Azure_AD_Users_Shared/*'
+    - '$(ProjectPathToInclude)/*'
+    exclude:
+    - '$(ProjectPathToExclude)/*'
+
+pr:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - 'Azure_AD_Users_Shared/*'
+    - '$(ProjectPathToInclude)/*'
+    exclude:
+    - '$(ProjectPathToExclude)/*'
 
 pool:
   vmImage: 'ubuntu-latest'
