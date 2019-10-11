@@ -17,21 +17,21 @@ steps:
   displayName: 'restore the publisher solution dependencies'
   inputs:
     command: 'restore'
-    projects: '**/Azure_AD_Users_Publisher/*.sln'
+    projects: '$(SolutionPath)'
     feedsToUse: 'select'
 
 - task: DotNetCoreCLI@2
   displayName: 'build the publisher solution'
   inputs:
     command: 'build'
-    projects: '**/Azure_AD_Users_Publisher/*.sln'
+    projects: '$(SolutionPath)'
     arguments: '--configuration $(BuildConfiguration) --no-restore'
 
 - task: DotNetCoreCLI@2
   displayName: 'run the publisher solution tests'
   inputs:
     command: 'test'
-    projects: '**/Azure_AD_Users_Publisher/*.sln'
+    projects: '$(SolutionPath)'
     arguments: '--configuration $(BuildConfiguration) --no-restore'
 
 - task: DotNetCoreCLI@2
@@ -39,7 +39,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    projects: '**/Azure_AD_Users_Publisher/Azure_AD_Users_Publisher.csproj'
+    projects: '$(PublishProjectPath)'
     arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory) --no-restore'
 
 - task: PublishBuildArtifacts@1
