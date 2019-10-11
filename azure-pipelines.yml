@@ -15,24 +15,28 @@ variables:
 steps:
 
 - task: DotNetCoreCLI@2
+  displayName: 'restore the publisher solution dependencies'
   inputs:
     command: 'restore'
     projects: '**/Azure_AD_Users_Publisher/*.sln'
     feedsToUse: 'select'
 
 - task: DotNetCoreCLI@2
+  displayName: 'build the publisher solution'
   inputs:
     command: 'build'
     projects: '**/Azure_AD_Users_Publisher/*.sln'
     arguments: '--configuration $(BuildConfiguration) --no-restore'
 
 - task: DotNetCoreCLI@2
+  displayName: 'run the publisher solution tests'
   inputs:
     command: 'test'
     projects: '**/Azure_AD_Users_Publisher/*.sln'
     arguments: '--configuration $(BuildConfiguration) --no-restore'
 
 - task: DotNetCoreCLI@2
+  displayName: 'publish the publisher solution'
   inputs:
     command: 'publish'
     publishWebProjects: false
@@ -40,6 +44,7 @@ steps:
     arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory) --no-restore'
 
 - task: PublishBuildArtifacts@1
+  displayName: 'create publisher artifact drop'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
