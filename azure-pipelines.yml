@@ -44,7 +44,7 @@ steps:
     arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory) --no-restore'
 
 - task: PublishBuildArtifacts@1
-  displayName: 'create publisher artifact drop'
+  displayName: 'create the publisher artifact drop'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
