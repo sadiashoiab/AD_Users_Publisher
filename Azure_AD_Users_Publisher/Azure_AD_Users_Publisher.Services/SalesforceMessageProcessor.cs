@@ -26,10 +26,10 @@ namespace Azure_AD_Users_Publisher.Services
 
         public async Task ProcessUser(AzureActiveDirectoryUser user)
         {
+            var json = System.Text.Json.JsonSerializer.Serialize(user);
             var syncUserToSalesforce = await CheckUserFranchiseAgainstFranchiseSource(user, ProgramDataSources.Salesforce, true, false);
             if (syncUserToSalesforce)
             {
-                var json = System.Text.Json.JsonSerializer.Serialize(user);
                 if (user.DeactivationDateTimeOffset.HasValue)
                 {
                     _logger.LogInformation($"User will be Deactivated: {json}");
@@ -66,6 +66,10 @@ namespace Azure_AD_Users_Publisher.Services
                 }
 
                 _logger.LogInformation($"Publish Count: {_salesforceUserPublishService.PublishCount}, Deactivation Count: {_salesforceUserPublishService.DeactivationCount}, Error Count: {_salesforceUserPublishService.ErrorCount}");
+            }
+            else
+            {
+                _logger.LogInformation($"User will NOT sent to Salesforce: {json}");
             }
         }
 
