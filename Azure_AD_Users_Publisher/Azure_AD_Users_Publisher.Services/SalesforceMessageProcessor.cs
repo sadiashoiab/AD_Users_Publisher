@@ -69,7 +69,7 @@ namespace Azure_AD_Users_Publisher.Services
             }
             else
             {
-                _logger.LogInformation($"User will NOT sent to Salesforce: {json}");
+                _logger.LogInformation($"User will NOT be sent to Salesforce: {json}");
             }
         }
 
