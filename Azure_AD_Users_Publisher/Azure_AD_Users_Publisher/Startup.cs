@@ -38,12 +38,6 @@ namespace Azure_AD_Users_Publisher
                 .AddApplicationInsightsPublisher();
 
             services
-                .AddHttpClient("EmailAlertHttpClient",
-                    client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
-                .AddTransientHttpErrorPolicy(builder =>
-                    builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
-
-            services
                 .AddHttpClient("TokenApiHttpClient",
                     client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
                 .AddTransientHttpErrorPolicy(builder =>
