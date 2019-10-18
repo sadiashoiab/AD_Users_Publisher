@@ -13,5 +13,6 @@ namespace Azure_AD_Users_Publisher.Services
 
         Task Publish(SalesforceUser user);
         Task Deactivate(string externalId);
+        Task<SalesforceQueryResponse> RetrieveAllUsers();
     }
 }

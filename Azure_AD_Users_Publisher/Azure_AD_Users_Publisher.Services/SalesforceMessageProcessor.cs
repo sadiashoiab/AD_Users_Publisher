@@ -3,20 +3,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
 using Azure_AD_Users_Shared.Models;
+using LazyCache;
 using Microsoft.Extensions.Logging;
 
 namespace Azure_AD_Users_Publisher.Services
 {
     public class SalesforceMessageProcessor : IMessageProcessor
     {
+        private const string _cacheKeyPrefix = "_SalesforceMessageProcessor_";
+
+        private readonly IAppCache _cache;
         private readonly ILogger<SalesforceMessageProcessor> _logger;
         private readonly IHISCTokenService _tokenService;
         private readonly IProgramDataService _programDataService;
         private readonly ITimeZoneService _timeZoneService;
         private readonly ISalesforceUserService _salesforceUserService;
 
-        public SalesforceMessageProcessor(ILogger<SalesforceMessageProcessor> logger, IHISCTokenService tokenService, IProgramDataService programDataService, ITimeZoneService timeZoneService, ISalesforceUserService salesforceUserService)
+        public SalesforceMessageProcessor(IAppCache cache, ILogger<SalesforceMessageProcessor> logger, IHISCTokenService tokenService, IProgramDataService programDataService, ITimeZoneService timeZoneService, ISalesforceUserService salesforceUserService)
         {
+            _cache = cache;
             _logger = logger;
             _tokenService = tokenService;
             _programDataService = programDataService;
@@ -30,7 +35,7 @@ namespace Azure_AD_Users_Publisher.Services
             var syncUserToSalesforce = await CheckUserFranchiseAgainstFranchiseSource(user, ProgramDataSources.Salesforce, true, false);
             if (syncUserToSalesforce)
             {
-                if (user.DeactivationDateTimeOffset.HasValue)
+                if (user.DeactivationDateTimeOffset.HasValue && await UserExistsAndIsActiveInSalesforce(user))
                 {
                     _logger.LogInformation($"User will be Deactivated: {json}");
                     await _salesforceUserService.Deactivate(user.ExternalId);
@@ -73,6 +78,14 @@ namespace Azure_AD_Users_Publisher.Services
             }
         }
 
+        private async Task<bool> UserExistsAndIsActiveInSalesforce(AzureActiveDirectoryUser user)
+        {
+            // todo: move absolute expiration of 6 hours to configuration or keyvault
+            var allUsers = await _cache.GetOrAddAsync($"{_cacheKeyPrefix}AllUsers", _salesforceUserService.RetrieveAllUsers, DateTimeOffset.Now.AddHours(6));
+            // todo: change condition to be check correct fields
+            return allUsers.records.Any(sfUser => sfUser.IsActive && sfUser.Id.Equals(user.ExternalId));
+        }
+
         private async Task<T> CheckUserFranchiseAgainstFranchiseSource<T>(AzureActiveDirectoryUser user, ProgramDataSources source, T success, T fail)
         {
             var parsed = int.TryParse(user.FranchiseNumber, out var userFranchiseNumber);
@@ -102,5 +115,7 @@ namespace Azure_AD_Users_Publisher.Services
                 throw;
             }
         }
+
+
     }
 }

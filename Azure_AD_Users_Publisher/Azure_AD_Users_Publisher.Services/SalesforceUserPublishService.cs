@@ -16,9 +16,10 @@ namespace Azure_AD_Users_Publisher.Services
 
         private readonly ILogger<SalesforceUserService> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly string _publishUrl;
         private readonly ISalesforceTokenService _tokenService;
-
+        private readonly string _publishUrl;
+        private readonly string _queryUrl;
+        
         private int _errorCount;
         private int _deactivationCount;
         private int _publishCount;
@@ -27,15 +28,15 @@ namespace Azure_AD_Users_Publisher.Services
         public int DeactivationCount => _deactivationCount;
         public int ErrorCount => _errorCount;
 
-        public SalesforceUserService(
-            ILogger<SalesforceUserService> logger, 
+        public SalesforceUserService(ILogger<SalesforceUserService> logger, 
             IHttpClientFactory httpClientFactory, 
             IConfiguration configuration, 
             ISalesforceTokenService tokenService)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
-            _publishUrl = configuration["SalesforcePublishUrl"];
+            _publishUrl = $"{configuration["SalesforceBaseUrl"]}{configuration["SalesforcePublishUrl"]}";
+            _queryUrl = $"{configuration["SalesforceBaseUrl"]}{configuration["SalesforceQueryUrl"]}";
             _tokenService = tokenService;
         }
 
@@ -100,29 +101,25 @@ namespace Azure_AD_Users_Publisher.Services
             _logger.LogDebug($"{correlationId}, Successfully Deactivated Salesforce User ExternalId: {externalId}");
         }
 
-        public async Task<string> RetrieveAllUsers()
+        public async Task<SalesforceQueryResponse> RetrieveAllUsers()
         {
-            //var client = await GetHttpClient();
-            //var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"{_publishUrl}{externalId}");
-            //requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
+            var client = await GetHttpClient();
+            // todo: replace query with correct values per Steve once he has them ready
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"{_queryUrl}");
+            requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
             
-            //var correlationId = Guid.NewGuid();
-            //_logger.LogDebug($"{correlationId}, Deactivating Salesforce User ExternalId: {externalId}");
+            var responseMessage = await client.SendAsync(requestMessage);
+            if (!responseMessage.IsSuccessStatusCode)
+            {
+                var responseContent = await responseMessage.Content.ReadAsStringAsync();
+                var message = $"Non Success Status Code when Retrieving All Salesforce Users, Response Content: {responseContent}";
+                _logger.LogError(message);
+                throw new UnexpectedStatusCodeException(responseMessage);
+            }
 
-            //var responseMessage = await client.SendAsync(requestMessage);
-            //if (!responseMessage.IsSuccessStatusCode)
-            //{
-            //    Interlocked.Increment(ref _errorCount);
-
-            //    var responseContent = await responseMessage.Content.ReadAsStringAsync();
-            //    var message = $"{correlationId}, Non Success Status Code when Deactivating Salesforce User, Response Content: {responseContent}, for User ExternalId: {externalId}";
-            //    _logger.LogError(message);
-            //    throw new UnexpectedStatusCodeException(responseMessage);
-            //}
-
-            //Interlocked.Increment(ref _deactivationCount);
-            //_logger.LogDebug($"{correlationId}, Successfully Deactivated Salesforce User ExternalId: {externalId}");
-            return await Task.FromResult("foo");
+            var json = await responseMessage.Content.ReadAsStringAsync();
+            var response = System.Text.Json.JsonSerializer.Deserialize<SalesforceQueryResponse>(json);
+            return response;
         }
     }
 }
