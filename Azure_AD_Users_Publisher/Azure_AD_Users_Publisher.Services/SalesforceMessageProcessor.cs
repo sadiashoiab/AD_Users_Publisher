@@ -13,15 +13,15 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly IHISCTokenService _tokenService;
         private readonly IProgramDataService _programDataService;
         private readonly ITimeZoneService _timeZoneService;
-        private readonly ISalesforceUserPublishService _salesforceUserPublishService;
+        private readonly ISalesforceUserService _salesforceUserService;
 
-        public SalesforceMessageProcessor(ILogger<SalesforceMessageProcessor> logger, IHISCTokenService tokenService, IProgramDataService programDataService, ITimeZoneService timeZoneService, ISalesforceUserPublishService salesforceUserPublishService)
+        public SalesforceMessageProcessor(ILogger<SalesforceMessageProcessor> logger, IHISCTokenService tokenService, IProgramDataService programDataService, ITimeZoneService timeZoneService, ISalesforceUserService salesforceUserService)
         {
             _logger = logger;
             _tokenService = tokenService;
             _programDataService = programDataService;
             _timeZoneService = timeZoneService;
-            _salesforceUserPublishService = salesforceUserPublishService;
+            _salesforceUserService = salesforceUserService;
         }
 
         public async Task ProcessUser(AzureActiveDirectoryUser user)
@@ -33,7 +33,7 @@ namespace Azure_AD_Users_Publisher.Services
                 if (user.DeactivationDateTimeOffset.HasValue)
                 {
                     _logger.LogInformation($"User will be Deactivated: {json}");
-                    await _salesforceUserPublishService.Deactivate(user.ExternalId);
+                    await _salesforceUserService.Deactivate(user.ExternalId);
                 }
                 else
                 {
@@ -62,10 +62,10 @@ namespace Azure_AD_Users_Publisher.Services
                     };
 
                     _logger.LogInformation($"User will be Published: {json}");
-                    await _salesforceUserPublishService.Publish(salesforceUser);
+                    await _salesforceUserService.Publish(salesforceUser);
                 }
 
-                _logger.LogInformation($"Publish Count: {_salesforceUserPublishService.PublishCount}, Deactivation Count: {_salesforceUserPublishService.DeactivationCount}, Error Count: {_salesforceUserPublishService.ErrorCount}");
+                _logger.LogInformation($"Publish Count: {_salesforceUserService.PublishCount}, Deactivation Count: {_salesforceUserService.DeactivationCount}, Error Count: {_salesforceUserService.ErrorCount}");
             }
             else
             {

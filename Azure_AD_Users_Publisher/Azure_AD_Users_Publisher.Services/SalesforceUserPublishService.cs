@@ -10,11 +10,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Azure_AD_Users_Publisher.Services
 {
-    public class SalesforceUserPublishService : ISalesforceUserPublishService
+    public class SalesforceUserService : ISalesforceUserService
     {
         private readonly CacheControlHeaderValue _noCacheControlHeaderValue = new CacheControlHeaderValue {NoCache = true};
 
-        private readonly ILogger<SalesforceUserPublishService> _logger;
+        private readonly ILogger<SalesforceUserService> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly string _publishUrl;
         private readonly ISalesforceTokenService _tokenService;
@@ -27,8 +27,8 @@ namespace Azure_AD_Users_Publisher.Services
         public int DeactivationCount => _deactivationCount;
         public int ErrorCount => _errorCount;
 
-        public SalesforceUserPublishService(
-            ILogger<SalesforceUserPublishService> logger, 
+        public SalesforceUserService(
+            ILogger<SalesforceUserService> logger, 
             IHttpClientFactory httpClientFactory, 
             IConfiguration configuration, 
             ISalesforceTokenService tokenService)
@@ -41,7 +41,7 @@ namespace Azure_AD_Users_Publisher.Services
 
         private async Task<HttpClient> GetHttpClient()
         {
-            var client = _httpClientFactory.CreateClient("SalesforcePublishHttpClient");
+            var client = _httpClientFactory.CreateClient("SalesforceHttpClient");
             var bearerToken = await _tokenService.RetrieveToken();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
             return client;
@@ -98,6 +98,31 @@ namespace Azure_AD_Users_Publisher.Services
 
             Interlocked.Increment(ref _deactivationCount);
             _logger.LogDebug($"{correlationId}, Successfully Deactivated Salesforce User ExternalId: {externalId}");
+        }
+
+        public async Task<string> RetrieveAllUsers()
+        {
+            //var client = await GetHttpClient();
+            //var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"{_publishUrl}{externalId}");
+            //requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
+            
+            //var correlationId = Guid.NewGuid();
+            //_logger.LogDebug($"{correlationId}, Deactivating Salesforce User ExternalId: {externalId}");
+
+            //var responseMessage = await client.SendAsync(requestMessage);
+            //if (!responseMessage.IsSuccessStatusCode)
+            //{
+            //    Interlocked.Increment(ref _errorCount);
+
+            //    var responseContent = await responseMessage.Content.ReadAsStringAsync();
+            //    var message = $"{correlationId}, Non Success Status Code when Deactivating Salesforce User, Response Content: {responseContent}, for User ExternalId: {externalId}";
+            //    _logger.LogError(message);
+            //    throw new UnexpectedStatusCodeException(responseMessage);
+            //}
+
+            //Interlocked.Increment(ref _deactivationCount);
+            //_logger.LogDebug($"{correlationId}, Successfully Deactivated Salesforce User ExternalId: {externalId}");
+            return await Task.FromResult("foo");
         }
     }
 }

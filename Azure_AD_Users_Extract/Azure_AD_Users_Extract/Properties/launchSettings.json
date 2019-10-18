@@ -15,6 +15,7 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "APPLICATION_AI_KEY": "bd4f956c-8d74-4084-bf5c-14b696f22037",
+        "APPLICATION_KEYVAULTURL": "https://hisc-dev-azure-ad-users.vault.azure.net/secrets/",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
