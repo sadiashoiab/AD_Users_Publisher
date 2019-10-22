@@ -117,7 +117,5 @@ namespace Azure_AD_Users_Publisher.Services
                 throw;
             }
         }
-
-
     }
 }
