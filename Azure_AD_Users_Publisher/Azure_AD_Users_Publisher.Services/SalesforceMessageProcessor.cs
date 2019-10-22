@@ -80,12 +80,12 @@ namespace Azure_AD_Users_Publisher.Services
 
         private async Task<bool> UserExistsAndIsActiveInSalesforce(AzureActiveDirectoryUser user)
         {
-            // todo: move absolute expiration of 6 hours to configuration or keyvault
-            var allUsers = await _cache.GetOrAddAsync($"{_cacheKeyPrefix}AllUsers", _salesforceUserService.RetrieveAllUsers, DateTimeOffset.Now.AddHours(6));
-            // todo: change condition to be check correct fields
-            return allUsers.records.Any(sfUser => sfUser.IsActive 
+            // note: using the default caching duration of 20 minutes
+            var allUsers = await _cache.GetOrAddAsync($"{_cacheKeyPrefix}AllUsers", _salesforceUserService.RetrieveAllUsers);
+            var isActive = allUsers.records.Any(sfUser => sfUser.IsActive 
                                                   && sfUser.HI_GUID__c != null 
                                                   && sfUser.HI_GUID__c.Equals(user.ExternalId));
+            return isActive;
         }
 
         private async Task<T> CheckUserFranchiseAgainstFranchiseSource<T>(AzureActiveDirectoryUser user, ProgramDataSources source, T success, T fail)

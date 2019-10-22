@@ -104,7 +104,6 @@ namespace Azure_AD_Users_Publisher.Services
         public async Task<SalesforceQueryResponse> RetrieveAllUsers()
         {
             var client = await GetHttpClient();
-            // todo: replace query with correct values per Steve once he has them ready
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"{_queryUrl}");
             requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
             
@@ -118,7 +117,7 @@ namespace Azure_AD_Users_Publisher.Services
             }
 
             var json = await responseMessage.Content.ReadAsStringAsync();
-            _logger.LogDebug($"Retrieved All Salesforce Users: {json}");
+            _logger.LogDebug($"Retrieved All Franchise Salesforce Users: {json}");
             var response = System.Text.Json.JsonSerializer.Deserialize<SalesforceQueryResponse>(json);
             return response;
         }
