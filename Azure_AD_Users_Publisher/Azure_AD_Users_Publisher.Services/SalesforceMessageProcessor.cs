@@ -83,7 +83,9 @@ namespace Azure_AD_Users_Publisher.Services
             // todo: move absolute expiration of 6 hours to configuration or keyvault
             var allUsers = await _cache.GetOrAddAsync($"{_cacheKeyPrefix}AllUsers", _salesforceUserService.RetrieveAllUsers, DateTimeOffset.Now.AddHours(6));
             // todo: change condition to be check correct fields
-            return allUsers.records.Any(sfUser => sfUser.IsActive && sfUser.Id.Equals(user.ExternalId));
+            return allUsers.records.Any(sfUser => sfUser.IsActive 
+                                                  && sfUser.HI_GUID__c != null 
+                                                  && sfUser.HI_GUID__c.Equals(user.ExternalId));
         }
 
         private async Task<T> CheckUserFranchiseAgainstFranchiseSource<T>(AzureActiveDirectoryUser user, ProgramDataSources source, T success, T fail)

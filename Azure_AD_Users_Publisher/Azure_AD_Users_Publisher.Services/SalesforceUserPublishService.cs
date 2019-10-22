@@ -118,6 +118,7 @@ namespace Azure_AD_Users_Publisher.Services
             }
 
             var json = await responseMessage.Content.ReadAsStringAsync();
+            _logger.LogDebug($"Retrieved All Salesforce Users: {json}");
             var response = System.Text.Json.JsonSerializer.Deserialize<SalesforceQueryResponse>(json);
             return response;
         }
