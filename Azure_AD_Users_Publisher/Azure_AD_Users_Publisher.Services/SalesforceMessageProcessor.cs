@@ -85,6 +85,12 @@ namespace Azure_AD_Users_Publisher.Services
             var isActive = allUsers.records.Any(sfUser => sfUser.IsActive 
                                                   && sfUser.HI_GUID__c != null 
                                                   && sfUser.HI_GUID__c.Equals(user.ExternalId));
+            if (!isActive)
+            {
+                var json = System.Text.Json.JsonSerializer.Serialize(user);
+                _logger.LogDebug($"User is NOT active OR does not exist in Salesforce: {json}");
+            }
+
             return isActive;
         }
 
