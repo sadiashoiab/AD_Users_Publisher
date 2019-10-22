@@ -46,6 +46,7 @@ steps:
     command: 'restore'
     projects: '$(SolutionPath)'
     feedsToUse: 'select'
+    arguments: '--runtime linux-x64'
 
 - task: DotNetCoreCLI@2
   displayName: 'build the solution'
