@@ -3,7 +3,7 @@ using Azure_AD_Users_Publisher.Services.Models;
 
 namespace Azure_AD_Users_Publisher.Services
 {
-    public interface ISalesforceUserPublishService
+    public interface ISalesforceUserService
     {
         int ErrorCount { get; }
 
@@ -13,5 +13,6 @@ namespace Azure_AD_Users_Publisher.Services
 
         Task Publish(SalesforceUser user);
         Task Deactivate(string externalId);
+        Task<SalesforceQueryResponse> RetrieveAllUsers();
     }
 }
