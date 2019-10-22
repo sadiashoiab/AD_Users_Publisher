@@ -10,15 +10,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Azure_AD_Users_Publisher.Services
 {
-    public class SalesforceUserPublishService : ISalesforceUserPublishService
+    public class SalesforceUserService : ISalesforceUserService
     {
         private readonly CacheControlHeaderValue _noCacheControlHeaderValue = new CacheControlHeaderValue {NoCache = true};
 
-        private readonly ILogger<SalesforceUserPublishService> _logger;
+        private readonly ILogger<SalesforceUserService> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly string _publishUrl;
         private readonly ISalesforceTokenService _tokenService;
-
+        private readonly string _publishUrl;
+        private readonly string _queryUrl;
+        
         private int _errorCount;
         private int _deactivationCount;
         private int _publishCount;
@@ -27,21 +28,21 @@ namespace Azure_AD_Users_Publisher.Services
         public int DeactivationCount => _deactivationCount;
         public int ErrorCount => _errorCount;
 
-        public SalesforceUserPublishService(
-            ILogger<SalesforceUserPublishService> logger, 
+        public SalesforceUserService(ILogger<SalesforceUserService> logger, 
             IHttpClientFactory httpClientFactory, 
             IConfiguration configuration, 
             ISalesforceTokenService tokenService)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
-            _publishUrl = configuration["SalesforcePublishUrl"];
+            _publishUrl = $"{configuration["SalesforceBaseUrl"]}{configuration["SalesforcePublishUrl"]}";
+            _queryUrl = $"{configuration["SalesforceBaseUrl"]}{configuration["SalesforceQueryUrl"]}";
             _tokenService = tokenService;
         }
 
         private async Task<HttpClient> GetHttpClient()
         {
-            var client = _httpClientFactory.CreateClient("SalesforcePublishHttpClient");
+            var client = _httpClientFactory.CreateClient("SalesforceHttpClient");
             var bearerToken = await _tokenService.RetrieveToken();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
             return client;
@@ -98,6 +99,27 @@ namespace Azure_AD_Users_Publisher.Services
 
             Interlocked.Increment(ref _deactivationCount);
             _logger.LogDebug($"{correlationId}, Successfully Deactivated Salesforce User ExternalId: {externalId}");
+        }
+
+        public async Task<SalesforceQueryResponse> RetrieveAllUsers()
+        {
+            var client = await GetHttpClient();
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"{_queryUrl}");
+            requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
+            
+            var responseMessage = await client.SendAsync(requestMessage);
+            if (!responseMessage.IsSuccessStatusCode)
+            {
+                var responseContent = await responseMessage.Content.ReadAsStringAsync();
+                var message = $"Non Success Status Code when Retrieving All Salesforce Users, Response Content: {responseContent}";
+                _logger.LogError(message);
+                throw new UnexpectedStatusCodeException(responseMessage);
+            }
+
+            var json = await responseMessage.Content.ReadAsStringAsync();
+            _logger.LogDebug($"Retrieved All Franchise Salesforce Users: {json}");
+            var response = System.Text.Json.JsonSerializer.Deserialize<SalesforceQueryResponse>(json);
+            return response;
         }
     }
 }

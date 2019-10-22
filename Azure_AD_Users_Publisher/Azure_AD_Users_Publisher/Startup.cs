@@ -8,11 +8,11 @@ using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Polly;
-using Swashbuckle.AspNetCore.Swagger;
 
 namespace Azure_AD_Users_Publisher
 {
@@ -32,16 +32,10 @@ namespace Azure_AD_Users_Publisher
             var appInsightServiceOptions = new ApplicationInsightsServiceOptions {EnableDebugLogger = true};
             services.AddApplicationInsightsTelemetry(appInsightServiceOptions);
 
-            services.AddMemoryCache();
+            services.AddLazyCache();
 
             services.AddHealthChecks()
                 .AddApplicationInsightsPublisher();
-
-            services
-                .AddHttpClient("EmailAlertHttpClient",
-                    client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
-                .AddTransientHttpErrorPolicy(builder =>
-                    builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
 
             services
                 .AddHttpClient("TokenApiHttpClient",
@@ -56,16 +50,18 @@ namespace Azure_AD_Users_Publisher
                     builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
 
             services
-                .AddHttpClient("SalesforcePublishHttpClient",
+                .AddHttpClient("SalesforceHttpClient",
                     client => { client.Timeout = System.Threading.Timeout.InfiniteTimeSpan; })
                 .AddTransientHttpErrorPolicy(builder =>
                     builder.WaitAndRetryAsync(2, _ => TimeSpan.FromMilliseconds(500)));
 
-            services.AddMvc(options => { options.Filters.Add<ExceptionActionFilter>(); })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllers(configure =>
+            {
+                configure.Filters.Add<ExceptionActionFilter>(); 
+            });
 
             services.AddSwaggerGen(c => {  
-                c.SwaggerDoc("v1", new Info {  
+                c.SwaggerDoc("v1", new OpenApiInfo {  
                     Version = "v1",  
                     Title = "Azure_AD_Users_Publisher API",  
                     Description = "Azure_AD_Users_Publisher ASP.NET Core Web API"  
@@ -78,14 +74,14 @@ namespace Azure_AD_Users_Publisher
             services.AddSingleton<IAzureKeyVaultService, AzureKeyVaultService>();
             services.AddSingleton<IMessageProcessor, SalesforceMessageProcessor>();
             services.AddSingleton<IGoogleApiService, GoogleApiService>();
-            services.AddSingleton<ISalesforceUserPublishService, SalesforceUserPublishService>();
+            services.AddSingleton<ISalesforceUserService, SalesforceUserService>();
             services.AddSingleton<ITimeZoneService, TimeZoneService>();
 
             services.AddHostedService<SubscriptionClientHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -97,15 +93,21 @@ namespace Azure_AD_Users_Publisher
                 app.UseHsts();
             }
 
-            app.UseHealthChecks("/healthcheck", new HealthCheckOptions
-            {
-                Predicate = _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });
-
             app.UseHttpsRedirection();
             app.UseStatusCodePages();
-            app.UseMvc();
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+
+                endpoints.MapControllers();
+            });
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
