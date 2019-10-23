@@ -84,8 +84,6 @@ namespace Azure_AD_Users_Extract.Tests
             var groupId = "GROUP";
             var syncDuration = 2;
 
-            var token = "TOKEN";
-
             tokenServiceMock.Setup(mock => mock.RetrieveToken(TokenEnum.Franchise)).Throws(new Exception("TEST EXCEPTION")).Verifiable();
 
             // ACT
@@ -111,9 +109,7 @@ namespace Azure_AD_Users_Extract.Tests
             var tokenServiceMock = new Mock<ITokenService>();
             var userServiceMock = new Mock<IUserService>();
             var unitUnderTest = new FranchiseUserService(loggerMock.Object, tokenServiceMock.Object, userServiceMock.Object);
-            var groupId = "GROUP";
             var syncDuration = 2;
-
             var token = "TOKEN";
 
             tokenServiceMock.Setup(mock => mock.RetrieveToken(TokenEnum.Franchise))
@@ -138,9 +134,7 @@ namespace Azure_AD_Users_Extract.Tests
             var tokenServiceMock = new Mock<ITokenService>();
             var userServiceMock = new Mock<IUserService>();
             var unitUnderTest = new FranchiseUserService(loggerMock.Object, tokenServiceMock.Object, userServiceMock.Object);
-            var groupId = "GROUP";
             var syncDuration = 2;
-
             var token = "TOKEN";
 
             tokenServiceMock.Setup(mock => mock.RetrieveToken(TokenEnum.Franchise))
@@ -173,8 +167,6 @@ namespace Azure_AD_Users_Extract.Tests
             var userServiceMock = new Mock<IUserService>();
             var unitUnderTest = new FranchiseUserService(loggerMock.Object, tokenServiceMock.Object, userServiceMock.Object);
             var syncDuration = 2;
-
-            var token = "TOKEN";
 
             tokenServiceMock.Setup(mock => mock.RetrieveToken(TokenEnum.Franchise)).Throws(new Exception("TEST EXCEPTION")).Verifiable();
 
