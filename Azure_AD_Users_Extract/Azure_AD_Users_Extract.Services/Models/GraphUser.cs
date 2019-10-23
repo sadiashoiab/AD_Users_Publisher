@@ -92,10 +92,6 @@ namespace Azure_AD_Users_Extract.Services.Models
 
         //    public List<object> onPremisesProvisioningErrors { get; set; }
         //    public List<ProvisionedPlan> provisionedPlans { get; set; }
-
-        public string timeZoneId { get; set; }
-        public bool owner => jobTitle == "Franchise Owner";
-        public string firstBusinessPhone => businessPhones?.Where(phone => !string.IsNullOrWhiteSpace(phone)).FirstOrDefault();
     }
 
     [ExcludeFromCodeCoverage]

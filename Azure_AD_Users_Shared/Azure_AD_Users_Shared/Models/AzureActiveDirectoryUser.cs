@@ -21,7 +21,7 @@ namespace Azure_AD_Users_Shared.Models
         public string Title { get; set; }
         public string CountryCode { get; set; }
         public string TimeZone { get; set; }
-        public bool IsOwner { get; set; }
+        public bool IsOwner => Title.ToLower() == "franchise owner";
         public DateTimeOffset? DeactivationDateTimeOffset { get; set; }
     }
 }
