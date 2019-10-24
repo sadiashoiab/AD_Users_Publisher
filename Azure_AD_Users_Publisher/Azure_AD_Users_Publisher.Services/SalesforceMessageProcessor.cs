@@ -40,7 +40,7 @@ namespace Azure_AD_Users_Publisher.Services
                     _logger.LogInformation($"User will be Deactivated: {json}");
                     await _salesforceUserService.Deactivate(user.ExternalId);
                 }
-                else
+                else if (!user.DeactivationDateTimeOffset.HasValue)
                 {
                     var operatingSystemTask = CheckUserFranchiseAgainstFranchiseSource(user, ProgramDataSources.ClearCare, "ClearCare", "N/A");
                     var timeZoneTask = _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
