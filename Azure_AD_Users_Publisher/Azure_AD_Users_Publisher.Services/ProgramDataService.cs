@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Azure_AD_Users_Shared.Exceptions;
-using Microsoft.Extensions.Caching.Memory;
+using LazyCache;
 using Microsoft.Extensions.Configuration;
 
 namespace Azure_AD_Users_Publisher.Services
@@ -12,16 +12,14 @@ namespace Azure_AD_Users_Publisher.Services
     {
         private const string _cacheKeyPrefix = "_ProgramData_";
         
-        private readonly IMemoryCache _memoryCache;
+        private readonly IAppCache _cache;
         private readonly string _programDataUrl;
-        private readonly int _programDataCacheDurationInMinutes;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public ProgramDataService(IMemoryCache memoryCache, IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public ProgramDataService(IAppCache cache, IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
-            _memoryCache = memoryCache;
+            _cache = cache;
             _programDataUrl = configuration["ProgramDataUrl"];
-            _programDataCacheDurationInMinutes = int.Parse(configuration["ProgramDataCacheDurationInMinutes"]);
             _httpClientFactory = httpClientFactory;
         }
 
@@ -36,22 +34,9 @@ namespace Azure_AD_Users_Publisher.Services
 
         public async Task<int[]> RetrieveFranchises(ProgramDataSources source, string bearerToken, bool cache = true)
         {
-            if (!_memoryCache.TryGetValue($"{_cacheKeyPrefix}{source.GetDescription()}", out int[] results))
-            {
-                results = await RequestFranchises(source, bearerToken);
-
-                var cacheOptions = new MemoryCacheEntryOptions
-                {
-                    AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(_programDataCacheDurationInMinutes)
-                };
-
-                if (cache)
-                {
-                    _memoryCache.Set($"{_cacheKeyPrefix}{source.GetDescription()}", results, cacheOptions);
-                }
-            }
-
-            return results;
+            // note: using the default caching duration of 20 minutes
+            var franchises = await _cache.GetOrAddAsync($"{_cacheKeyPrefix}{source.GetDescription()}", () => RequestFranchises(source, bearerToken));
+            return franchises;
         }
 
         private string BuildApiUrl(ProgramDataSources source)
