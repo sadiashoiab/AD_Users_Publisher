@@ -19,6 +19,7 @@ namespace Azure_AD_Users_Publisher.Tests
         {
             _context = context;
             _context.Properties["appCache"] = new CachingService();
+            //var appCache = (IAppCache) _context.Properties["appCache"];
         }
 
         [TestMethod]

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
 using Azure_AD_Users_Shared.Exceptions;
 using Azure_AD_Users_Shared.Services;
-using Microsoft.Extensions.Caching.Memory;
+using LazyCache;
 using Microsoft.Extensions.Configuration;
 
 namespace Azure_AD_Users_Publisher.Services
@@ -16,7 +15,7 @@ namespace Azure_AD_Users_Publisher.Services
         private const string _cacheKey = "_HISCToken";
         
         private readonly CacheControlHeaderValue _noCacheControlHeaderValue = new CacheControlHeaderValue {NoCache = true};
-        private readonly IMemoryCache _memoryCache;
+        private readonly IAppCache _cache;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAzureKeyVaultService _azureKeyVaultService;
         private readonly string _resourceUrl;
@@ -26,9 +25,9 @@ namespace Azure_AD_Users_Publisher.Services
 
         private string ContentBody { get; set; }
 
-        public HISCTokenService(IMemoryCache memoryCache, IHttpClientFactory httpClientFactory, IAzureKeyVaultService azureKeyVaultService, IConfiguration configuration)
+        public HISCTokenService(IAppCache cache, IHttpClientFactory httpClientFactory, IAzureKeyVaultService azureKeyVaultService, IConfiguration configuration)
         {
-            _memoryCache = memoryCache;
+            _cache = cache;
             _httpClientFactory = httpClientFactory;
             _azureKeyVaultService = azureKeyVaultService;
             _resourceUrl = configuration["ProgramDataUrl"];
@@ -94,20 +93,9 @@ namespace Azure_AD_Users_Publisher.Services
 
         public async Task<string> RetrieveToken()
         {
-            if (!_memoryCache.TryGetValue(_cacheKey, out string token))
-            {
-                var bearerTokenResponse = await RequestBearerToken();
-                token = bearerTokenResponse.access_token;
-
-                var cacheOptions = new MemoryCacheEntryOptions
-                {
-                    AbsoluteExpiration = DateTimeOffset.FromUnixTimeSeconds(bearerTokenResponse.expires_on_as_unix_time_seconds)
-                };
-
-                _memoryCache.Set(_cacheKey, token, cacheOptions);
-            }
-
-            return token;
+            // note: using the default caching duration of 20 minutes
+            var token = await _cache.GetOrAddAsync(_cacheKey, RequestBearerToken);
+            return token.access_token;
         }
     }
 }
