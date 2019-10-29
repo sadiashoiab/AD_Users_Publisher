@@ -119,12 +119,12 @@ namespace Azure_AD_Users_Publisher.Services
             catch (Exception ex)
             {
                 var msg = $"Exception when processing message: {Encoding.UTF8.GetString(message.Body)}, sending message to DeadLetter. StackTrace: {ex.StackTrace}";
+                _logger.LogError(ex, msg);
+
                 if (!_subscriptionClient.IsClosedOrClosing && message.SystemProperties.IsLockTokenSet)
                 {
                     await _subscriptionClient.DeadLetterAsync(message.SystemProperties.LockToken, msg);
                 }
-
-                _logger.LogError(ex, msg);
             }
         }
     }
