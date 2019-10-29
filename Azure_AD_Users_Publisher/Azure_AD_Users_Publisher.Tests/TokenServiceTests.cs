@@ -30,6 +30,13 @@ namespace Azure_AD_Users_Publisher.Tests
                 .Build();
         }
 
+        [TestInitialize]
+        public void ClearCache()
+        {
+            var appCache = (IAppCache) _context.Properties["appCache"];
+            appCache.Remove("_HISCToken");
+        }
+
         [TestMethod]
         public async Task RetrieveToken_Success()
         {
