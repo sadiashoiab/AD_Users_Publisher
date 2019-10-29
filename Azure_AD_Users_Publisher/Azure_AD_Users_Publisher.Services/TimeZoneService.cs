@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Azure_AD_Users_Shared.Models;
-using Microsoft.Extensions.Caching.Memory;
+using LazyCache;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -13,43 +13,30 @@ namespace Azure_AD_Users_Publisher.Services
         private const string _cacheKeyPrefix = "_TimeZone_";
 
         private readonly ILogger<TimeZoneService> _logger;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IAppCache _cache;
         private readonly IGoogleApiService _googleApiService;
         private readonly int _franchiseTimeZoneCacheDurationInHours;
 
-        public TimeZoneService(ILogger<TimeZoneService> logger, IMemoryCache memoryCache, IGoogleApiService googleApiService, IConfiguration configuration)
+        public TimeZoneService(ILogger<TimeZoneService> logger, IAppCache cache, IGoogleApiService googleApiService, IConfiguration configuration)
         {
             _logger = logger;
-            _memoryCache = memoryCache;
+            _cache = cache;
             _googleApiService = googleApiService;
             _franchiseTimeZoneCacheDurationInHours = int.Parse(configuration["FranchiseTimeZoneCacheDurationInHours"]);
+        }
+
+        private async Task<(string TimeZone, string Country)> GetUserTimeZoneCountry(AzureActiveDirectoryUser user)
+        {
+            var timeZone = await GetSalesforceSupportedTimeZoneAndPopulateUsersCountryCodeIfAvailable(user);
+            return (timeZone, user.CountryCode);
         }
 
         public async Task<string> RetrieveTimeZoneAndPopulateUsersCountryCode(AzureActiveDirectoryUser user)
         {
             var cacheKey = $"{_cacheKeyPrefix}{user.FranchiseNumber}";
-            if (!_memoryCache.TryGetValue(cacheKey, out CacheTimeZoneCountry timeZoneCountry))
-            {
-                timeZoneCountry = new CacheTimeZoneCountry();
-                timeZoneCountry.TimeZone = await GetSalesforceSupportedTimeZoneAndPopulateUsersCountryCodeIfAvailable(user);
-                timeZoneCountry.Country = user.CountryCode;
-
-                if (!string.IsNullOrWhiteSpace(timeZoneCountry.TimeZone))
-                {
-                    var cacheOptions = new MemoryCacheEntryOptions
-                    {
-                        AbsoluteExpiration = DateTimeOffset.UtcNow.AddHours(_franchiseTimeZoneCacheDurationInHours),
-                    };
-
-                    _memoryCache.Set(cacheKey, timeZoneCountry, cacheOptions);
-                }
-            }
-            else
-            {
-                user.CountryCode = timeZoneCountry.Country;
-            }
-
-            return timeZoneCountry.TimeZone;
+            var timeZoneAndCountry = await _cache.GetOrAddAsync(cacheKey, () => GetUserTimeZoneCountry(user), DateTimeOffset.UtcNow.AddHours(_franchiseTimeZoneCacheDurationInHours));
+            user.CountryCode = timeZoneAndCountry.Country;
+            return timeZoneAndCountry.TimeZone;
         }
 
         private async Task<string> GetSalesforceSupportedTimeZoneAndPopulateUsersCountryCodeIfAvailable(AzureActiveDirectoryUser user)
