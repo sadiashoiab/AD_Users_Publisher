@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Azure_AD_Users_Publisher.Services;
 using Azure_AD_Users_Publisher.Services.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,7 +13,8 @@ namespace Azure_AD_Users_Publisher.Tests
         public void OneMatches()
         {
             // ARRANGE
-            // new SalesforceSupportedTimeZone(-36000, "Hawaii-Aleutian Standard Time", "Pacific/Honolulu"),
+            var salesforceSupportedTimeZones = new List<SalesforceSupportedTimeZone>();
+            salesforceSupportedTimeZones.Add(new SalesforceSupportedTimeZone(-36000, "Hawaii-Aleutian Standard Time", "Pacific/Honolulu"));
             var googleTimeZone = new GoogleApiTimeZoneResult
             {
                 rawOffset = -36000,
@@ -20,7 +22,7 @@ namespace Azure_AD_Users_Publisher.Tests
             };
 
             // ACT
-            var result = googleTimeZone.ToSalesforceTimeZone();
+            var result = googleTimeZone.ToSalesforceTimeZone(salesforceSupportedTimeZones);
 
             // ASSERT
             Assert.AreEqual("Pacific/Honolulu", result);
@@ -30,6 +32,10 @@ namespace Azure_AD_Users_Publisher.Tests
         public void MultipleTimeZoneNameMatches()
         {
             // ARRANGE
+            var salesforceSupportedTimeZones = new List<SalesforceSupportedTimeZone>();
+            salesforceSupportedTimeZones.Add(new SalesforceSupportedTimeZone(-14400, "Eastern Daylight Time", "America/New_York"));
+            salesforceSupportedTimeZones.Add(new SalesforceSupportedTimeZone(-14400, "Eastern Daylight Time", "Pacific/Honolulu"));
+
             var googleTimeZone = new GoogleApiTimeZoneResult
             {
                 rawOffset = -18000,
@@ -38,7 +44,7 @@ namespace Azure_AD_Users_Publisher.Tests
             };
 
             // ACT
-            var result = googleTimeZone.ToSalesforceTimeZone();
+            var result = googleTimeZone.ToSalesforceTimeZone(salesforceSupportedTimeZones);
 
             // ASSERT
             Assert.AreEqual("America/New_York", result);
@@ -48,6 +54,8 @@ namespace Azure_AD_Users_Publisher.Tests
         public void MultipleTimeZoneNameMatches_NoResult()
         {
             // ARRANGE
+            var salesforceSupportedTimeZones = new List<SalesforceSupportedTimeZone>();
+            salesforceSupportedTimeZones.Add(new SalesforceSupportedTimeZone(-36000, "Eastern Daylight Time", "America/New_York"));
             var googleTimeZone = new GoogleApiTimeZoneResult
             {
                 rawOffset = -18000,
@@ -56,7 +64,7 @@ namespace Azure_AD_Users_Publisher.Tests
             };
 
             // ACT
-            var result = googleTimeZone.ToSalesforceTimeZone();
+            var result = googleTimeZone.ToSalesforceTimeZone(salesforceSupportedTimeZones);
 
             // ASSERT
             Assert.AreEqual(string.Empty, result);
