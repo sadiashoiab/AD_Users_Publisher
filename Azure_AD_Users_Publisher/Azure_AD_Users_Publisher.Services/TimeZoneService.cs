@@ -56,7 +56,8 @@ namespace Azure_AD_Users_Publisher.Services
             if (string.IsNullOrWhiteSpace(timeZone))
             {
                 var userJson = System.Text.Json.JsonSerializer.Serialize(user);
-                _logger.LogWarning($"No Salesforce Supported Time Zone was found for dstOffset: {timeZoneResult.dstOffset}, rawOffset: {timeZoneResult.rawOffset}, timeZoneName: {timeZoneResult.timeZoneName}, for user: {userJson}");
+                var salesforceTimeZonesJson = System.Text.Json.JsonSerializer.Serialize(salesforceSupportedTimeZones);
+                _logger.LogWarning($"No Salesforce Supported Time Zone was found for dstOffset: {timeZoneResult.dstOffset}, rawOffset: {timeZoneResult.rawOffset}, timeZoneName: {timeZoneResult.timeZoneName}, for user: {userJson}, with salesforceTimeZones: {salesforceTimeZonesJson}");
             }
 
             return timeZone;

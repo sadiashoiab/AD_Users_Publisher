@@ -75,6 +75,7 @@ namespace Azure_AD_Users_Publisher
             services.AddSingleton<IMessageProcessor, SalesforceMessageProcessor>();
             services.AddSingleton<IGoogleApiService, GoogleApiService>();
             services.AddSingleton<ISalesforceUserService, SalesforceUserService>();
+            services.AddSingleton<ISalesforceTimeZoneManagerService, SalesforceTimeZoneManagerService>();
             services.AddSingleton<ITimeZoneService, TimeZoneService>();
 
             services.AddHostedService<SubscriptionClientHostedService>();
