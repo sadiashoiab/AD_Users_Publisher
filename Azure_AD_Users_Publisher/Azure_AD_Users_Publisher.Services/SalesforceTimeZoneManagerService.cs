@@ -46,7 +46,7 @@ namespace Azure_AD_Users_Publisher.Services
         private IList<SalesforceSupportedTimeZone> MapSalesforceTimeZones(IList<SalesforceTimeZone> salesforceTimeZones)
         {
             var salesforceSupportedTimeZones = new List<SalesforceSupportedTimeZone>();
-            salesforceSupportedTimeZones.AddRange(salesforceTimeZones.Select(timezone => new SalesforceSupportedTimeZone(timezone.offsetSeconds, timezone.name, timezone.key)));
+            salesforceSupportedTimeZones.AddRange(salesforceTimeZones.Where(timezone => timezone.isActive).Select(timezone => new SalesforceSupportedTimeZone(timezone.offsetSeconds, timezone.name, timezone.key)));
             return salesforceSupportedTimeZones;
         }
 
