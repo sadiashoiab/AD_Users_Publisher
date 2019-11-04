@@ -15,13 +15,15 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly ILogger<TimeZoneService> _logger;
         private readonly IAppCache _cache;
         private readonly IGoogleApiService _googleApiService;
+        private readonly ISalesforceTimeZoneManagerService _salesforceTimeZoneManagerService;
         private readonly int _franchiseTimeZoneCacheDurationInHours;
 
-        public TimeZoneService(ILogger<TimeZoneService> logger, IAppCache cache, IGoogleApiService googleApiService, IConfiguration configuration)
+        public TimeZoneService(ILogger<TimeZoneService> logger, IAppCache cache, IGoogleApiService googleApiService, IConfiguration configuration, ISalesforceTimeZoneManagerService salesforceTimeZoneManagerService)
         {
             _logger = logger;
             _cache = cache;
             _googleApiService = googleApiService;
+            _salesforceTimeZoneManagerService = salesforceTimeZoneManagerService;
             _franchiseTimeZoneCacheDurationInHours = int.Parse(configuration["FranchiseTimeZoneCacheDurationInHours"]);
         }
 
@@ -49,10 +51,13 @@ namespace Azure_AD_Users_Publisher.Services
             }
 
             var timeZoneResult = await _googleApiService.TimeZone(geoCodeResult.geometry?.location);
-            var timeZone = timeZoneResult.ToSalesforceTimeZone();
+            var salesforceSupportedTimeZones = await _salesforceTimeZoneManagerService.GetSupportedTimeZones();
+            var timeZone = timeZoneResult.ToSalesforceTimeZone(salesforceSupportedTimeZones);
             if (string.IsNullOrWhiteSpace(timeZone))
             {
-                _logger.LogWarning($"No Salesforce Supported Time Zone was found for dstOffset: {timeZoneResult.dstOffset}, rawOffset: {timeZoneResult.rawOffset}, timeZoneName: {timeZoneResult.timeZoneName}");
+                var userJson = System.Text.Json.JsonSerializer.Serialize(user);
+                var salesforceTimeZonesJson = System.Text.Json.JsonSerializer.Serialize(salesforceSupportedTimeZones);
+                _logger.LogWarning($"No Salesforce Supported Time Zone was found for dstOffset: {timeZoneResult.dstOffset}, rawOffset: {timeZoneResult.rawOffset}, timeZoneName: {timeZoneResult.timeZoneName}, for user: {userJson}, with salesforceTimeZones: {salesforceTimeZonesJson}");
             }
 
             return timeZone;
