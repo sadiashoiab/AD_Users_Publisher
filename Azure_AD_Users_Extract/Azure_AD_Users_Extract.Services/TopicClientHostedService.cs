@@ -132,7 +132,6 @@ namespace Azure_AD_Users_Extract.Services
 
         private async Task SendUsersToServiceBusTopic(IEnumerable<AzureActiveDirectoryUser> users)
         {
-            // note: think about converting this to use the SendAsync(IList<Message> messageList)
             foreach (var user in users)
             {
                 var userJson = System.Text.Json.JsonSerializer.Serialize(user);
