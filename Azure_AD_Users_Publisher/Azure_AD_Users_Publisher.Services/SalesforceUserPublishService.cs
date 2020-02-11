@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
 using Azure_AD_Users_Shared.Exceptions;
-using LazyCache;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -13,14 +12,11 @@ namespace Azure_AD_Users_Publisher.Services
 {
     public class SalesforceUserService : ISalesforceUserService
     {
-        private const string _cacheKeyPrefix = "_SalesforceUserService_";
-
         private readonly CacheControlHeaderValue _noCacheControlHeaderValue = new CacheControlHeaderValue {NoCache = true};
 
         private readonly ILogger<SalesforceUserService> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ISalesforceTokenService _tokenService;
-        private readonly IAppCache _cache;
         private readonly string _publishUrl;
         private readonly string _queryUrl;
         
@@ -35,22 +31,19 @@ namespace Azure_AD_Users_Publisher.Services
         public SalesforceUserService(ILogger<SalesforceUserService> logger, 
             IHttpClientFactory httpClientFactory, 
             IConfiguration configuration, 
-            ISalesforceTokenService tokenService,
-            IAppCache cache)
+            ISalesforceTokenService tokenService)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
             _publishUrl = $"{configuration["SalesforceBaseUrl"]}{configuration["SalesforcePublishUrl"]}";
             _queryUrl = $"{configuration["SalesforceBaseUrl"]}{configuration["SalesforceQueryUrl"]}";
             _tokenService = tokenService;
-            _cache = cache;
         }
 
         private async Task<HttpClient> GetHttpClient()
         {
             var client = _httpClientFactory.CreateClient("SalesforceHttpClient");
-            // cache the bearer token for 20 minutes
-            var bearerToken = await _cache.GetOrAddAsync<string>($"{_cacheKeyPrefix}SalesforceBearerToken", () => _tokenService.RetrieveToken(),  DateTimeOffset.Now.AddMinutes(20));
+            var bearerToken = await _tokenService.RetrieveToken();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
             return client;
         }

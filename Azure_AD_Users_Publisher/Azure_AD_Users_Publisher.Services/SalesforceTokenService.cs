@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Azure_AD_Users_Publisher.Services.Models;
@@ -41,6 +42,12 @@ namespace Azure_AD_Users_Publisher.Services
         }
 
         public async Task<string> RetrieveToken()
+        {
+            var accessToken = await _cache.GetOrAddAsync($"{_cacheKeyPrefix}AccessToken", GetAccessToken, DateTimeOffset.Now.AddMinutes(20));
+            return accessToken;
+        }
+
+        private async Task<string> GetAccessToken()
         {
             var client = _httpClientFactory.CreateClient("TokenApiHttpClient");
 
