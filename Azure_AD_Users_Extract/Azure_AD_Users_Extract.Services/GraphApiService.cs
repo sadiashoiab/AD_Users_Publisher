@@ -14,10 +14,10 @@ namespace Azure_AD_Users_Extract.Services
         private const string _graphUrl = "https://graph.microsoft.com";
         private const string _bearerHeaderSchemeName = "Bearer";
 
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly System.Net.Http.IHttpClientFactory _httpClientFactory;
         private readonly string _azureActiveDirectoryInstanceFormat;
 
-        public GraphApiService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public GraphApiService(IConfiguration configuration, System.Net.Http.IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
             _azureActiveDirectoryInstanceFormat = configuration["AzureActiveDirectoryInstanceFormat"];
