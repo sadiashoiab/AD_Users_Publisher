@@ -36,7 +36,7 @@
 		2. Select the "Configuration" menu item under "Settings"
 		3. Select the "General settings" tab
 		4. Change the Stack to ".NET Core"
-		5. Set the Major and Minor version to ".NET Core 2.2"
+		5. Set the Major version to "3.1" and Minor version to "3.1.0" (2020-02-12)
 		6. Click "Save"
 	3. Navigate to the hisc-[Environment]-azure-ad-users-publisher App Service
 		1. *note:* As of 2019-09-23, terraform does not have a way to set the following values and therefore we need to do this step manually
