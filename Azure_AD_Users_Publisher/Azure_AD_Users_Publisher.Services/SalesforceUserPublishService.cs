@@ -19,6 +19,7 @@ namespace Azure_AD_Users_Publisher.Services
         private readonly ISalesforceTokenService _tokenService;
         private readonly string _publishUrl;
         private readonly string _queryUrl;
+        private readonly string _salesforceFranchisesUrl;
         
         private int _errorCount;
         private int _deactivationCount;
@@ -37,6 +38,7 @@ namespace Azure_AD_Users_Publisher.Services
             _httpClientFactory = httpClientFactory;
             _publishUrl = $"{configuration["SalesforceBaseUrl"]}{configuration["SalesforcePublishUrl"]}";
             _queryUrl = $"{configuration["SalesforceBaseUrl"]}{configuration["SalesforceQueryUrl"]}";
+            _salesforceFranchisesUrl = $"{configuration["SalesforceBaseUrl"]}{configuration["SalesforceFranchisesUrl"]}";
             _tokenService = tokenService;
         }
 
@@ -104,7 +106,7 @@ namespace Azure_AD_Users_Publisher.Services
         public async Task<SalesforceQueryResponse> RetrieveAllUsers()
         {
             var client = await GetHttpClient();
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"{_queryUrl}");
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, _queryUrl);
             requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
             
             var responseMessage = await client.SendAsync(requestMessage);
@@ -118,6 +120,28 @@ namespace Azure_AD_Users_Publisher.Services
 
             var json = await responseMessage.Content.ReadAsStringAsync();
             _logger.LogDebug($"Retrieved All Franchise Salesforce Users: {json}");
+            var response = System.Text.Json.JsonSerializer.Deserialize<SalesforceQueryResponse>(json);
+            return response;
+        }
+        
+        public async Task<SalesforceQueryResponse> RetrieveAllFranchises()
+        {
+            // todo: is the response okay for this?
+            var client = await GetHttpClient();
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, _salesforceFranchisesUrl);
+            requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
+            
+            var responseMessage = await client.SendAsync(requestMessage);
+            if (!responseMessage.IsSuccessStatusCode)
+            {
+                var responseContent = await responseMessage.Content.ReadAsStringAsync();
+                var message = $"Non Success Status Code when Retrieving All Salesforce Franchises, Response Content: {responseContent}";
+                _logger.LogError(message);
+                throw new UnexpectedStatusCodeException(responseMessage);
+            }
+
+            var json = await responseMessage.Content.ReadAsStringAsync();
+            _logger.LogDebug($"Retrieved All Franchise Salesforce Franchises: {json}");
             var response = System.Text.Json.JsonSerializer.Deserialize<SalesforceQueryResponse>(json);
             return response;
         }

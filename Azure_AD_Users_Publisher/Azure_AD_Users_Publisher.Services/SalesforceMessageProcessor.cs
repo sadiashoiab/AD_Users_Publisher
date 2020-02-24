@@ -32,50 +32,94 @@ namespace Azure_AD_Users_Publisher.Services
         public async Task ProcessUser(AzureActiveDirectoryUser user)
         {
             var json = System.Text.Json.JsonSerializer.Serialize(user);
-            var syncUserToSalesforce = await CheckUserFranchiseAgainstFranchiseSource(user, ProgramDataSources.Salesforce, true, false);
-            if (syncUserToSalesforce)
+            var usersFranchiseExistsInProgramDataSalesforceFranchises = await CheckUserFranchiseAgainstFranchiseSource(user, ProgramDataSources.Salesforce, true, false);
+            if (usersFranchiseExistsInProgramDataSalesforceFranchises)
             {
-                if (user.DeactivationDateTimeOffset.HasValue && await UserExistsAndIsActiveInSalesforce(user))
+                if (user.DeactivationDateTimeOffset.HasValue)
                 {
-                    _logger.LogInformation($"User will be Deactivated: {json}");
-                    await _salesforceUserService.Deactivate(user.ExternalId);
-                }
-                else if (!user.DeactivationDateTimeOffset.HasValue)
-                {
-                    var operatingSystemTask = CheckUserFranchiseAgainstFranchiseSource(user, ProgramDataSources.ClearCare, "ClearCare", "N/A");
-                    var timeZoneTask = _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
-                    await Task.WhenAll(operatingSystemTask, timeZoneTask);
-
-                    var salesforceUser = new SalesforceUser
+                    if (user.DeactivationDateTimeOffset.Value <= DateTimeOffset.Now)
                     {
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
-                        Email = user.Email,
-                        FranchiseNumber = user.FranchiseNumber,
-                        ExternalId = user.ExternalId,
-                        FederationId = user.FederationId,
-                        MobilePhone = user.MobilePhone,
-                        Address = user.Address,
-                        City = user.City,
-                        State = user.State,
-                        PostalCode = user.PostalCode,
-                        CountryCode = user.CountryCode,
-                        IsOwner = user.IsOwner,
-                        Title = user.Title,
-                        OperatingSystem = await operatingSystemTask,
-                        TimeZone = await timeZoneTask
-                    };
-
+                        await DeactivateUserIfActiveInSalesforce(user);
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"User will NOT be Deactived OR Published as it has a Deactivation Date AND it's Deactivation Date has not passed: {json}");
+                    }
+                }
+                else
+                {
                     _logger.LogInformation($"User will be Published: {json}");
+                    var salesforceUser = await MapActiveDirectoryUserToSalesforceUser(user);
                     await _salesforceUserService.Publish(salesforceUser);
                 }
-
-                _logger.LogInformation($"Publish Count: {_salesforceUserService.PublishCount}, Deactivation Count: {_salesforceUserService.DeactivationCount}, Error Count: {_salesforceUserService.ErrorCount}");
             }
             else
             {
-                _logger.LogInformation($"User will NOT be sent to Salesforce: {json}");
+                var usersFranchiseExistsInSalesforce = await UsersFranchiseExistsInSalesforceFranchises(user.FranchiseNumber);
+                if (usersFranchiseExistsInSalesforce)
+                {
+                    await DeactivateUserIfActiveInSalesforce(user);
+                }
+                else
+                {
+                    _logger.LogInformation($"User will NOT be Deactived OR Published as it's Franchise is NOT a Salesforce Franchise: {json}");
+                }
             }
+        }
+
+        private async Task<SalesforceUser> MapActiveDirectoryUserToSalesforceUser(AzureActiveDirectoryUser user)
+        {
+            var operatingSystemTask = CheckUserFranchiseAgainstFranchiseSource(user, ProgramDataSources.ClearCare, "ClearCare", "N/A");
+            var timeZoneTask = _timeZoneService.RetrieveTimeZoneAndPopulateUsersCountryCode(user);
+            await Task.WhenAll(operatingSystemTask, timeZoneTask);
+
+            var salesforceUser = new SalesforceUser
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                FranchiseNumber = user.FranchiseNumber,
+                ExternalId = user.ExternalId,
+                FederationId = user.FederationId,
+                MobilePhone = user.MobilePhone,
+                Address = user.Address,
+                City = user.City,
+                State = user.State,
+                PostalCode = user.PostalCode,
+                CountryCode = user.CountryCode,
+                IsOwner = user.IsOwner,
+                Title = user.Title,
+                OperatingSystem = await operatingSystemTask,
+                TimeZone = await timeZoneTask
+            };
+
+            return salesforceUser;
+        }
+
+        private async Task DeactivateUserIfActiveInSalesforce(AzureActiveDirectoryUser user)
+        {
+            var userJson = System.Text.Json.JsonSerializer.Serialize(user);
+            var userExistsAndIsActiveInSalesforce = await UserExistsAndIsActiveInSalesforce(user);
+            if (userExistsAndIsActiveInSalesforce)
+            {
+                _logger.LogInformation($"User will be Deactivated: {userJson}");
+                await _salesforceUserService.Deactivate(user.ExternalId);
+            }
+            else
+            {
+                _logger.LogInformation($"User will NOT be Deactived as it is NOT an Active User in Salesforce: {userJson}");
+            }
+        }
+
+        private async Task<bool> UsersFranchiseExistsInSalesforceFranchises(string franchiseNumber)
+        {
+            // note: using the default caching duration of 20 minutes
+            var allFranchises = await _cache.GetOrAddAsync($"{_cacheKeyPrefix}AllUsers", _salesforceUserService.RetrieveAllFranchises);
+            // todo: this logic needs to be corrected for franchises after we get the query sorted from Steve
+            var userFranchiseExists = allFranchises.records.Any(salesforceFranchise => salesforceFranchise.IsActive 
+                                                  && salesforceFranchise.HI_GUID__c != null 
+                                                  && salesforceFranchise.HI_GUID__c.Equals(franchiseNumber));
+            return userFranchiseExists;
         }
 
         private async Task<bool> UserExistsAndIsActiveInSalesforce(AzureActiveDirectoryUser user)
