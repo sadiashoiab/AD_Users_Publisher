@@ -45,6 +45,7 @@ namespace Azure_AD_Users_Publisher.Services
                 {
                     if (user.DeactivationDateTimeOffset.Value <= DateTimeOffset.Now)
                     {
+                        _logger.LogInformation($"User is a candiate for Deactivation: {json}");
                         await DeactivateUserIfActiveInSalesforce(user);
                     }
                     else
