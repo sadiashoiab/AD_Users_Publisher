@@ -104,7 +104,7 @@ namespace Azure_AD_Users_Publisher.Services
         public async Task<SalesforceQueryResponse> RetrieveAllUsers()
         {
             var client = await GetHttpClient();
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"{_queryUrl}");
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, _queryUrl);
             requestMessage.Headers.CacheControl = _noCacheControlHeaderValue;
             
             var responseMessage = await client.SendAsync(requestMessage);
