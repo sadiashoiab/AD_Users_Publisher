@@ -65,7 +65,7 @@ namespace Azure_AD_Users_Publisher.Services
                 var usersFranchiseExistsInSalesforce = await UsersFranchiseExistsInSalesforceFranchises(user.FranchiseNumber);
                 if (usersFranchiseExistsInSalesforce)
                 {
-                    _logger.LogInformation($"Users franchise does NOT exist in Program Data, but does exist in Salesforce: {json}");
+                    _logger.LogInformation($"Users franchise does NOT exist in Program Data, but does exist in Salesforce and is a candidate for Deactivation: {json}");
                     await DeactivateUserIfActiveInSalesforce(user);
                 }
                 else
