@@ -31,6 +31,12 @@ namespace Azure_AD_Users_Publisher.Services
 
         public async Task ProcessUser(AzureActiveDirectoryUser user)
         {
+            if (user == null)
+            {
+                _logger.LogInformation("User will NOT be Processed as it is null.");
+                return;
+            }
+
             var json = System.Text.Json.JsonSerializer.Serialize(user);
             var usersFranchiseExistsInProgramDataSalesforceFranchises = await CheckUserFranchiseAgainstFranchiseSource(user, ProgramDataSources.Salesforce, true, false);
             if (usersFranchiseExistsInProgramDataSalesforceFranchises)
@@ -114,11 +120,16 @@ namespace Azure_AD_Users_Publisher.Services
         private async Task<bool> UsersFranchiseExistsInSalesforceFranchises(string franchiseNumber)
         {
             // note: using the default caching duration of 20 minutes
-            var allFranchises = await _cache.GetOrAddAsync($"{_cacheKeyPrefix}AllUsers", _salesforceUserService.RetrieveAllFranchises);
-            // todo: this logic needs to be corrected for franchises after we get the query sorted from Steve
-            var userFranchiseExists = allFranchises.records.Any(salesforceFranchise => salesforceFranchise.IsActive 
-                                                  && salesforceFranchise.HI_GUID__c != null 
-                                                  && salesforceFranchise.HI_GUID__c.Equals(franchiseNumber));
+            var allUsers = await _cache.GetOrAddAsync($"{_cacheKeyPrefix}AllUsers", _salesforceUserService.RetrieveAllUsers);    
+            var distinctSalesforceFranchiseNumbers = _cache.GetOrAdd($"{_cacheKeyPrefix}DistinctFranchises", () => 
+                allUsers.records
+                    .GroupBy(user => user.Default_Franchise__c)
+                    .Select(group => group.First())
+                    .Select(distinctGroup => distinctGroup.Default_Franchise__c?.TrimStart('0'))
+                    .Where(item => item != null)
+                    .ToList());
+
+            var userFranchiseExists = distinctSalesforceFranchiseNumbers.Any(distinct => distinct != null && distinct.Equals(franchiseNumber?.TrimStart('0')));
             return userFranchiseExists;
         }
 
