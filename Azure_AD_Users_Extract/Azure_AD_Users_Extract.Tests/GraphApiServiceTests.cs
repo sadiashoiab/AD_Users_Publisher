@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Globalization;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Azure_AD_Users_Shared.Exceptions;
 using Azure_AD_Users_Shared.Stubs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Moq;
 
 namespace Azure_AD_Users_Extract.Tests
@@ -22,7 +24,7 @@ namespace Azure_AD_Users_Extract.Tests
         {
             // ARRANGE
             var configurationMock = new Mock<IConfiguration>();
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            var httpClientFactoryMock = new Mock<System.Net.Http.IHttpClientFactory>();
             var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) =>
                 {
                     var response = new HttpResponseMessage(HttpStatusCode.OK)
@@ -52,7 +54,7 @@ namespace Azure_AD_Users_Extract.Tests
         {
             // ARRANGE
             var configurationMock = new Mock<IConfiguration>();
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            var httpClientFactoryMock = new Mock<System.Net.Http.IHttpClientFactory>();
             var clientHandlerStub = new DelegatingHandlerStub((request, cancellationToken) =>
             {
                 var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
@@ -77,7 +79,7 @@ namespace Azure_AD_Users_Extract.Tests
         {
             // ARRANGE
             var configurationMock = new Mock<IConfiguration>();
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            var httpClientFactoryMock = new Mock<System.Net.Http.IHttpClientFactory>();
             var clientHandlerStub = new DelegatingHandlerStub();
             var client = new HttpClient(clientHandlerStub);
             var unitUnderTest = new GraphApiService(configurationMock.Object, httpClientFactoryMock.Object);
@@ -86,6 +88,20 @@ namespace Azure_AD_Users_Extract.Tests
 
             // ACT
             var _ = await unitUnderTest.RetrieveData("https://www.google.com", "Does not matter for this test as we are using a DelegatingHandler");
+        }
+
+        [TestMethod]
+        public async Task Test()
+        {
+            var clientId = "7495e03d-bfdd-4b49-86fd-93da77b69a03";
+            var appKey = "uuo6FoRQF92X9T/PyBHym29jE0sB7TFYe+vpsMeZFnU=";
+            var authority = string.Format(CultureInfo.InvariantCulture, "https://login.microsoftonline.com/{0}", "849fc475-5645-4049-afc1-bcad4289b7ac");
+            var authContext = new AuthenticationContext(authority);
+
+            // Acquiring the token by using microsoft graph api resource
+            var result = await authContext.AcquireTokenAsync("https://graph.microsoft.com", new ClientCredential(clientId, appKey));     
+            var token = result.AccessToken;
+            Assert.IsNotNull(token);
         }
     }
 }
