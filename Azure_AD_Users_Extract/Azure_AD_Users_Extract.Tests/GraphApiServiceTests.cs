@@ -90,18 +90,18 @@ namespace Azure_AD_Users_Extract.Tests
             var _ = await unitUnderTest.RetrieveData("https://www.google.com", "Does not matter for this test as we are using a DelegatingHandler");
         }
 
-        [TestMethod]
-        public async Task Test()
-        {
-            var clientId = "7495e03d-bfdd-4b49-86fd-93da77b69a03";
-            var appKey = "uuo6FoRQF92X9T/PyBHym29jE0sB7TFYe+vpsMeZFnU=";
-            var authority = string.Format(CultureInfo.InvariantCulture, "https://login.microsoftonline.com/{0}", "849fc475-5645-4049-afc1-bcad4289b7ac");
-            var authContext = new AuthenticationContext(authority);
+        //[TestMethod]
+        //public async Task Test()
+        //{
+        //    var clientId = "7495e03d-bfdd-4b49-86fd-93da77b69a03";
+        //    var appKey = "uuo6FoRQF92X9T/PyBHym29jE0sB7TFYe+vpsMeZFnU="; // this is an expired secret, please use a valid secret to run this test.
+        //    var authority = string.Format(CultureInfo.InvariantCulture, "https://login.microsoftonline.com/{0}", "849fc475-5645-4049-afc1-bcad4289b7ac");
+        //    var authContext = new AuthenticationContext(authority);
 
-            // Acquiring the token by using microsoft graph api resource
-            var result = await authContext.AcquireTokenAsync("https://graph.microsoft.com", new ClientCredential(clientId, appKey));     
-            var token = result.AccessToken;
-            Assert.IsNotNull(token);
-        }
+        //    // Acquiring the token by using microsoft graph api resource
+        //    var result = await authContext.AcquireTokenAsync("https://graph.microsoft.com", new ClientCredential(clientId, appKey));     
+        //    var token = result.AccessToken;
+        //    Assert.IsNotNull(token);
+        //}
     }
 }
