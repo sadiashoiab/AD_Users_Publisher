@@ -30,7 +30,11 @@ namespace Azure_AD_Users_Extract
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var appInsightServiceOptions = new ApplicationInsightsServiceOptions {EnableDebugLogger = true};
+            var appInsightServiceOptions = new ApplicationInsightsServiceOptions
+            {
+                EnableDebugLogger = true,
+                EnableAdaptiveSampling = false
+            };
             services.AddApplicationInsightsTelemetry(appInsightServiceOptions);
 
             var graphApiUrlFromConfig = Configuration["GraphApiUrl"];
