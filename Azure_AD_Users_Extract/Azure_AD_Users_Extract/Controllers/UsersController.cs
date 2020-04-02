@@ -19,7 +19,7 @@ namespace Azure_AD_Users_Extract.Controllers
             _franchiseUserService = franchiseUserService;
         }
 
-        // GET users
+        // GET users//
         //[ProducesResponseType(typeof(List<AzureActiveDirectoryUser>), StatusCodes.Status200OK)]
         //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
         //[Produces("application/json")]
